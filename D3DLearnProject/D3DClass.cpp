@@ -297,7 +297,6 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	{
 		return false;
 	}
-
 	// 绑定渲染目标视图和深度缓冲到渲染管线.
 	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
 
@@ -333,7 +332,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
 
-	// 创建视口
+	// 创建视口,用来指定显示到屏幕的哪一块区域，以及深度剔除
 	m_deviceContext->RSSetViewports(1, &viewport);
 
 	// 设置透视投影矩阵
@@ -347,13 +346,10 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	//该矩阵实现局部坐标到世界坐标的转换
 	D3DXMatrixIdentity(&m_worldMatrix);
 
-
 	// 创建正交投影矩阵，主要用来实施2D渲染.
 	D3DXMatrixOrthoLH(&m_orthoMatrix, (float)screenWidth, (float)screenHeight, screenNear, screenDepth);
 
 	return true;
-
-
 }
 
 void D3DClass::Shutdown()
