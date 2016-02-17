@@ -3,7 +3,10 @@
 
 GraphicsClass::GraphicsClass(void)
 {
-	m_D3D = 0;
+	m_D3D = NULL;
+	m_pCarema = NULL;
+	m_pTriangleClass = NULL;
+	m_pCarema = NULL;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -107,7 +110,15 @@ bool GraphicsClass::Render()
 	bool result = true;;
 	// 设置framebuffer.为浅蓝色
 	m_D3D->BeginScene(0.0f, 0.0f, 0.5f, 1.0f);
+	
+	m_pCarema->Render();
+	m_pCarema->GetViewMatrix(viewMatrix);
+	m_D3D->GetWorldMatrix(worldMatrix);
+	m_D3D->GetProjectionMatrix(projectionMatrix);
 
+	m_pTriangleClass->Render(m_D3D->GetDeviceContext());
+	result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
+				3, worldMatrix, viewMatrix, projectionMatrix);
 	//把framebuffer中的图像present到屏幕上.
 	m_D3D->EndScene();
 

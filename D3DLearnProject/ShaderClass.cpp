@@ -34,7 +34,7 @@ static unsigned char s_lpShaderContentStr[] =
 "	output.color = input.color;	"
 "	return output;				"
 "}								"
-"float4 ColorPixelShader(PixelInputType input) : SV_TAGET{"
+"float4 ColorPixelShader(PixelInputType input) : SV_TARGET{"
 "	return input.color;"
 "}";
 
