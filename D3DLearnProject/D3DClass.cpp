@@ -10,14 +10,12 @@ D3DClass::D3DClass(void)
 	m_depthStencilState = 0;
 	m_depthStencilView = 0;
 	m_rasterState = 0;
-
 }
 
 D3DClass::D3DClass(const D3DClass& other)
 {
+
 }
-
-
 
 D3DClass::~D3DClass(void)
 {
@@ -44,7 +42,6 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	D3D11_RASTERIZER_DESC rasterDesc;
 	D3D11_VIEWPORT viewport;
 	float fieldOfView, screenAspect;
-
 
 	// 保存垂直同步设置
 	m_vsync_enabled = vsync;
@@ -245,7 +242,6 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	if(FAILED(result))
 	{
 		return false;
-
 	}
 
 	// 初始化深度模版状态描述.
@@ -415,7 +411,6 @@ void D3DClass::BeginScene(float red, float green, float blue, float alpha)
 {
 	float color[4];
 
-
 	// 设置清除后缓冲颜色.
 	color[0] = red;
 	color[1] = green;
@@ -430,7 +425,6 @@ void D3DClass::BeginScene(float red, float green, float blue, float alpha)
 
 	return;
 }
-
 
 void D3DClass::EndScene()
 {

@@ -8,6 +8,7 @@ class ShaderClass
 {
 public:
 	bool Init(ID3D11Device *pDevice, HWND hwnd);
+	void Shutdown();
 	bool Render(ID3D11DeviceContext *pDeviceContext, 
 					int indexCount,
 					D3DXMATRIX worldMatrix,

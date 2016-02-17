@@ -53,6 +53,27 @@ bool ShaderClass::Render(ID3D11DeviceContext *pDeviceContext,
 	return res;
 }
 
+
+void ShaderClass::Shutdown()
+{
+	if (m_pLayout)
+	{
+		m_pLayout->Release();
+	}
+	if (m_pVertexShader)
+	{
+		m_pVertexShader->Release();
+	}
+	if (m_pPixelShader)
+	{
+		m_pPixelShader->Release();
+	}
+	if (m_pConstantBuffer)
+	{
+		m_pConstantBuffer->Release();
+	}
+}
+
 bool ShaderClass::Init(ID3D11Device *pDevice, HWND hwnd)
 {
 	HRESULT res = S_OK;
@@ -71,7 +92,7 @@ bool ShaderClass::Init(ID3D11Device *pDevice, HWND hwnd)
 		"vs_5_0",
 		D3D10_SHADER_ENABLE_STRICTNESS,
 		0, NULL, &pVertexShaderBuffer, &pErr, NULL);
-	assert(FAILED(res));
+	assert(SUCCEEDED(res));
 	
 	// 编译PS
 	res = D3DX11CompileFromMemory((LPCSTR)s_lpShaderContentStr,
@@ -81,18 +102,18 @@ bool ShaderClass::Init(ID3D11Device *pDevice, HWND hwnd)
 		"ps_5_0",
 		D3D10_SHADER_ENABLE_STRICTNESS,
 		0, NULL, &pPixelShaderBuffer, &pErr, NULL);
-	assert(FAILED(res));
+	assert(SUCCEEDED(res));
 	// 创建VS Shader
 	res = pDevice->CreateVertexShader(pVertexShaderBuffer->GetBufferPointer(),
 								pVertexShaderBuffer->GetBufferSize(),
 								NULL, &m_pVertexShader);
-	assert(FAILED(res));
+	assert(SUCCEEDED(res));
 		
 	// 创建PS Shader
 	res = pDevice->CreatePixelShader(pPixelShaderBuffer->GetBufferPointer(),
 								pPixelShaderBuffer->GetBufferSize(),
 								NULL, &m_pPixelShader);
-	assert(FAILED(res));
+	assert(SUCCEEDED(res));
 
 	// 创建定点布局，在Input-Assemble 阶段使用
 	polygonLayout[0].SemanticName = "POSITION";	// 语义
@@ -116,7 +137,7 @@ bool ShaderClass::Init(ID3D11Device *pDevice, HWND hwnd)
 		pVertexShaderBuffer->GetBufferPointer(),
 		pVertexShaderBuffer->GetBufferSize(),
 		&m_pLayout);
-	assert(FAILED(res));
+	assert(SUCCEEDED(res));
 
 	pVertexShaderBuffer->Release();
 	pVertexShaderBuffer = NULL;
@@ -134,7 +155,7 @@ bool ShaderClass::Init(ID3D11Device *pDevice, HWND hwnd)
 	res = pDevice->CreateBuffer(&matrixBufferDesc, 
 								NULL, 
 								&m_pConstantBuffer);
-	assert(FAILED(res));
+	assert(SUCCEEDED(res));
 	
 	return true;
 }
@@ -168,7 +189,7 @@ bool ShaderClass::SetShaderParam(ID3D11DeviceContext *pDeviceContext,
 	res = pDeviceContext->Map(m_pConstantBuffer, 0,
 		D3D11_MAP_WRITE_DISCARD,
 		0, &mappedResource);
-	assert(FAILED(res));
+	assert(SUCCEEDED(res));
 
 	pBufferPtr = (MatrixBufferType*)mappedResource.pData;
 	pBufferPtr->world = worldMatrix;

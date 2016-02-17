@@ -2,6 +2,9 @@
 
 #include <windows.h>
 #include "d3dclass.h"
+#include "CameraClass.h"
+#include "ShaderClass.h"
+#include "TriangleClass.h"
 
 /////////////
 // GLOBALS //
@@ -26,6 +29,8 @@ class GraphicsClass
 
 		//定义一个D3DClass类成员变量
 		D3DClass* m_D3D;
-
+		CameraClass *m_pCarema;
+		ShaderClass *m_pShaderClass;
+		TriangleClass *m_pTriangleClass;
 	};
 

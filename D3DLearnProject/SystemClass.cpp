@@ -69,7 +69,6 @@ void SystemClass::Shutdown()
 	}
 	// 执行一些销毁工作.
 	ShutdownWindows();
-
 }
 
 //处理消息
