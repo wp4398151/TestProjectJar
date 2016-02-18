@@ -40,9 +40,9 @@ void TriangleClass::Shutdown()
 {
 
 }
-void TriangleClass::Render(ID3D11DeviceContext*)
+void TriangleClass::Render(ID3D11DeviceContext* pDeviceContext)
 {
-
+	RenderBuffers(pDeviceContext);
 }
 
 int TriangleClass::GetIndexCount()
