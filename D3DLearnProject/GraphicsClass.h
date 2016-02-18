@@ -5,6 +5,7 @@
 #include "CameraClass.h"
 #include "ShaderClass.h"
 #include "TriangleClass.h"
+#include "Box.h"
 
 /////////////
 // GLOBALS //
@@ -24,13 +25,14 @@ class GraphicsClass
 		void Shutdown();
 		bool Frame();
 
+		CameraClass *m_pCarema;
 	private:
 		bool Render();
 
 		//定义一个D3DClass类成员变量
 		D3DClass* m_D3D;
-		CameraClass *m_pCarema;
 		ShaderClass *m_pShaderClass;
 		TriangleClass *m_pTriangleClass;
+		Box *m_pBox;
 	};
 

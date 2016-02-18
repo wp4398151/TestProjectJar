@@ -94,6 +94,7 @@ void  SystemClass::Run()
 
 		// 接收到WM_QUIT消息，退出程序.
 		if(msg.message == WM_QUIT)
+
 		{
 			done = true;
 		}

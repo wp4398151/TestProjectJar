@@ -8,6 +8,7 @@ GraphicsClass::GraphicsClass(void)
 	m_pTriangleClass = NULL;
 	m_pCarema = NULL;
 	m_pShaderClass = NULL;
+	m_pBox = NULL;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -57,6 +58,17 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 	m_pTriangleClass->Initialize(m_D3D->GetDevice());
 	
+
+	// 初始化矩形
+	m_pBox = new Box;
+
+	m_pBox->Initialize(m_D3D->GetDevice());
+	if (!m_pBox)
+	{
+		return false;
+	}
+	
+	// 初始化Shader
 	m_pShaderClass = new ShaderClass();
 	if (!m_pShaderClass)
 	{
@@ -80,6 +92,14 @@ void GraphicsClass::Shutdown()
 		delete m_pTriangleClass;
 		m_pTriangleClass = NULL;
 	}
+
+	if (m_pBox)
+	{
+		m_pBox->Shutdown();
+		delete m_pBox;
+		m_pBox = NULL;
+	}
+	
 	//销毁m_D3D对象
 	if(m_D3D)
 	{
@@ -118,10 +138,16 @@ bool GraphicsClass::Render()
 	
 	m_pCarema->Render();
 	m_pCarema->GetViewMatrix(viewMatrix);
+	//m_pCarema->pitch(1.0f);
 	m_D3D->GetWorldMatrix(worldMatrix);
-	m_D3D->GetProjectionMatrix(projectionMatrix);
+	//m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	//m_D3D->GetOrthoMatrix(projectionMatrix);
+	m_D3D->GetOrthoMatrix(projectionMatrix);
+
+	//m_pTriangleClass->Render(m_D3D->GetDeviceContext());
+	//m_pBox->Render(m_D3D->GetDeviceContext());
+	//result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
+	//			m_pBox->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
 	m_pTriangleClass->Render(m_D3D->GetDeviceContext());
 	result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
