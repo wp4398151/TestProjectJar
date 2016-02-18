@@ -323,8 +323,10 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	// 设置视口，显示全部后缓冲内容
 	viewport.Width = (float)screenWidth;
 	viewport.Height = (float)screenHeight;
-	viewport.MinDepth = 0.0f;
+
+	viewport.MinDepth = 0.0f;	// 仅仅表示深度缓冲区的值,而不是是椎体的
 	viewport.MaxDepth = 1.0f;
+
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
 
@@ -343,7 +345,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	D3DXMatrixIdentity(&m_worldMatrix);
 
 	// 创建正交投影矩阵，主要用来实施2D渲染.
-	D3DXMatrixOrthoLH(&m_orthoMatrix, (float)screenWidth, (float)screenHeight, screenNear, screenDepth);
+	//D3DXMatrixOrthoLH(&m_orthoMatrix, (float)screenWidth, (float)screenHeight, screenNear, screenDepth);
 
 	return true;
 }

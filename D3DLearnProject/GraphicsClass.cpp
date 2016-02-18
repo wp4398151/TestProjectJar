@@ -84,7 +84,6 @@ void GraphicsClass::Shutdown()
 	return;
 }
 
-
 bool GraphicsClass::Frame()
 {
 	bool result;
@@ -100,7 +99,6 @@ bool GraphicsClass::Frame()
 	return true;
 }
 
-
 bool GraphicsClass::Render()
 {
 	D3DXMATRIX worldMatrix;	// ÊÀ½ç±ä»» 
@@ -115,6 +113,8 @@ bool GraphicsClass::Render()
 	m_pCarema->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
+
+	//m_D3D->GetOrthoMatrix(projectionMatrix);
 
 	m_pTriangleClass->Render(m_D3D->GetDeviceContext());
 	result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 

@@ -7,9 +7,13 @@ struct VertexType
 	D3DXVECTOR4 color;
 };
 VertexType g_vertices[] = {
-	{ D3DXVECTOR3(-1.0f, -1.0f, 0.0f), D3DXVECTOR4(1.0f, 1.0f, 0.0f, 1.0f) },
-	{ D3DXVECTOR3(0.0f, 1.0f, 0.0f), D3DXVECTOR4(1.0f, 1.0f, 0.0f, 1.0f) },
-	{ D3DXVECTOR3(1.0f, -1.0f, 0.0f), D3DXVECTOR4(1.0f, 1.0f, 0.0f, 1.0f) }
+	//{ D3DXVECTOR3(-1.0f, -1.0f, 0.1f), D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f) },
+	//{ D3DXVECTOR3(0.0f, 1.0f, 0.1f), D3DXVECTOR4(1.0f, 0.5f, 0.0f, 1.0f) },
+	//{ D3DXVECTOR3(1.0f, -1.0f, 0.1f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f) }
+
+	{ D3DXVECTOR3(-0.5f, -.5f, 10.0f), D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f) },
+	{ D3DXVECTOR3(0.0f, 0.5f, 10.0f), D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f) },
+	{ D3DXVECTOR3(0.5f, -0.5f, 10.0f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f) }
 };
 unsigned int g_indexVertice[sizeof(g_vertices) / sizeof(g_vertices[0])] = {
 	0, 1, 2 };
@@ -31,14 +35,14 @@ TriangleClass::~TriangleClass(void)
 {
 
 }
-bool TriangleClass::Initialize(ID3D11Device*)
+bool TriangleClass::Initialize(ID3D11Device* pDevice)
 {
-	return true;
+	return InitializeBuffers(pDevice);
 }
 
 void TriangleClass::Shutdown()
 {
-
+	ShutdownBuffers();
 }
 void TriangleClass::Render(ID3D11DeviceContext* pDeviceContext)
 {
@@ -76,20 +80,20 @@ bool TriangleClass::InitializeBuffers(ID3D11Device* pDevice)
 	assert(SUCCEEDED(result));
 	
 	// 设置顶点索引缓冲描述
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(g_indexVertice[0]) * (sizeof(g_vertices) / sizeof(g_vertices[0]));
-	vertexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER; // 将资源绑定到顶点索引，供管线访问
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
-	vertexBufferDesc.StructureByteStride = 0;
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof(g_indexVertice[0]) * (sizeof(g_vertices) / sizeof(g_vertices[0]));
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER; // 将资源绑定到顶点索引，供管线访问
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+	indexBufferDesc.StructureByteStride = 0;
 
 	// 指向保存顶点数据的临时缓冲.
-	vertexData.pSysMem = g_indexVertice; // 将三角形的顶点数据放入顶点缓冲中
-	vertexData.SysMemPitch = 0;
-	vertexData.SysMemSlicePitch = 0;
+	indexData.pSysMem = g_indexVertice; // 将三角形的顶点数据放入顶点缓冲中
+	indexData.SysMemPitch = 0;
+	indexData.SysMemSlicePitch = 0;
 
 	// 创建顶点缓冲.
-	result = pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pVertexBuffer);
+	result = pDevice->CreateBuffer(&indexBufferDesc, &indexData, &m_pIndexBuffer);
 	assert(SUCCEEDED(result));
 
 	return true;
@@ -115,8 +119,8 @@ void TriangleClass::ShutdownBuffers()
 
 void TriangleClass::RenderBuffers(ID3D11DeviceContext* pDeviceContext)
 {
-	unsigned int stride;
-	unsigned int offset;
+	unsigned int stride = 0;
+	unsigned int offset = 0;
 
 	// 设置顶点缓冲跨度和偏移.
 	stride = sizeof(VertexType);
