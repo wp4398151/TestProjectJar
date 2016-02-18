@@ -48,7 +48,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	// 设置摄像机位置.
-	m_pCarema->SetPosition(0.0f, 0.0f, -10.0f);
+	m_pCarema->SetPosition(5.0f, 5.0f, -10.0f);
 
 	// 初始化三角形
 	m_pTriangleClass = new TriangleClass;
@@ -140,18 +140,17 @@ bool GraphicsClass::Render()
 	m_pCarema->GetViewMatrix(viewMatrix);
 	//m_pCarema->pitch(1.0f);
 	m_D3D->GetWorldMatrix(worldMatrix);
-	//m_D3D->GetProjectionMatrix(projectionMatrix);
+	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	m_D3D->GetOrthoMatrix(projectionMatrix);
+	//m_D3D->GetOrthoMatrix(projectionMatrix);
+
+	m_pBox->Render(m_D3D->GetDeviceContext());
+	result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
+				m_pBox->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
 	//m_pTriangleClass->Render(m_D3D->GetDeviceContext());
-	//m_pBox->Render(m_D3D->GetDeviceContext());
 	//result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
-	//			m_pBox->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
-
-	m_pTriangleClass->Render(m_D3D->GetDeviceContext());
-	result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
-				3, worldMatrix, viewMatrix, projectionMatrix);
+	//			3, worldMatrix, viewMatrix, projectionMatrix);
 	//把framebuffer中的图像present到屏幕上.
 	m_D3D->EndScene();
 
