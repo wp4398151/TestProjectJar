@@ -251,7 +251,6 @@ void SystemClass::ShutdownWindows()
 
 LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
-
 	switch(umsg)
 	{
 		// 检测按键消息.
@@ -260,10 +259,25 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 			m_Input->KeyDown((unsigned int)wparam);
 			return 0;
 		}
-
 	case WM_KEYUP:
 		{
 			m_Input->KeyUp((unsigned int)wparam);
+			return 0;
+		}
+	case WM_SIZE:
+		{
+			int screenWidth = 0, screenHeight = 0;
+			screenWidth = LOWORD(lparam);
+			screenHeight = HIWORD(lparam);
+			// 窗口大小改变时，重新初始化图形对象 
+			if (m_Graphics)
+			{
+				bool result = m_Graphics->Initialize(screenWidth, screenHeight, m_hwnd);
+				if (!result)
+				{
+					return false;
+				}
+			}
 			return 0;
 		}
 		//任何其它消息发送到windows缺省处理.
@@ -272,6 +286,8 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 			return DefWindowProc(hwnd, umsg, wparam, lparam);
 		}
 	}
+
+	return DefWindowProc(hwnd, umsg, wparam, lparam);
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
@@ -285,7 +301,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 			PostQuitMessage(0);
 			return 0;
 		}
-
 		// 窗口关闭消息.
 	case WM_CLOSE:
 		{

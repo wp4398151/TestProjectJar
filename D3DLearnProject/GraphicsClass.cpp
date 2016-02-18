@@ -7,6 +7,7 @@ GraphicsClass::GraphicsClass(void)
 	m_pCarema = NULL;
 	m_pTriangleClass = NULL;
 	m_pCarema = NULL;
+	m_pShaderClass = NULL;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -20,6 +21,8 @@ GraphicsClass::~GraphicsClass(void)
 bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
 	bool result;
+
+	Shutdown();
 
 	// 创建一个D3DClass对象.
 	m_D3D = new D3DClass;
@@ -68,17 +71,21 @@ void GraphicsClass::Shutdown()
 	if (m_pShaderClass)
 	{
 		m_pShaderClass->Shutdown();
+		delete m_pShaderClass;
+		m_pShaderClass = NULL;
 	}
 	if (m_pTriangleClass)
 	{
 		m_pTriangleClass->Shutdown();
+		delete m_pTriangleClass;
+		m_pTriangleClass = NULL;
 	}
 	//销毁m_D3D对象
 	if(m_D3D)
 	{
 		m_D3D->Shutdown();
 		delete m_D3D;
-		m_D3D = 0;
+		m_D3D = NULL;
 	}
 
 	return;
