@@ -27,7 +27,4 @@ private:
 	//顶点缓冲和顶点索引缓冲
 	ID3D11Buffer *m_pVertexBuffer, *m_pIndexBuffer;
 	int m_vertexCount, m_indexCount;
-
-
 };
-

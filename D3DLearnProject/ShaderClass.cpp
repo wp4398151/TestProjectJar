@@ -25,12 +25,12 @@ static unsigned char s_lpShaderContentStr[] =
 "	float4 position : SV_POSITION;			"
 "	float4 color : COLOR;			"
 "};								"
-"PixelInputType ColorVertexShader(PixelInputType input){"
+"PixelInputType ColorVertexShader(VertexInputType input){"
 "	PixelInputType output;		"
 "	input.position.w = 1.0f;	"
 "	output.position = mul(input.position, worldMatrix);			"
-"	output.position = mul(input.position, viewMatrix);			"
-"	output.position = mul(input.position, projectionMatrix);	"
+"	output.position = mul(output.position, viewMatrix);			"
+"	output.position = mul(output.position, projectionMatrix);	"
 "	output.color = input.color;	"
 "	return output;				"
 "}								"
@@ -48,7 +48,7 @@ bool ShaderClass::Render(ID3D11DeviceContext *pDeviceContext,
 	bool res = true;
 	res = SetShaderParam(pDeviceContext,
 		worldMatrix, viewMatrix, projectionMatrix);
-	assert(!res);
+	assert(res);
 	RenderShader(pDeviceContext, indexCount);
 	return res;
 }

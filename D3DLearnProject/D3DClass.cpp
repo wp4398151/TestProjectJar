@@ -25,17 +25,22 @@ D3DClass::~D3DClass(void)
 bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, bool fullscreen, 
 	float screenDepth, float screenNear)
 {
-	HRESULT result;
-	IDXGIFactory* factory;
-	IDXGIAdapter* adapter;
-	IDXGIOutput* adapterOutput;
-	unsigned int numModes, i, numerator, denominator, stringLength;
-	DXGI_MODE_DESC* displayModeList;
+	HRESULT result = NULL;
+	IDXGIFactory* factory = NULL;
+	IDXGIAdapter* adapter = NULL;
+	IDXGIOutput* adapterOutput = NULL;
+	unsigned int numModes = 0;
+	unsigned int n = 0;
+	unsigned int i = 0;
+	unsigned int numerator = 0;
+	unsigned int denominator = 1;
+	unsigned int stringLength = 0;
+	DXGI_MODE_DESC* displayModeList = NULL;
 	DXGI_ADAPTER_DESC adapterDesc;
 	int error;
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
 	D3D_FEATURE_LEVEL featureLevel;
-	ID3D11Texture2D* backBufferPtr;
+	ID3D11Texture2D* backBufferPtr = NULL;
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
@@ -323,8 +328,10 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	// 设置视口，显示全部后缓冲内容
 	viewport.Width = (float)screenWidth;
 	viewport.Height = (float)screenHeight;
-	viewport.MinDepth = 0.0f;
+
+	viewport.MinDepth = 0.0f;	// 仅仅表示深度缓冲区的值,而不是是椎体的
 	viewport.MaxDepth = 1.0f;
+
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
 

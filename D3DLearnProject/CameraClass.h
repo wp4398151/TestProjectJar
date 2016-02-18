@@ -14,6 +14,10 @@ public:
 	D3DXVECTOR3 GetPosition();
 	D3DXVECTOR3 GetRotation();
 
+	void pitch(float angle); // 旋转view坐标系right向量
+	void yaw(float angle);   // 旋转up向量
+	void roll(float angle);  // 旋转look向量
+
 	void Render();
 	void GetViewMatrix(D3DXMATRIX&);
 private:

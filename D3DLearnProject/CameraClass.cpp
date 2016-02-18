@@ -46,6 +46,24 @@ D3DXVECTOR3 CameraClass::GetRotation()
 	return D3DXVECTOR3(m_rotationX, m_rotationY, m_rotationZ);
 }
 
+// 旋转view坐标系right向量
+void CameraClass::pitch(float angle)
+{
+	m_rotationX += angle;
+}
+
+// 旋转up向量
+void CameraClass::yaw(float angle)
+{
+	m_rotationY += angle;
+}
+
+// 旋转look向量
+void CameraClass::roll(float angle)
+{
+	m_rotationZ += angle;
+}
+
 void CameraClass::Render()
 {
 	D3DXVECTOR3 up; // 摄像机的上方
@@ -68,9 +86,12 @@ void CameraClass::Render()
 	position.z = m_positionZ;
 	
 	// 设置摄像机lookat的方向.
-	lookAt.x = 0.0f;
-	lookAt.y = 0.0f;
-	lookAt.z = 1.0f;
+	//lookAt.x = 0.0f;
+	//lookAt.y = 0.0f;
+	//lookAt.z = 1.0f;
+
+	D3DXVec3Normalize(&lookAt, &position);
+	lookAt = lookAt * (-1);
 
 	// 得到弧度单位的欧拉旋转 yaw (Y axis), pitch (X axis), 以及 roll (Z axis) .
 	pitch = m_rotationX * 0.0174532925f;
