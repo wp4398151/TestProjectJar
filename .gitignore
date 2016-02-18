@@ -8,3 +8,5 @@
 /D3DLearnProject/Debug/*.lastbuildstate
 *.cache
 *.sdf
+/D3DLearnProject/myTutorialD3D11_3.v12.suo
+/D3DLearnProject/*.suo
