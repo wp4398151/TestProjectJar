@@ -1,5 +1,6 @@
 #include "SystemClass.h"
-
+#define _USE_MATH_DEFINES // for C++
+#include <cmath>
 
 SystemClass::SystemClass(void)
 {
@@ -48,7 +49,6 @@ bool SystemClass::Initialize()
 		return false;
 	}
 
-
 	return true;
 }
 
@@ -61,7 +61,6 @@ void SystemClass::Shutdown()
 		delete m_Graphics;
 		m_Graphics = 0;
 	}
-
 	if(m_Input)
 	{
 		delete m_Input;
@@ -116,16 +115,39 @@ void  SystemClass::Run()
 	return;
 }
 
+void SystemClass::MoveCamera()
+{
+	//如果A,S,D,W,Q,E,Z,X,C键按下，移动摄像机 
+	if (GetAsyncKeyState('W') & 0x8000)    //前后 
+		m_Graphics->m_pCamera->walk(0.1);
+	if (GetAsyncKeyState('S') & 0x8000)
+		m_Graphics->m_pCamera->walk(-0.1);
+	if (GetAsyncKeyState('A') & 0x8000)    //左右 
+		m_Graphics->m_pCamera->strafe(0.1);
+	if (GetAsyncKeyState('D') & 0x8000)
+		m_Graphics->m_pCamera->strafe(-0.1);
+	if (GetAsyncKeyState('Q') & 0x8000)    //上下 
+		m_Graphics->m_pCamera->fly(0.1);
+	if (GetAsyncKeyState('E') & 0x8000)
+		m_Graphics->m_pCamera->fly(-0.1);
+	if (GetAsyncKeyState('Z') & 0x8000)
+		m_Graphics->m_pCamera->pitch(M_PI / 180);
+	if (GetAsyncKeyState('X') & 0x8000)
+		m_Graphics->m_pCamera->yaw(M_PI / 180);
+	if (GetAsyncKeyState('C') & 0x8000)
+		m_Graphics->m_pCamera->roll(M_PI / 180);
+}
+
 bool SystemClass::Frame()
 {
 	bool result;
-
 
 	//检测用户是否按下ESC键，如果按下，退出程序.
 	if(m_Input->IsKeyDown(VK_ESCAPE))
 	{
 		return false;
 	}
+	MoveCamera();
 
 	// 执行帧渲染函数.
 	result = m_Graphics->Frame();

@@ -15,9 +15,9 @@ VertexType g_vertices[] = {
 	//{ D3DXVECTOR3(0.0f, 0.5f, 10.0f), D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f) },
 	//{ D3DXVECTOR3(0.5f, -0.5f, 10.0f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f) }
 
-	{ D3DXVECTOR3(0.0f, -100.0f, 10.0f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f) },
-	{ D3DXVECTOR3(-100.0f, 100.0f, 10.0f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f) },
-	{ D3DXVECTOR3(100.0f, 100.0f, 10.0f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f) },
+	{ D3DXVECTOR3(0.0f, -1.0f, 1.0f), D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f) },
+	{ D3DXVECTOR3(-1.0f, 1.0f, 1.0f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f) },
+	{ D3DXVECTOR3(1.0f, 1.0f, 1.0f), D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f) },
 
 };
 unsigned int g_indexVertice[sizeof(g_vertices) / sizeof(g_vertices[0])] = {

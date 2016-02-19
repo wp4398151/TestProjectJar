@@ -9,20 +9,26 @@ public:
 	CameraClass(const CameraClass&);
 	~CameraClass(void);
 	void SetPosition(float, float, float);
-	void SetRotation(float, float, float);
-
 	D3DXVECTOR3 GetPosition();
-	D3DXVECTOR3 GetRotation();
+	void GetRight(D3DXVECTOR3& right);
+	void GetUp(D3DXVECTOR3& up);
+	void GetLook(D3DXVECTOR3& look);
+
+	void strafe(float units); // 左右 
+	void fly(float units);   // 上下 
+	void walk(float units);   // 前后
 
 	void pitch(float angle); // 旋转view坐标系right向量
 	void yaw(float angle);   // 旋转up向量
 	void roll(float angle);  // 旋转look向量
 
-	void Render();
-	void GetViewMatrix(D3DXMATRIX&);
+	//void Render();
+	void GetViewMatrix(D3DXMATRIX& rViewMatrix);
 private:
-	float m_positionX, m_positionY, m_positionZ;//摄像机在世界坐标系中的位置
-	float m_rotationX, m_rotationY, m_rotationZ;//摄像机的欧拉旋转角度
-	D3DXMATRIX m_viewMatrix;
+
+	D3DXVECTOR3 m_PosVector;	// 摄像机的位置
+	D3DXVECTOR3 m_UpVector;		// 上方Vector
+	D3DXVECTOR3 m_LookAtVetor;	// 朝向Vector
+	D3DXVECTOR3 m_RightVetor;	// 朝向Vector
 };
 

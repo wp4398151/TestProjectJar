@@ -4,9 +4,8 @@
 GraphicsClass::GraphicsClass(void)
 {
 	m_D3D = NULL;
-	m_pCarema = NULL;
+	m_pCamera = NULL;
 	m_pTriangleClass = NULL;
-	m_pCarema = NULL;
 	m_pShaderClass = NULL;
 	m_pBox = NULL;
 }
@@ -42,13 +41,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	
 	// 初始化摄像机
 	// 创建摄像机对象
-	m_pCarema = new CameraClass;
-	if (!m_pCarema)
+	m_pCamera = new CameraClass;
+	if (!m_pCamera)
 	{
 		return false;
 	}
 	// 设置摄像机位置.
-	m_pCarema->SetPosition(5.0f, 5.0f, -10.0f);
+	m_pCamera->SetPosition(0.0f, 0.0f, -10.0f);
 
 	// 初始化三角形
 	m_pTriangleClass = new TriangleClass;
@@ -136,21 +135,20 @@ bool GraphicsClass::Render()
 	// 设置framebuffer.为浅蓝色
 	m_D3D->BeginScene(0.0f, 0.0f, 0.5f, 1.0f);
 	
-	m_pCarema->Render();
-	m_pCarema->GetViewMatrix(viewMatrix);
-	//m_pCarema->pitch(1.0f);
+	m_pCamera->GetViewMatrix(viewMatrix);
+	//m_pCamera->pitch(1.0f);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
 	//m_D3D->GetOrthoMatrix(projectionMatrix);
 
-	m_pBox->Render(m_D3D->GetDeviceContext());
-	result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
-				m_pBox->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
-
-	//m_pTriangleClass->Render(m_D3D->GetDeviceContext());
+	//m_pBox->Render(m_D3D->GetDeviceContext());
 	//result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
-	//			3, worldMatrix, viewMatrix, projectionMatrix);
+	//			m_pBox->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+
+	m_pTriangleClass->Render(m_D3D->GetDeviceContext());
+	result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
+				3, worldMatrix, viewMatrix, projectionMatrix);
 	//把framebuffer中的图像present到屏幕上.
 	m_D3D->EndScene();
 

@@ -25,7 +25,7 @@ class GraphicsClass
 		void Shutdown();
 		bool Frame();
 
-		CameraClass *m_pCarema;
+		CameraClass *m_pCamera;
 	private:
 		bool Render();
 

@@ -17,8 +17,10 @@ class SystemClass
 		bool Initialize();
 		void Shutdown();
 		void Run();
+		void MoveCamera();
 
 		LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
+
 	private:
 		bool Frame();
 		void InitializeWindows(int&, int&);
