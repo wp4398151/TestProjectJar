@@ -19,11 +19,13 @@ static unsigned char s_lpShaderContentStr[] =
 "};								"
 "struct VertexInputType{		"
 "	float4 position : POSITION;	"
-"	float4 color : COLOR;			"
+"	float4 color : COLOR;		"
+"	float2 texcoord : TEXCOORD0;"
 "};								"
 "struct PixelInputType{			"
 "	float4 position : SV_POSITION;			"
 "	float4 color : COLOR;			"
+"	float2 texcoord : TEXCOORD0;"
 "};								"
 "PixelInputType ColorVertexShader(VertexInputType input){"
 "	PixelInputType output;		"
@@ -35,7 +37,9 @@ static unsigned char s_lpShaderContentStr[] =
 "	return output;				"
 "}								"
 "float4 ColorPixelShader(PixelInputType input) : SV_TARGET{"
-"	return input.color;"
+"	float4 textureColor;						"
+"	textureColor = shaderTexture.Sample(SampleType, input.texcoord);"
+"	return textureColor;"
 "}";
 
 bool ShaderClass::Render(ID3D11DeviceContext *pDeviceContext,
