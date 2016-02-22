@@ -15,7 +15,7 @@ VertexType g_vertices[] = {
 	//{ D3DXVECTOR3(-0.5f, -.5f, 10.0f), D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f) },
 	//{ D3DXVECTOR3(0.0f, 0.5f, 10.0f), D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f) },
 	//{ D3DXVECTOR3(0.5f, -0.5f, 10.0f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f) }
-	{ D3DXVECTOR3(0.0f, -1.0f, 1.0f), D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f), D3DXVECTOR2(0.0f,0.0f)},
+	{ D3DXVECTOR3(-1.0f, -1.0f, 1.0f), D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f), D3DXVECTOR2(0.0f,0.0f)},
 	{ D3DXVECTOR3(-1.0f, 1.0f, 1.0f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f), D3DXVECTOR2(1.0f,0.0f)},
 	{ D3DXVECTOR3(1.0f, 1.0f, 1.0f), D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f), D3DXVECTOR2(0.0f,0.1f)},
 };
@@ -28,6 +28,7 @@ TriangleClass::TriangleClass(void)
 	m_pIndexBuffer = NULL;
 	m_vertexCount = (sizeof(g_vertices) / sizeof(g_vertices[0]));
 	m_indexCount = m_vertexCount;
+	m_pTextureClass = NULL;
 }
 
 TriangleClass::TriangleClass(const TriangleClass &)
@@ -39,9 +40,15 @@ TriangleClass::~TriangleClass(void)
 {
 
 }
-bool TriangleClass::Initialize(ID3D11Device* pDevice)
+
+bool TriangleClass::Initialize(ID3D11Device* pDevice, WCHAR *pwzFileName)
 {
-	return InitializeBuffers(pDevice);
+	bool res = false;
+	res = InitializeBuffers(pDevice);
+	assert(res);
+	res = LoadTexture(pDevice, pwzFileName);
+	assert(res);
+	return true;
 }
 
 void TriangleClass::Shutdown()
@@ -56,6 +63,20 @@ void TriangleClass::Render(ID3D11DeviceContext* pDeviceContext)
 int TriangleClass::GetIndexCount()
 {
 	return m_indexCount;
+}
+
+ID3D11ShaderResourceView* TriangleClass::GetTexture()
+{
+	return m_pTextureClass->GetTexutre();
+}
+
+bool TriangleClass::LoadTexture(ID3D11Device* pDevice, WCHAR* pwzFileName)
+{
+	bool isOK = true;;
+	m_pTextureClass = new TextureClass;
+	isOK = m_pTextureClass->Initialize(pDevice, pwzFileName);
+	assert(isOK);
+	return isOK;
 }
 
 bool TriangleClass::InitializeBuffers(ID3D11Device* pDevice)
@@ -138,4 +159,14 @@ void TriangleClass::RenderBuffers(ID3D11DeviceContext* pDeviceContext)
 
 	// 设置体元语义，渲染三角形列表.
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void TriangleClass::ReleaseTexture()
+{
+	if (m_pTextureClass)
+	{
+		m_pTextureClass->Shutdown();
+		delete m_pTextureClass;
+		m_pTextureClass = NULL;
+	}
 }

@@ -11,6 +11,11 @@ TextureClass::~TextureClass()
 
 }
 
+ID3D11ShaderResourceView* TextureClass::GetTexutre()
+{
+	return m_pTextureView;
+}
+
 TextureClass::TextureClass(const TextureClass& textureClass)
 {
 	m_pTextureView = NULL;

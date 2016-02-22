@@ -13,14 +13,16 @@ public:
 					int indexCount,
 					D3DXMATRIX worldMatrix,
 					D3DXMATRIX viewMatrix,
-					D3DXMATRIX projectionMatrix);
+					D3DXMATRIX projectionMatrix,
+					ID3D11ShaderResourceView* pShaderResourceView);
 private:
 	bool RenderShader(ID3D11DeviceContext *pDeviceContext,
 						int indexCount);
 	bool SetShaderParam(ID3D11DeviceContext *pDeviceContext,
 						D3DXMATRIX worldMatrix,
 						D3DXMATRIX viewMatrix,
-						D3DXMATRIX projectionMatrix);
+						D3DXMATRIX projectionMatrix,
+						ID3D11ShaderResourceView* pShaderResourceView);
 
 private:
 	ID3D11InputLayout *m_pLayout;
@@ -28,4 +30,5 @@ private:
 	ID3D11PixelShader *m_pPixelShader;
 	ID3D11Buffer *m_pConstantBuffer;
 	//ID3DBlob *m_pMatrixBuffer
+	ID3D11SamplerState *m_pSampleState;
 };

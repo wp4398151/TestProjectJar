@@ -55,8 +55,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
-	m_pTriangleClass->Initialize(m_D3D->GetDevice());
-	
+	m_pTriangleClass->Initialize(m_D3D->GetDevice(), L"Test.dds");
 
 	// 初始化矩形
 	m_pBox = new Box;
@@ -148,7 +147,7 @@ bool GraphicsClass::Render()
 
 	m_pTriangleClass->Render(m_D3D->GetDeviceContext());
 	result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
-				3, worldMatrix, viewMatrix, projectionMatrix);
+				3, worldMatrix, viewMatrix, projectionMatrix, m_pTriangleClass->GetTexture());
 	//把framebuffer中的图像present到屏幕上.
 	m_D3D->EndScene();
 
