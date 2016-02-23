@@ -9,3 +9,5 @@
 *.cache
 *.sdf
 *.suo
+*.opensdf
+*.ilk

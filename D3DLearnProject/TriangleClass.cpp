@@ -6,6 +6,7 @@ struct VertexType
 	D3DXVECTOR3 position;
 	D3DXVECTOR4 color;
 	D3DXVECTOR2 texcoord;
+	//D3DXVECTOR3 normal;	// ·¨Ïß
 };
 VertexType g_vertices[] = {
 	//{ D3DXVECTOR3(-1.0f, -1.0f, 0.1f), D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f) },

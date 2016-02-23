@@ -20,9 +20,9 @@ static unsigned char s_lpShaderContentStr[] =
 "	matrix projectionMatrix;		"
 "};								"
 "struct VertexInputType{		"
-"	float4 position : POSITION;	"
-"	float4 color : COLOR;		"
-"	float2 texcoord : TEXCOORD0;"
+"	float4 position : POSITION;	"		// Î»ÖÃ
+"	float4 color : COLOR;		"		// ÑÕÉ«
+"	float2 texcoord : TEXCOORD0;"		// ÌùÍ¼×ø±ê
 "};								"
 "struct PixelInputType{			"
 "	float4 position : SV_POSITION;			"
@@ -39,10 +39,13 @@ static unsigned char s_lpShaderContentStr[] =
 "	output.texcoord = input.texcoord;							"
 "	return output;												"
 "}								"
-"float4 ColorPixelShader(PixelInputType input) : SV_TARGET{"
-"	float4 textureColor;						"
+"float4 ColorPixelShader(PixelInputType input) : SV_TARGET{		"
+"	float4 textureColor;										"
 "	textureColor = shaderTexture.Sample(SampleType, input.texcoord);"
-"	return textureColor;"
+"	return textureColor;										"
+"}																"
+"float4 ColorPixelShaderJustColor(PixelInputType input) : SV_TARGET{"
+"	return input.color;											"
 "}";
 
 bool ShaderClass::Render(ID3D11DeviceContext *pDeviceContext,
