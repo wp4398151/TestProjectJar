@@ -3,9 +3,9 @@
 CameraClass::CameraClass(void)
 {
 	m_PosVector = {0.0f, 0.0f, 0.0f};	// 摄像机的位置
+	m_RightVetor = {1.0f, 0.0f, 0.0f};	// 朝向Vector
 	m_UpVector = {0.0f, 1.0f, 0.0f};	// 上方Vector
 	m_LookAtVetor = {0.0f, 0.0f, 1.0f};	// 朝向Vector
-	m_RightVetor = {1.0f, 0.0f, 0.0f};	// 朝向Vector
 }
 
 CameraClass::CameraClass(const CameraClass& cameraClass)
@@ -43,7 +43,7 @@ void CameraClass::GetUp(D3DXVECTOR3& up)
 
 void CameraClass::GetLook(D3DXVECTOR3& look)
 {
-	look = m_UpVector;
+	look = m_LookAtVetor;
 }
 
 // 左右 
@@ -156,18 +156,20 @@ void CameraClass::GetViewMatrix(D3DXMATRIX& rViewMatrix)
 
 	D3DXVec3Cross(&m_UpVector, &m_RightVetor, &m_LookAtVetor);
 	D3DXVec3Normalize(&m_UpVector, &m_UpVector);
-	
+
 	D3DXVec3Cross(&m_RightVetor, &m_LookAtVetor, &m_UpVector);
 	D3DXVec3Normalize(&m_RightVetor, &m_RightVetor);
 
+	D3DXVECTOR3 upVector = m_UpVector*-1;
 	//// 生成view矩阵: 
 	//float x = -D3DXVec3Dot(&m_RightVetor, &m_PosVector);
 	//float y = -D3DXVec3Dot(&m_UpVector, &m_PosVector);
 	//float z = -D3DXVec3Dot(&m_LookAtVetor, &m_PosVector);
 	D3DXVECTOR3 posLookAt = m_PosVector + m_LookAtVetor;
+
 	// 创建view矩阵.
 	//D3DXMatrixLookAtLH(&rViewMatrix, &m_PosVector, &m_PosVector, &m_UpVector);
-	D3DXMatrixLookAtLH(&rViewMatrix, &m_PosVector, &posLookAt , &m_UpVector);
-	
+	D3DXMatrixLookAtLH(&rViewMatrix, &m_PosVector, &posLookAt, &upVector);
+
 	return;
 }
