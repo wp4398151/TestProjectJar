@@ -48,6 +48,11 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	D3D11_VIEWPORT viewport;
 	float fieldOfView, screenAspect;
 
+	if (screenWidth < 1)
+		screenWidth = 1;
+	if (screenHeight <1)
+		screenHeight = 1;
+
 	// 保存垂直同步设置
 	m_vsync_enabled = vsync;
 
