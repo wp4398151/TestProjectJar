@@ -46,6 +46,8 @@ private:
 		D3DXVECTOR4 cameraPosition, D3DXVECTOR4 Ke, D3DXVECTOR4 Ka, D3DXVECTOR4 Kd, D3DXVECTOR4 Ks,
 		D3DXVECTOR3 lightDirection, float shininess);
 
+	void OutputShaderErrorMessage(ID3D10Blob* errorMessage);
+
 private:
 	ID3D11InputLayout *m_pLayout;
 	ID3D11VertexShader *m_pVertexShader;

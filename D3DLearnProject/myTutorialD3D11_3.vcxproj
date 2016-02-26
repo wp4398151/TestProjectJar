@@ -83,6 +83,7 @@
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="GraphicsClass.cpp" />
     <ClCompile Include="InputClass.cpp" />
+    <ClCompile Include="LightBox.cpp" />
     <ClCompile Include="LightClass.cpp" />
     <ClCompile Include="LightShaderClass.cpp" />
     <ClCompile Include="main.cpp" />
@@ -97,6 +98,7 @@
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicsClass.h" />
     <ClInclude Include="InputClass.h" />
+    <ClInclude Include="LightBox.h" />
     <ClInclude Include="LightClass.h" />
     <ClInclude Include="LightShaderClass.h" />
     <ClInclude Include="ShaderClass.h" />

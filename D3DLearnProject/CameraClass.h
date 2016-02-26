@@ -24,9 +24,10 @@ public:
 
 	//void Render();
 	void GetViewMatrix(D3DXMATRIX& rViewMatrix);
-private:
 
 	D3DXVECTOR3 m_PosVector;	// 摄像机的位置
+private:
+
 	D3DXVECTOR3 m_UpVector;		// 上方Vector
 	D3DXVECTOR3 m_LookAtVetor;	// 朝向Vector
 	D3DXVECTOR3 m_RightVetor;	// 朝向Vector

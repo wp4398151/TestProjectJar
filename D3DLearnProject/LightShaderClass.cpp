@@ -19,7 +19,7 @@ static const char s_lpVertexShaderContentStr[] =
 "	float4 Ka;					"	// 材质环境光系数
 "	float4 Kd;					"	// 材质漫反射系数
 "	float4 Ks;					"	// 材质高光系数
-"	float3 lightDir;			"	// 平行光方向
+"	float3 lightDirection;			"	// 平行光方向
 "	float shininess;			"	// 高光指数
 "};                             "
 "struct VertexInputType         "
@@ -31,50 +31,49 @@ static const char s_lpVertexShaderContentStr[] =
 "struct PixelInputType          "
 "{                              "
 "	float4 position : POSITION; "
-"	float3 normal : NORMAL;     "
+"	float4 color : COLOR;     "
 "};                             "
 "PixelInputType LightVertexShader(VertexInputType input)                                     "
 "{                                                                                           "
 "    PixelInputType output;                                                                  "
 "    float4 worldPosition;                                                                   "
 "	                                                                                         "
-"	// Calculate the position of the vertex against the world, view, and projection matrices."
+"	"// Calculate the position of the vertex against the world, view, and projection matrices.
 "    output.position = mul(input.position, worldMatrix);                                     "
 "    output.position = mul(output.position, viewMatrix);                                     "
 "    output.position = mul(output.position, projectionMatrix);                               "
-"	                                                                                         "
-"	// 世界坐标系中的顶点法向.                                                               "
+"	                                                                "//世界坐标系中的顶点法向
 "    float3 worldNomal = mul(input.normal, (float3x3)worldMatrix);                           "
 "	worldNomal = normalize(worldNomal);                                                      "
-"	//世界坐标系顶点位置                                                                     "
+"	                                                                     "//世界坐标系顶点位置
 "    worldPosition = mul(input.position, worldMatrix);                                       "
 "	float3 worldVertexPosition = worldPosition.xyz;                                          "
 "	                                                                                         "
-"	//自发射颜色                                                                             "
-"	float4 emissive = Ke;                                                                    "
-"	//计算环境光                                                                             "
-"    float4 ambient = Ka * globalAmbient;                                                    "
+"	                                                                            "
+"	float4 emissive = Ke;                                                                    "//自发射颜色 
+"	                                                                             "
+"    float4 ambient = Ka * globalAmbient;                                                    "//计算环境光
 "	                                                                                         "
-"	//计算漫反射光                                                                           "
+"	                                                                           "//计算漫反射光
 "    float3 WorldLightDir = -normalize(lightDirection);                                      "
 "    float diffuseLight = max(dot(worldNomal, WorldLightDir), 0);                            "
 "    float4 diffuse = Kd * lightColor * diffuseLight;                                        "
-"	//计算高光                                                                               "
+"	                                                                               "//计算高光
 "    float3 distCameraToVertex = normalize(cameraPosition.xyz - worldVertexPosition);        "
 "    float3 hilightDir = normalize(WorldLightDir + distCameraToVertex);                      "
-"    float specularLight = pow(max(dot(worldNomal, hilightDir), 0), shininess)               "
+"    float specularLight = pow(max(dot(worldNomal, hilightDir), 0), shininess);              "
 "	                                                                                         "
 "    if (diffuseLight <= 0)                                                                  "
 "	      specularLight = 0;                                                                 "
 "    float4 specular = Ks * lightColor * specularLight;                                      "
 "                                                                                            "
-"	output.color = emissive + ambient + diffuse + specular;                                  "
+"	output.color = emissive + ambient + diffuse + speculear;                                  "
 "                                                                                            "
 "    return output;                                                                          "
-"}";
+"}\r\n";
 
 
-static unsigned char s_lpPixelShaderContentStr[] =
+static const char s_lpPixelShaderContentStr[] =
 "struct PixelInputType                                     "
 "{                                                         "
 "    float4 position : SV_POSITION;                        "
@@ -114,14 +113,15 @@ bool LightShaderClass::Init(ID3D11Device *pDevice, HWND hwnd)
 
 	result = D3DX11CompileFromMemory(s_lpVertexShaderContentStr,
 		sizeof(s_lpVertexShaderContentStr),
-		NULL, NULL, NULL, "LightVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, 
+		NULL, NULL, NULL, "LightVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 
 		0, NULL, &pVertexShaderBuffer, &pErrorMessage, NULL);
+	OutputShaderErrorMessage(pErrorMessage);
 	assert(SUCCEEDED(result));
 
-	result = D3DX11CompileFromMemory(s_lpVertexShaderContentStr,
+	result = D3DX11CompileFromMemory(s_lpPixelShaderContentStr,
 		sizeof(s_lpPixelShaderContentStr),
-		NULL, NULL, NULL, "LightPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS | D3D10_SHADER_DEBUG, 
-		0, NULL, &pVertexShaderBuffer, &pErrorMessage, NULL);
+		NULL, NULL, NULL, "LightPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 
+		0, NULL, &pPixelShaderBuffer, &pErrorMessage, NULL);
 	assert(SUCCEEDED(result));
 
 	result = pDevice->CreateVertexShader(
@@ -184,6 +184,20 @@ bool LightShaderClass::Init(ID3D11Device *pDevice, HWND hwnd)
 
 	return true;
 }
+
+void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage)
+{
+	char* compileErrors;
+	unsigned long bufferSize, i;
+	// 得到错误信息buffer指针.
+	compileErrors = (char*)(errorMessage->GetBufferPointer());
+	// 得到buffer的长度.
+	bufferSize = errorMessage->GetBufferSize();
+	errorMessage->Release();
+	errorMessage = 0;
+	return;
+}
+
 void LightShaderClass::Shutdown()
 {
 	// 释放光照材质缓冲.
