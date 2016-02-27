@@ -12,6 +12,7 @@ GraphicsClass::GraphicsClass(void)
 	m_pLightClass = NULL;
 	m_pSimpleColorShader = NULL;
 	m_pAxisModel = NULL;
+	m_pLightAxiModel = NULL;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -106,17 +107,32 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_pSimpleColorShader->Init(m_D3D->GetDevice(), hwnd);
+
 	m_pAxisModel = new AxisModelClass;
 	if (!m_pAxisModel)
 	{
 		return false;
 	}
 	m_pAxisModel->Initialize(m_D3D->GetDevice());
+
+	m_pLightAxiModel = new AxisModelClass;
+	if (!m_pLightAxiModel)
+	{
+		return false;
+	}
+	m_pLightAxiModel->Initialize(m_D3D->GetDevice());
+
 	return true;
 }
 
 void GraphicsClass::Shutdown()
 {
+	if (m_pLightAxiModel)
+	{
+		m_pLightAxiModel->Shutdown();
+		delete m_pLightAxiModel;
+		m_pLightAxiModel = NULL;
+	}
 	if (m_pAxisModel)
 	{
 		m_pAxisModel->Shutdown();
@@ -228,6 +244,16 @@ bool GraphicsClass::Render()
 		m_pLightBox->GetIndexCount(), LightColorWorldMatrix, viewMatrix, projectionMatrix,
 		m_pLightClass->GetPosition(), m_pLightClass->GetLightColor(), m_pLightClass->GetGlobalAmbient(),
 		realcamerpos, Ke, Ka, Kd, Ks, m_pLightClass->GetDirection(), m_pLightClass->GetShininess());
+
+	D3DXMATRIX LightAxiWorldMatrix;
+	//D3DXMatrixIdentity(&LightAxiWorldMatrix);
+	D3DXMatrixTranslation(&LightAxiWorldMatrix,
+					m_pLightClass->GetPosition().x,
+					m_pLightClass->GetPosition().y,
+					m_pLightClass->GetPosition().z);
+	m_pLightAxiModel->Render(m_D3D->GetDeviceContext());
+	result = m_pSimpleColorShader->Render(m_D3D->GetDeviceContext(),
+		m_pLightAxiModel->GetIndexCount(), LightAxiWorldMatrix, viewMatrix, projectionMatrix);
 
 	//把framebuffer中的图像present到屏幕上.
 	m_D3D->EndScene();

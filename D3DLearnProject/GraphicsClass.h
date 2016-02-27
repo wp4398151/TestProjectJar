@@ -44,6 +44,6 @@ class GraphicsClass
 		LightClass* m_pLightClass;
 		SimpleColorShader* m_pSimpleColorShader;
 		AxisModelClass* m_pAxisModel;
-		
+		AxisModelClass* m_pLightAxiModel;
 	};
 
