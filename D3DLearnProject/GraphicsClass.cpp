@@ -1,6 +1,5 @@
 #include "GraphicsClass.h"
 
-
 GraphicsClass::GraphicsClass(void)
 {
 	m_D3D = NULL;
@@ -11,6 +10,8 @@ GraphicsClass::GraphicsClass(void)
 	m_pBox = NULL;
 	m_pLightBox = NULL;
 	m_pLightClass = NULL;
+	m_pSimpleColorShader = NULL;
+	m_pAxisModel = NULL;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -98,11 +99,31 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
+
+	m_pSimpleColorShader = new SimpleColorShader;
+	if (!m_pSimpleColorShader)
+	{
+		return false;
+	}
+	m_pSimpleColorShader->Init(m_D3D->GetDevice(), hwnd);
+	m_pAxisModel = new AxisModelClass;
+	if (!m_pAxisModel)
+	{
+		return false;
+	}
+	m_pAxisModel->Initialize(m_D3D->GetDevice());
 	return true;
 }
 
 void GraphicsClass::Shutdown()
 {
+	if (m_pAxisModel)
+	{
+		m_pAxisModel->Shutdown();
+		delete m_pAxisModel;
+		m_pAxisModel = NULL;
+	}
+
 	if (m_pShaderClass)
 	{
 		m_pShaderClass->Shutdown();
@@ -178,6 +199,12 @@ bool GraphicsClass::Render()
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
+	D3DXMATRIX AxisWorldMatrix;
+	m_pAxisModel->GetWorldMatrix(AxisWorldMatrix);
+	m_pAxisModel->Render(m_D3D->GetDeviceContext());
+	result = m_pSimpleColorShader->Render(m_D3D->GetDeviceContext(), 
+		m_pAxisModel->GetIndexCount(), AxisWorldMatrix, viewMatrix, projectionMatrix);
+
 	//m_D3D->GetOrthoMatrix(projectionMatrix);
 
 	//m_pBox->Render(m_D3D->GetDeviceContext());
@@ -195,8 +222,10 @@ bool GraphicsClass::Render()
 
 	m_pLightBox->Render(m_D3D->GetDeviceContext());
 	D3DXVECTOR4	realcamerpos = D3DXVECTOR4(m_pCamera->m_PosVector.x, m_pCamera->m_PosVector.y, m_pCamera->m_PosVector.z, 1.0);
+	D3DXMATRIX LightColorWorldMatrix;
+	m_pLightBox->GetWorldMatrix(LightColorWorldMatrix);
 	result = m_pLightShaderClass->Render(m_D3D->GetDeviceContext(),
-		m_pLightBox->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_pLightBox->GetIndexCount(), LightColorWorldMatrix, viewMatrix, projectionMatrix,
 		m_pLightClass->GetPosition(), m_pLightClass->GetLightColor(), m_pLightClass->GetGlobalAmbient(),
 		realcamerpos, Ke, Ka, Kd, Ks, m_pLightClass->GetDirection(), m_pLightClass->GetShininess());
 
