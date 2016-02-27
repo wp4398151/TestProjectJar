@@ -3,8 +3,8 @@
 
 LightClass::LightClass()
 {
-	m_position = D3DXVECTOR4(1.0, 8.0, 1.0, 1.0);
-	m_globalAmbient = D3DXVECTOR4(1.0, 1.0, 1.0, 1.0);
+	m_position = D3DXVECTOR4(1.0, 0.0, 1.0, 1.0);
+	m_globalAmbient = D3DXVECTOR4(1.0, 0.0, 1.0, 1.0);
 	m_direction = D3DXVECTOR3(-1.0, -1.0, 1.0);
 	m_lightColor = D3DXVECTOR4(1.0, 1.0, 1.0, 1.0);
 	m_shininess = 5.0f;

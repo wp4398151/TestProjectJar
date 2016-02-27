@@ -94,7 +94,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_pLightClass = NULL;
 	m_pLightClass = new LightClass;
-	if (m_pLightClass)
+	if (!m_pLightClass)
 	{
 		return false;
 	}
@@ -184,11 +184,11 @@ bool GraphicsClass::Render()
 	//result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
 	//			m_pBox->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
-	m_pTriangleClass->Render(m_D3D->GetDeviceContext());
-	result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
-				3, worldMatrix, viewMatrix, projectionMatrix, m_pTriangleClass->GetTexture());
+	//m_pTriangleClass->Render(m_D3D->GetDeviceContext());
+	//result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
+	//			m_pTriangleClass->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_pTriangleClass->GetTexture());
 	
-	D3DXVECTOR4 Ke = D3DXVECTOR4(0.8, 0.0, 0.2, 1.0);
+	D3DXVECTOR4 Ke = D3DXVECTOR4(0.8, 0.0, 0.5, 1.0);
 	D3DXVECTOR4 Ka = D3DXVECTOR4(0.2, 0.2, 0.2, 1.0);
 	D3DXVECTOR4 Kd = D3DXVECTOR4(1.0, 1.0, 1.0, 1.0);
 	D3DXVECTOR4 Ks = D3DXVECTOR4(1.0, 1.0, 1.0, 1.0);

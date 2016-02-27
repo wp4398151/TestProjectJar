@@ -6,7 +6,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 	SystemClass* System;
 	bool result;
 
-
 	// 创建一个system对象.
 	System = new SystemClass;
 	if(!System)
