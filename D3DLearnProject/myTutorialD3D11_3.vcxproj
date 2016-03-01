@@ -92,6 +92,7 @@
     <ClCompile Include="SimpleColorShader.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="TextureClass.cpp" />
+    <ClCompile Include="TimerClass.cpp" />
     <ClCompile Include="TriangleClass.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +110,7 @@
     <ClInclude Include="SimpleColorShader.h" />
     <ClInclude Include="SystemClass.h" />
     <ClInclude Include="TextureClass.h" />
+    <ClInclude Include="TimerClass.h" />
     <ClInclude Include="TriangleClass.h" />
   </ItemGroup>
   <ItemGroup>

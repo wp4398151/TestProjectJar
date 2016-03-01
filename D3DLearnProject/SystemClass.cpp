@@ -6,6 +6,7 @@ SystemClass::SystemClass(void)
 {
 	m_Input = 0;
 	m_Graphics = 0;
+	m_pTimer = 0;
 }
 
 SystemClass::SystemClass(const SystemClass &)
@@ -25,6 +26,17 @@ bool SystemClass::Initialize()
 
 	// 初始化窗口
 	InitializeWindows(screenWidth, screenHeight);
+	
+	m_pTimer = new TimerClass;
+	if (!m_pTimer)
+	{
+		return false;
+	}
+	result = m_pTimer->Initialize();
+	if (!result)
+	{
+		return false;
+	}
 
 	//创建input对象处理键盘输入
 	m_Input = new InputClass;
