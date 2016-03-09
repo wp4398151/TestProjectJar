@@ -78,6 +78,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AxisModelClass.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="CameraClass.cpp" />
     <ClCompile Include="D3DClass.cpp" />
@@ -88,13 +89,17 @@
     <ClCompile Include="LightShaderClass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
+    <ClCompile Include="SimpleColorShader.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="TextureClass.cpp" />
+    <ClCompile Include="TimerClass.cpp" />
     <ClCompile Include="TriangleClass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AxisModelClass.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="CameraClass.h" />
+    <ClInclude Include="Common.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicsClass.h" />
     <ClInclude Include="InputClass.h" />
@@ -102,8 +107,10 @@
     <ClInclude Include="LightClass.h" />
     <ClInclude Include="LightShaderClass.h" />
     <ClInclude Include="ShaderClass.h" />
+    <ClInclude Include="SimpleColorShader.h" />
     <ClInclude Include="SystemClass.h" />
     <ClInclude Include="TextureClass.h" />
+    <ClInclude Include="TimerClass.h" />
     <ClInclude Include="TriangleClass.h" />
   </ItemGroup>
   <ItemGroup>

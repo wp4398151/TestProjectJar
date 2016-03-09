@@ -1,6 +1,5 @@
 #include "GraphicsClass.h"
 
-
 GraphicsClass::GraphicsClass(void)
 {
 	m_D3D = NULL;
@@ -11,6 +10,9 @@ GraphicsClass::GraphicsClass(void)
 	m_pBox = NULL;
 	m_pLightBox = NULL;
 	m_pLightClass = NULL;
+	m_pSimpleColorShader = NULL;
+	m_pAxisModel = NULL;
+	m_pLightAxiModel = NULL;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -94,15 +96,50 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_pLightClass = NULL;
 	m_pLightClass = new LightClass;
-	if (m_pLightClass)
+	if (!m_pLightClass)
 	{
 		return false;
 	}
+
+	m_pSimpleColorShader = new SimpleColorShader;
+	if (!m_pSimpleColorShader)
+	{
+		return false;
+	}
+	m_pSimpleColorShader->Init(m_D3D->GetDevice(), hwnd);
+
+	m_pAxisModel = new AxisModelClass;
+	if (!m_pAxisModel)
+	{
+		return false;
+	}
+	m_pAxisModel->Initialize(m_D3D->GetDevice());
+
+	m_pLightAxiModel = new AxisModelClass;
+	if (!m_pLightAxiModel)
+	{
+		return false;
+	}
+	m_pLightAxiModel->Initialize(m_D3D->GetDevice());
+
 	return true;
 }
 
 void GraphicsClass::Shutdown()
 {
+	if (m_pLightAxiModel)
+	{
+		m_pLightAxiModel->Shutdown();
+		delete m_pLightAxiModel;
+		m_pLightAxiModel = NULL;
+	}
+	if (m_pAxisModel)
+	{
+		m_pAxisModel->Shutdown();
+		delete m_pAxisModel;
+		m_pAxisModel = NULL;
+	}
+
 	if (m_pShaderClass)
 	{
 		m_pShaderClass->Shutdown();
@@ -178,27 +215,45 @@ bool GraphicsClass::Render()
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
+	D3DXMATRIX AxisWorldMatrix;
+	m_pAxisModel->GetWorldMatrix(AxisWorldMatrix);
+	m_pAxisModel->Render(m_D3D->GetDeviceContext());
+	result = m_pSimpleColorShader->Render(m_D3D->GetDeviceContext(), 
+		m_pAxisModel->GetIndexCount(), AxisWorldMatrix, viewMatrix, projectionMatrix);
+
 	//m_D3D->GetOrthoMatrix(projectionMatrix);
 
 	//m_pBox->Render(m_D3D->GetDeviceContext());
 	//result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
 	//			m_pBox->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
-	m_pTriangleClass->Render(m_D3D->GetDeviceContext());
-	result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
-				3, worldMatrix, viewMatrix, projectionMatrix, m_pTriangleClass->GetTexture());
+	//m_pTriangleClass->Render(m_D3D->GetDeviceContext());
+	//result = m_pShaderClass->Render(m_D3D->GetDeviceContext(), 
+	//			m_pTriangleClass->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_pTriangleClass->GetTexture());
 	
-	D3DXVECTOR4 Ke = D3DXVECTOR4(0.8, 0.0, 0.2, 1.0);
+	D3DXVECTOR4 Ke = D3DXVECTOR4(0.8, 0.0, 0.5, 1.0);
 	D3DXVECTOR4 Ka = D3DXVECTOR4(0.2, 0.2, 0.2, 1.0);
 	D3DXVECTOR4 Kd = D3DXVECTOR4(1.0, 1.0, 1.0, 1.0);
 	D3DXVECTOR4 Ks = D3DXVECTOR4(1.0, 1.0, 1.0, 1.0);
 
 	m_pLightBox->Render(m_D3D->GetDeviceContext());
 	D3DXVECTOR4	realcamerpos = D3DXVECTOR4(m_pCamera->m_PosVector.x, m_pCamera->m_PosVector.y, m_pCamera->m_PosVector.z, 1.0);
+	D3DXMATRIX LightColorWorldMatrix;
+	m_pLightBox->GetWorldMatrix(LightColorWorldMatrix);
 	result = m_pLightShaderClass->Render(m_D3D->GetDeviceContext(),
-		m_pLightBox->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_pLightBox->GetIndexCount(), LightColorWorldMatrix, viewMatrix, projectionMatrix,
 		m_pLightClass->GetPosition(), m_pLightClass->GetLightColor(), m_pLightClass->GetGlobalAmbient(),
 		realcamerpos, Ke, Ka, Kd, Ks, m_pLightClass->GetDirection(), m_pLightClass->GetShininess());
+
+	D3DXMATRIX LightAxiWorldMatrix;
+	//D3DXMatrixIdentity(&LightAxiWorldMatrix);
+	D3DXMatrixTranslation(&LightAxiWorldMatrix,
+					m_pLightClass->GetPosition().x,
+					m_pLightClass->GetPosition().y,
+					m_pLightClass->GetPosition().z);
+	m_pLightAxiModel->Render(m_D3D->GetDeviceContext());
+	result = m_pSimpleColorShader->Render(m_D3D->GetDeviceContext(),
+		m_pLightAxiModel->GetIndexCount(), LightAxiWorldMatrix, viewMatrix, projectionMatrix);
 
 	//把framebuffer中的图像present到屏幕上.
 	m_D3D->EndScene();

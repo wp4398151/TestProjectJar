@@ -30,14 +30,14 @@ static const char s_lpVertexShaderContentStr[] =
 "                               "
 "struct PixelInputType          "
 "{                              "
-"	float4 position : POSITION; "
+"	float4 position : SV_POSITION; "
 "	float4 color : COLOR;     "
 "};                             "
 "PixelInputType LightVertexShader(VertexInputType input)                                     "
 "{                                                                                           "
 "    PixelInputType output;                                                                  "
 "    float4 worldPosition;                                                                   "
-"	                                                                                         "
+"	input.position.w = 1.0f;                                                                 "
 "	"// Calculate the position of the vertex against the world, view, and projection matrices.
 "    output.position = mul(input.position, worldMatrix);                                     "
 "    output.position = mul(output.position, viewMatrix);                                     "
@@ -67,7 +67,7 @@ static const char s_lpVertexShaderContentStr[] =
 "	      specularLight = 0;                                                                 "
 "    float4 specular = Ks * lightColor * specularLight;                                      "
 "                                                                                            "
-"	output.color = emissive + ambient + diffuse + speculear;                                  "
+"	output.color = emissive + ambient + diffuse + specular;                                  "
 "                                                                                            "
 "    return output;                                                                          "
 "}\r\n";
@@ -115,7 +115,6 @@ bool LightShaderClass::Init(ID3D11Device *pDevice, HWND hwnd)
 		sizeof(s_lpVertexShaderContentStr),
 		NULL, NULL, NULL, "LightVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 
 		0, NULL, &pVertexShaderBuffer, &pErrorMessage, NULL);
-	OutputShaderErrorMessage(pErrorMessage);
 	assert(SUCCEEDED(result));
 
 	result = D3DX11CompileFromMemory(s_lpPixelShaderContentStr,
@@ -181,6 +180,7 @@ bool LightShaderClass::Init(ID3D11Device *pDevice, HWND hwnd)
 	lightmaterialBufferDesc.MiscFlags = 0;
 	lightmaterialBufferDesc.StructureByteStride = 0;
 	result = pDevice->CreateBuffer(&lightmaterialBufferDesc, NULL, &m_pLightMaterialBuffer);
+	assert(SUCCEEDED(result));
 
 	return true;
 }
@@ -284,7 +284,9 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, 
 	D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
 	D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
 
-	result = pDeviceContext->Map(m_pConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	result = pDeviceContext->Map(m_pConstantBuffer, 0, 
+		D3D11_MAP_WRITE_DISCARD, 
+		0, &mappedResource);
 	assert(SUCCEEDED(result));
 
 	pMatrixBufferPtr = (MatrixBufferType*)mappedResource.pData;
@@ -295,7 +297,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, 
 	pDeviceContext->Unmap(m_pConstantBuffer, 0);
 	
 	// index of cbuffer 
-	bufferNumber = 1;
+	bufferNumber = 0;
 	pDeviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_pConstantBuffer);
 
 	// Ëø¶¨¹âÕÕ²ÄÖÊ»º³å.

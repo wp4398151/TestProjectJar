@@ -9,6 +9,8 @@
 #include "LightBox.h"
 #include "LightClass.h"
 #include "LightShaderClass.h"
+#include "SimpleColorShader.h"
+#include "AxisModelClass.h"
 
 /////////////
 // GLOBALS //
@@ -40,5 +42,8 @@ class GraphicsClass
 		Box *m_pBox;
 		LightBox* m_pLightBox;
 		LightClass* m_pLightClass;
+		SimpleColorShader* m_pSimpleColorShader;
+		AxisModelClass* m_pAxisModel;
+		AxisModelClass* m_pLightAxiModel;
 	};
 

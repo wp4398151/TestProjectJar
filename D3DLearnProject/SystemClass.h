@@ -6,6 +6,7 @@
 
 #include "InputClass.h"
 #include "GraphicsClass.h"
+#include "TimerClass.h"
 
 class SystemClass
 	{
@@ -33,6 +34,7 @@ class SystemClass
 		//InputClass和GraphicsClass是SystemClass的两个成员变量
 		InputClass* m_Input;
 		GraphicsClass* m_Graphics;
+		TimerClass *m_pTimer;
 	};
 
 //定义静态的回调函数以及应用程序句柄

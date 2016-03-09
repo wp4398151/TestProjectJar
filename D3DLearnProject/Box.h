@@ -16,7 +16,7 @@ public:
 		void Render(ID3D11DeviceContext* pDeviceContext);
 
 		int GetIndexCount();
-		void GetWorldMatrix(D3DXMATRIX& m_WorldMatrix);
+		void GetWorldMatrix(D3DXMATRIX& WorldMatrix);
 
 	private:
 		bool InitializeBuffers(ID3D11Device* pDevice);

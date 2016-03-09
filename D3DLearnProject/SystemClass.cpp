@@ -6,6 +6,7 @@ SystemClass::SystemClass(void)
 {
 	m_Input = 0;
 	m_Graphics = 0;
+	m_pTimer = 0;
 }
 
 SystemClass::SystemClass(const SystemClass &)
@@ -25,6 +26,17 @@ bool SystemClass::Initialize()
 
 	// 初始化窗口
 	InitializeWindows(screenWidth, screenHeight);
+	
+	m_pTimer = new TimerClass;
+	if (!m_pTimer)
+	{
+		return false;
+	}
+	result = m_pTimer->Initialize();
+	if (!result)
+	{
+		return false;
+	}
 
 	//创建input对象处理键盘输入
 	m_Input = new InputClass;
@@ -76,7 +88,6 @@ void  SystemClass::Run()
 	MSG msg;
 	bool done, result ;
 
-
 	// 初始化消息结构.
 	ZeroMemory(&msg, sizeof(MSG));
 
@@ -123,9 +134,9 @@ void SystemClass::MoveCamera()
 	if (GetAsyncKeyState('S') & 0x8000)
 		m_Graphics->m_pCamera->walk(-0.1);
 	if (GetAsyncKeyState('A') & 0x8000)    //左右 
-		m_Graphics->m_pCamera->strafe(0.1);
-	if (GetAsyncKeyState('D') & 0x8000)
 		m_Graphics->m_pCamera->strafe(-0.1);
+	if (GetAsyncKeyState('D') & 0x8000)
+		m_Graphics->m_pCamera->strafe(0.1);
 	if (GetAsyncKeyState('Q') & 0x8000)    //上下 
 		m_Graphics->m_pCamera->fly(0.1);
 	if (GetAsyncKeyState('E') & 0x8000)
@@ -330,7 +341,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 			PostQuitMessage(0);		
 			return 0;
 		}
-
 		//MessageHandle过程处理其它所有消息.
 	default:
 		{
