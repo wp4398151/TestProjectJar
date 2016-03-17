@@ -87,7 +87,6 @@ void ShaderClass::Shutdown()
 	{
 		m_pConstantBuffer->Release();
 	}
-
 }
 
 bool ShaderClass::Init(ID3D11Device *pDevice, HWND hwnd)

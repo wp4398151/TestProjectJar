@@ -1,4 +1,5 @@
-{\rtf1\ansi\deff0\nouicompat{\fonttbl{\f0\fnil\fcharset134 \'cb\'ce\'cc\'e5;}}
+{\rtf1\ansi\ansicpg936\deff0\nouicompat{\fonttbl{\f0\fnil\fcharset134 \'cb\'ce\'cc\'e5;}}
+{\colortbl ;\red0\green0\blue255;}
 {\*\generator Riched20 10.0.10586}\viewkind4\uc1 
 \pard\sa200\sl276\slmult1\f0\fs22\lang2052 Session \'b8\'f4\'c0\'eb\par
 \'b8\'c5\'c4\'ee:\par
@@ -21121,7 +21122,7 @@ do\par
 \tab\tab ZeroMemory(&si,sizeof(STARTUPINFO));\par
 \tab\tab ZeroMemory(&pi,sizeof(PROCESS_INFORMATION));\par
 \tab\tab si.cb = sizeof(STARTUPINFO);\par
-\tab\tab si.lpDesktop = _T("WinSta0\\\\Default");\par
+\tab\tab si.lpDesktop = _T("WinSta0{{\field{\*\fldinst{HYPERLINK "\\\\\\\\Default"}}{\fldrslt{\\\\Default\ul0\cf0}}}}\f0\fs22 ");\par
 \tab\tab si.wShowWindow = TRUE;\par
 \tab\tab si.dwFlags     = STARTF_USESHOWWINDOW;\par
 \par
@@ -21157,7 +21158,7 @@ HANDLE hToken = NULL;\par
 \tab\tab\tab\tab ZeroMemory(&si,sizeof(STARTUPINFO));\par
 \tab\tab\tab\tab ZeroMemory(&pi,sizeof(PROCESS_INFORMATION));\par
 \tab\tab\tab\tab si.cb = sizeof(STARTUPINFO);\par
-\tab\tab\tab\tab si.lpDesktop = _T("WinSta0\\\\Default");\par
+\tab\tab\tab\tab si.lpDesktop = _T("WinSta0{{\field{\*\fldinst{HYPERLINK "\\\\\\\\Default"}}{\fldrslt{\\\\Default\ul0\cf0}}}}\f0\fs22 ");\par
 \tab\tab\tab\tab si.wShowWindow = SW_SHOW;\par
 \tab\tab\tab\tab si.dwFlags     =   STARTF_USESHOWWINDOW /*|STARTF_USESTDHANDLES*/;\par
 \par
@@ -21267,6 +21268,9 @@ CreateProcessAsUser(\par
               &si,\par
 \par
               &pi);\par
+\par
+\'b2\'ce\'bf\'bc:\par
+{{\field{\*\fldinst{HYPERLINK http://support.microsoft.com/en-us/kb/165194 }}{\fldrslt{http://support.microsoft.com/en-us/kb/165194\ul0\cf0}}}}\f0\fs22\par
 
 \pard\sa200\sl240\slmult1\par
 
