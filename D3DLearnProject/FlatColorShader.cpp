@@ -1,6 +1,7 @@
 #include "FlatColorShader.h"
 #include <D3Dcompiler.h>
 #include <D3DX11async.h>
+#include <assert.h>
 
 
 static unsigned char s_lpFlatColorSahder[] = 
@@ -19,23 +20,38 @@ static unsigned char s_lpFlatColorSahder[] =
 "	output.position = input.position;							"
 "	return output;												"
 "}								"
-"float4 ColorPixelShaderJustColor(PixelInputType input) : SV_TARGET{"
+"float4 ColorPixelShader(PixelInputType input) : SV_TARGET{"
 "	return input.color;											"
 "}";
 
 FlatColorShader::FlatColorShader()
 {
-
+	m_pLayout = NULL;
+	m_pVertexShader = NULL;
+	m_pPixelShader = NULL;
 }
 
 FlatColorShader::~FlatColorShader()
 {
-
 }
 
 void FlatColorShader::Shutdown()
 {
-
+	if (m_pLayout)
+	{
+		m_pLayout->Release();
+		m_pLayout = NULL;
+	}
+	if (m_pVertexShader)
+	{
+		m_pVertexShader->Release();
+		m_pVertexShader = NULL;
+	}
+	if (m_pPixelShader)
+	{
+		m_pPixelShader->Release();
+		m_pPixelShader = NULL;
+	}
 }
 
 bool FlatColorShader::Init(ID3D11Device* pDevice)
@@ -112,12 +128,137 @@ bool FlatColorShader::Init(ID3D11Device* pDevice)
 
 bool FlatColorShader::Render(ID3D11DeviceContext *pDeviceContext, int indexCount)
 {
-	RenderShader(pDeviceContext);
+	RenderShader(pDeviceContext, indexCount);
 	return true;
 }
 
 void FlatColorShader::RenderShader(ID3D11DeviceContext *pDeviceContext, int indexCount)
 {
+	pDeviceContext->IASetInputLayout(m_pLayout);
+	// 设置VS Shader 和PS Shader
+	pDeviceContext->VSSetShader(m_pVertexShader, NULL, 0);
+	pDeviceContext->PSSetShader(m_pPixelShader, NULL, 0);
 
+	pDeviceContext->DrawIndexed(indexCount, 0, 0);
 	return ;		
+}
+
+const static FlatTriangle::VertexType s_vertices[] = {
+		{ D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f) },
+		{ D3DXVECTOR3(0.5f, 0.0f, 0.0f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f) },
+		{ D3DXVECTOR3(0.5f, -0.5f, 0.0f), D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f) },
+};
+const static unsigned int s_indexVertice[sizeof(s_vertices) / sizeof(s_vertices[0])] = {
+		0, 1, 2 };
+
+FlatTriangle::FlatTriangle(void)
+{
+	m_pVertexBuffer = NULL;
+	m_pIndexBuffer = NULL;
+	m_vertexCount = (sizeof(s_vertices) / sizeof(s_vertices[0]));
+	m_indexCount = m_vertexCount;
+}
+
+bool FlatTriangle::Initialize(ID3D11Device* pDevice)
+{
+	bool res = false;
+	res = InitializeBuffers(pDevice);
+	assert(res);
+	return res;
+}
+
+void FlatTriangle::Shutdown()
+{
+	ShutdownBuffers();
+}
+
+void FlatTriangle::Render(ID3D11DeviceContext* pDeviceContext)
+{
+	RenderBuffers(pDeviceContext);
+}
+
+int FlatTriangle::GetIndexCount()
+{
+	return m_indexCount;
+}
+
+bool FlatTriangle::InitializeBuffers(ID3D11Device* pDevice)
+{
+	D3D11_BUFFER_DESC vertexBufferDesc;	// 顶点缓存的描述
+	D3D11_BUFFER_DESC indexBufferDesc; // 顶点索引缓存的描述
+	D3D11_SUBRESOURCE_DATA vertexData; // 顶点需要访问的资源
+	D3D11_SUBRESOURCE_DATA indexData; // 顶点索引需要访问的资源
+	HRESULT result = true;
+
+	// 设置顶点缓冲描述
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.ByteWidth = sizeof(VertexType)* (sizeof(s_vertices) / sizeof(s_vertices[0]));
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // 将资源绑定到顶点，供管线访问
+	vertexBufferDesc.CPUAccessFlags = 0;
+	vertexBufferDesc.MiscFlags = 0;
+	vertexBufferDesc.StructureByteStride = 0;
+
+	// 指向保存顶点数据的临时缓冲.
+	vertexData.pSysMem = s_vertices; // 将三角形的顶点数据放入顶点缓冲中
+	vertexData.SysMemPitch = 0;
+	vertexData.SysMemSlicePitch = 0;
+
+	// 创建顶点缓冲.
+	result = pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pVertexBuffer);
+	assert(SUCCEEDED(result));
+
+	// 设置顶点索引缓冲描述
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof(s_indexVertice[0]) * (sizeof(s_vertices) / sizeof(s_vertices[0]));
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER; // 将资源绑定到顶点索引，供管线访问
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+	indexBufferDesc.StructureByteStride = 0;
+
+	// 指向保存顶点数据的临时缓冲.
+	indexData.pSysMem = s_indexVertice; // 将三角形的顶点数据放入顶点缓冲中
+	indexData.SysMemPitch = 0;
+	indexData.SysMemSlicePitch = 0;
+
+	// 创建顶点缓冲.
+	result = pDevice->CreateBuffer(&indexBufferDesc, &indexData, &m_pIndexBuffer);
+	assert(SUCCEEDED(result));
+
+	return true;
+}
+
+void FlatTriangle::ShutdownBuffers()
+{
+	// 释放顶点缓冲.
+	if (m_pIndexBuffer)
+	{
+		m_pIndexBuffer->Release();
+		m_pIndexBuffer = NULL;
+	}
+
+	// 释放索引缓冲
+	if (m_pVertexBuffer)
+	{
+		m_pVertexBuffer->Release();
+		m_pVertexBuffer = NULL;
+	}
+}
+
+void FlatTriangle::RenderBuffers(ID3D11DeviceContext* pDeviceContext)
+{
+	unsigned int stride = 0;
+	unsigned int offset = 0;
+
+	// 设置顶点缓冲跨度和偏移.
+	stride = sizeof(VertexType);
+	offset = 0;
+
+	//在input assemberl阶段绑定顶点缓冲，以便能够被渲染
+	pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+
+	//在input assemberl阶段绑定索引缓冲，以便能够被渲染
+	pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	// 设置体元语义，渲染三角形列表.
+	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }

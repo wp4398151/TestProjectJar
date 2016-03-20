@@ -13,6 +13,8 @@ GraphicsClass::GraphicsClass(void)
 	m_pSimpleColorShader = NULL;
 	m_pAxisModel = NULL;
 	m_pLightAxiModel = NULL;
+	m_pFlatTriangle = NULL;
+	m_pFlatShader = NULL;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -122,6 +124,20 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 	m_pLightAxiModel->Initialize(m_D3D->GetDevice());
 
+	m_pFlatTriangle = new FlatTriangle;
+	if (!m_pFlatTriangle)
+	{
+		return false;
+	}
+	m_pFlatTriangle->Initialize(m_D3D->GetDevice());
+
+	m_pFlatShader = new FlatColorShader;
+	if (!m_pFlatShader)
+	{
+		return false;
+	}
+	m_pFlatShader->Init(m_D3D->GetDevice());
+
 	return true;
 }
 
@@ -174,6 +190,20 @@ void GraphicsClass::Shutdown()
 		m_pLightBox = NULL;
 	}
 	
+	if (m_pFlatShader)
+	{
+		m_pFlatShader->Shutdown();
+		delete m_pFlatShader;
+		m_pFlatShader = NULL;
+	}
+
+	if (m_pFlatTriangle)
+	{
+		m_pFlatTriangle->Shutdown();
+		delete m_pFlatTriangle;
+		m_pFlatTriangle = NULL;
+	}
+
 	//销毁m_D3D对象
 	if(m_D3D)
 	{
@@ -256,6 +286,8 @@ bool GraphicsClass::Render()
 		m_pLightAxiModel->GetIndexCount(), LightAxiWorldMatrix, viewMatrix, projectionMatrix);
 
 	//把framebuffer中的图像present到屏幕上.
+	m_pFlatTriangle->Render(m_D3D->GetDeviceContext());
+	m_pFlatShader->Render(m_D3D->GetDeviceContext(), m_pFlatTriangle->GetIndexCount());
 	m_D3D->EndScene();
 
 	return true;

@@ -204,3 +204,4 @@ bool SimpleColorShader::SetShaderParam(ID3D11DeviceContext *pDeviceContext,
 
 	return true;
 }
+
