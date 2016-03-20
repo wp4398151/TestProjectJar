@@ -1,4 +1,5 @@
 #include "GraphicsClass.h"
+#include "CopyTexture2D.h"
 
 GraphicsClass::GraphicsClass(void)
 {
@@ -238,7 +239,7 @@ bool GraphicsClass::Render()
 	
 	bool result = true;;
 	// 设置framebuffer.为浅蓝色
-	m_D3D->BeginScene(0.0f, 0.0f, 0.5f, 1.0f);
+	m_D3D->BeginScene(0.1f, 0.0f, 0.5f, 1.0f);
 	
 	m_pCamera->GetViewMatrix(viewMatrix);
 	//m_pCamera->pitch(1.0f);
@@ -288,6 +289,12 @@ bool GraphicsClass::Render()
 	//把framebuffer中的图像present到屏幕上.
 	m_pFlatTriangle->Render(m_D3D->GetDeviceContext());
 	m_pFlatShader->Render(m_D3D->GetDeviceContext(), m_pFlatTriangle->GetIndexCount());
+
+	// Map The render texture
+	CopyTexture2D copyTexture2D;
+	copyTexture2D.Copy(m_D3D->GetDeviceContext(), m_D3D->GetDevice(), m_D3D->GetSwapChain());
+	copyTexture2D.CheckCopyTextureContent(m_D3D->GetDeviceContext());
+
 	m_D3D->EndScene();
 
 	return true;

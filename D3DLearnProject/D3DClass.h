@@ -28,6 +28,7 @@ class D3DClass
 
 		ID3D11Device* GetDevice();
 		ID3D11DeviceContext* GetDeviceContext();
+		IDXGISwapChain* GetSwapChain();
 
 		void GetProjectionMatrix(D3DXMATRIX&);
 		void GetWorldMatrix(D3DXMATRIX&);
