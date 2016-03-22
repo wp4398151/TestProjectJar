@@ -9,19 +9,11 @@ static const char s_lpVertexShaderContentStr[] =
 "	matrix viewMatrix;          "
 "	matrix projectionMatrix;    "
 "};                             "
-"cbuffer lightMaterialBuffer	"
+"cbuffer lightMaterialBuffer"
 "{"
-"	float4 lightPosition;		"	// 光源位置
-"	float4 lightColor;			"	// 光源颜色
-"	float4 globalAmbient;		"	// 环境光系数
-"	float4 cameraPosition;		"	// 摄像机位置
-"	float4 Ke;					"	// 材质自发光
-"	float4 Ka;					"	// 材质环境光系数
-"	float4 Kd;					"	// 材质漫反射系数
-"	float4 Ks;					"	// 材质高光系数
-"	float3 lightDirection;			"	// 平行光方向
-"	float shininess;			"	// 高光指数
-"};                             "
+"	float3 cameraPosition;"
+"	float padding;"
+"};"
 "struct VertexInputType         "
 "{                              "
 "	float4 position : POSITION; "
@@ -49,28 +41,87 @@ static const char s_lpVertexShaderContentStr[] =
 "    worldPosition = mul(input.position, worldMatrix);                                       "
 "	float3 worldVertexPosition = worldPosition.xyz;                                          "
 "	                                                                                         "
-"	                                                                            "
-"	float4 emissive = Ke;                                                                    "//自发射颜色 
+"	float3 emissive = float3(0.0, 0.0, 0.0);                                                                    "//自发射颜色 
 "	                                                                             "
-"    float4 ambient = Ka * globalAmbient;                                                    "//计算环境光
-"	                                                                                         "
+"    float3 ambient = float3(0.3, 0.3, 0.3);                                                    "//计算环境光
 "	                                                                           "//计算漫反射光
-"    float3 WorldLightDir = -normalize(lightDirection);                                      "
+"    float3 WorldLightDir = normalize(float3(-1.0, -1.0, 1.0));                                      "
 "    float diffuseLight = max(dot(worldNomal, WorldLightDir), 0);                            "
-"    float4 diffuse = Kd * lightColor * diffuseLight;                                        "
+"    float3 diffuse = diffuseLight;                                        "
 "	                                                                               "//计算高光
-"    float3 distCameraToVertex = normalize(cameraPosition.xyz - worldVertexPosition);        "
+"    float3 distCameraToVertex = normalize(cameraPosition - worldVertexPosition);        "
 "    float3 hilightDir = normalize(WorldLightDir + distCameraToVertex);                      "
-"    float specularLight = pow(max(dot(worldNomal, hilightDir), 0), shininess);              "
+"    float specularLight = pow(max(dot(worldNomal, hilightDir), 0), 5.0);              "
 "	                                                                                         "
 "    if (diffuseLight <= 0)                                                                  "
 "	      specularLight = 0;                                                                 "
-"    float4 specular = Ks * lightColor * specularLight;                                      "
+"    float3 specular = specularLight;                                      "
 "                                                                                            "
-"	output.color = emissive + ambient + diffuse + specular;                                  "
-"                                                                                            "
+"	 output.color.xyz = emissive + ambient + diffuse + specular;                                  "
+"    output.color.w = 1.0f;                                                                                        "
 "    return output;                                                                          "
 "}\r\n";
+
+//"cbuffer lightMaterialBuffer	"
+//"{"
+//"	float4 lightPosition;		"	// 光源位置
+//"	float4 lightColor;			"	// 光源颜色
+//"	float4 globalAmbient;		"	// 环境光系数
+//"	float4 cameraPosition;		"	// 摄像机位置
+//"	float4 Ke;					"	// 材质自发光
+//"	float4 Ka;					"	// 材质环境光系数
+//"	float4 Kd;					"	// 材质漫反射系数
+//"	float4 Ks;					"	// 材质高光系数
+//"	float3 lightDirection;			"	// 平行光方向
+//"	float shininess;			"	// 高光指数
+//"};                             "
+//"struct VertexInputType         "
+//"{                              "
+//"	float4 position : POSITION; "
+//"	float3 normal : NORMAL;     "
+//"};                             "
+//"                               "
+//"struct PixelInputType          "
+//"{                              "
+//"	float4 position : SV_POSITION; "
+//"	float4 color : COLOR;     "
+//"};                             "
+//"PixelInputType LightVertexShader(VertexInputType input)                                     "
+//"{                                                                                           "
+//"    PixelInputType output;                                                                  "
+//"    float4 worldPosition;                                                                   "
+//"	input.position.w = 1.0f;                                                                 "
+//"	"// Calculate the position of the vertex against the world, view, and projection matrices.
+//"    output.position = mul(input.position, worldMatrix);                                     "
+//"    output.position = mul(output.position, viewMatrix);                                     "
+//"    output.position = mul(output.position, projectionMatrix);                               "
+//"	                                                                "//世界坐标系中的顶点法向
+//"    float3 worldNomal = mul(input.normal, (float3x3)worldMatrix);                           "
+//"	worldNomal = normalize(worldNomal);                                                      "
+//"	                                                                     "//世界坐标系顶点位置
+//"    worldPosition = mul(input.position, worldMatrix);                                       "
+//"	float3 worldVertexPosition = worldPosition.xyz;                                          "
+//"	                                                                                         "
+//"	float4 emissive = Ke;                                                                    "//自发射颜色 
+//"	                                                                             "
+//"    float4 ambient = Ka * globalAmbient;                                                    "//计算环境光
+//"	                                                                           "//计算漫反射光
+//"    float3 WorldLightDir = -normalize(lightDirection);                                      "
+//"    float diffuseLight = max(dot(worldNomal, WorldLightDir), 0);                            "
+//"    float4 diffuse = Kd * lightColor * diffuseLight;                                        "
+//"	                                                                               "//计算高光
+//"    float3 distCameraToVertex = normalize(cameraPosition.xyz - worldVertexPosition);        "
+//"    float3 hilightDir = normalize(WorldLightDir + distCameraToVertex);                      "
+//"    float specularLight = pow(max(dot(worldNomal, hilightDir), 0), shininess);              "
+//"	                                                                                         "
+//"    if (diffuseLight <= 0)                                                                  "
+//"	      specularLight = 0;                                                                 "
+//"    float4 specular = Ks * lightColor * specularLight;                                      "
+//"                                                                                            "
+//"	output.color = emissive + ambient + diffuse + specular;                                  "
+//"                                                                                            "
+//"    return output;                                                                          "
+//"}\r\n";
 
 
 static const char s_lpPixelShaderContentStr[] =
@@ -115,6 +166,8 @@ bool LightShaderClass::Init(ID3D11Device *pDevice, HWND hwnd)
 		sizeof(s_lpVertexShaderContentStr),
 		NULL, NULL, NULL, "LightVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 
 		0, NULL, &pVertexShaderBuffer, &pErrorMessage, NULL);
+
+	//OutputShaderErrorMessage(pErrorMessage);
 	assert(SUCCEEDED(result));
 
 	result = D3DX11CompileFromMemory(s_lpPixelShaderContentStr,
@@ -308,16 +361,18 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* pDeviceContext, 
 	pLightBufferBufferPtr = (LightMaterialBufferType*)mappedResource.pData;
 
 	// 常量缓冲赋值.
-	pLightBufferBufferPtr->lightPosition = lightPosition;
-	pLightBufferBufferPtr->lightColor = lightColor;
-	pLightBufferBufferPtr->cameraPosition = cameraPosition;
-	pLightBufferBufferPtr->globalAmbient = globalAmbient;
-	pLightBufferBufferPtr->Ke = Ke;
-	pLightBufferBufferPtr->Ka = Ke;
-	pLightBufferBufferPtr->Kd = Kd;
-	pLightBufferBufferPtr->Ks = Ks;
-	pLightBufferBufferPtr->lightDirection = lightDirection;
-	pLightBufferBufferPtr->shininess = shininess;
+	//pLightBufferBufferPtr->lightPosition = lightPosition;
+	//pLightBufferBufferPtr->lightColor = lightColor;
+	pLightBufferBufferPtr->cameraPosition.x = cameraPosition.x;
+	pLightBufferBufferPtr->cameraPosition.y = cameraPosition.y;
+	pLightBufferBufferPtr->cameraPosition.z = cameraPosition.z;
+	//pLightBufferBufferPtr->globalAmbient = globalAmbient;
+	//pLightBufferBufferPtr->Ke = Ke;
+	//pLightBufferBufferPtr->Ka = Ke;
+	//pLightBufferBufferPtr->Kd = Kd;
+	//pLightBufferBufferPtr->Ks = Ks;
+	//pLightBufferBufferPtr->lightDirection = lightDirection;
+	//pLightBufferBufferPtr->shininess = shininess;
 
 	// 解锁常量缓冲
 	pDeviceContext->Unmap(m_pLightMaterialBuffer, 0);

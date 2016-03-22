@@ -14,21 +14,27 @@ public:
 		D3DXMATRIX view;
 		D3DXMATRIX projection;
 	};
-	struct  LightMaterialBufferType
+
+	struct LightMaterialBufferType
 	{
-		D3DXVECTOR4 lightPosition; //光源位置
-		D3DXVECTOR4 lightColor;   //光源颜色
-		D3DXVECTOR4 globalAmbient; //光源的环境光反射系数
-		D3DXVECTOR4 cameraPosition; //摄像机的位置
-		D3DXVECTOR4 Ke;  //材质的自发光
-		D3DXVECTOR4 Ka;  //材质的环境光系数
-		D3DXVECTOR4 Kd;  //材质的漫反射系数
-		D3DXVECTOR4 Ks;  //材质的高光系数
-		D3DXVECTOR4 attenuation; //衰减系数，x,y,z对应常量，线性和二次系数
-		D3DXVECTOR4 spotattenuation;//对于spotlight，x，y分别存储内和外角cos值
-		D3DXVECTOR3 lightDirection; //平行光方向
-		float shininess; //高光指数
+		D3DXVECTOR3 cameraPosition;
+		float padding;
 	};
+	//struct  LightMaterialBufferType
+	//{
+	//	D3DXVECTOR4 lightPosition; //光源位置
+	//	D3DXVECTOR4 lightColor;   //光源颜色
+	//	D3DXVECTOR4 globalAmbient; //光源的环境光反射系数
+	//	D3DXVECTOR4 cameraPosition; //摄像机的位置
+	//	D3DXVECTOR4 Ke;  //材质的自发光
+	//	D3DXVECTOR4 Ka;  //材质的环境光系数
+	//	D3DXVECTOR4 Kd;  //材质的漫反射系数
+	//	D3DXVECTOR4 Ks;  //材质的高光系数
+	//	D3DXVECTOR4 attenuation; //衰减系数，x,y,z对应常量，线性和二次系数
+	//	D3DXVECTOR4 spotattenuation;//对于spotlight，x，y分别存储内和外角cos值
+	//	D3DXVECTOR3 lightDirection; //平行光方向
+	//	float shininess; //高光指数
+	//};
 
 public:
 	bool Init(ID3D11Device *pDevice, HWND hwnd);
