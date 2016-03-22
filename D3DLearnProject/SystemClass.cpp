@@ -7,6 +7,7 @@ SystemClass::SystemClass(void)
 	m_Input = 0;
 	m_Graphics = 0;
 	m_pTimer = 0;
+	m_bIsMoveMouse = FALSE;
 }
 
 SystemClass::SystemClass(const SystemClass &)
@@ -315,6 +316,37 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 			return 0;
 		}
 		//任何其它消息发送到windows缺省处理.
+	// 鼠标消息
+	case WM_LBUTTONDOWN:
+		{
+		   if ((wparam & MK_LBUTTON)&&(m_bIsMoveMouse == FALSE))
+		   {
+				m_bIsMoveMouse = TRUE;
+				m_Old_MousePos.x = LOWORD(lparam);
+				m_Old_MousePos.y = HIWORD(lparam);
+		   }
+		}
+		break;
+	case WM_LBUTTONUP:
+		{
+			 m_bIsMoveMouse = FALSE;
+		}
+		break;
+	case WM_MOUSEMOVE:
+		{
+			if ((wparam&MK_LBUTTON) && (m_bIsMoveMouse == TRUE))
+			{
+				int dx,dy;	// 每一次变化增量
+				POINT curPos; // 
+				curPos.x = LOWORD(lparam);
+				curPos.y = HIWORD(lparam);
+				dx = curPos.x - m_Old_MousePos.x;
+				dy = curPos.y - m_Old_MousePos.y;
+				m_Graphics->m_pCamera->pitch(0.01*dy*0.0174532925f);
+				m_Graphics->m_pCamera->yaw(-0.01*dx*0.0174532925f);
+			}
+		}
+		break;
 	default:
 		{
 			return DefWindowProc(hwnd, umsg, wparam, lparam);

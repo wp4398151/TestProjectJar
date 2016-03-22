@@ -35,6 +35,8 @@ class SystemClass
 		InputClass* m_Input;
 		GraphicsClass* m_Graphics;
 		TimerClass *m_pTimer;
+		POINT m_Old_MousePos;
+		BOOL m_bIsMoveMouse;
 	};
 
 //定义静态的回调函数以及应用程序句柄
