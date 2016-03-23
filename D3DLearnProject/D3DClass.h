@@ -12,7 +12,6 @@
 #include <d3d11.h>
 #include <d3dx10math.h>
 
-
 class D3DClass
 	{
 	public:
@@ -30,6 +29,8 @@ class D3DClass
 		ID3D11DeviceContext* GetDeviceContext();
 		IDXGISwapChain* GetSwapChain();
 
+		void TurnOnAlphaBlending();
+		void TurnOffAlphaBlending();
 		void GetProjectionMatrix(D3DXMATRIX&);
 		void GetWorldMatrix(D3DXMATRIX&);
 		void GetOrthoMatrix(D3DXMATRIX&);
@@ -51,5 +52,7 @@ class D3DClass
 		D3DXMATRIX m_projectionMatrix; //投影矩阵
 		D3DXMATRIX m_worldMatrix;//世界坐标系矩阵
 		D3DXMATRIX m_orthoMatrix;//正交投影矩阵
+		ID3D11BlendState *m_pBlendEnableState;
+		ID3D11BlendState *m_pBlendDisableState;
 	};
 

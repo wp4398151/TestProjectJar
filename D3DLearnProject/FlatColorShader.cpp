@@ -144,9 +144,9 @@ void FlatColorShader::RenderShader(ID3D11DeviceContext *pDeviceContext, int inde
 }
 
 const static FlatTriangle::VertexType s_vertices[] = {
-		{ D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f) },
-		{ D3DXVECTOR3(0.5f, 0.0f, 0.0f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f) },
-		{ D3DXVECTOR3(0.5f, -0.5f, 0.0f), D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f) },
+		{ D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR4(1.0f, 0.0f, 0.0f, 0.5f) },
+		{ D3DXVECTOR3(0.5f, 0.0f, 0.0f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 0.5) },
+		{ D3DXVECTOR3(0.5f, -0.5f, 0.0f), D3DXVECTOR4(0.0f, 0.0f, 1.0f, 0.5f) },
 };
 const static unsigned int s_indexVertice[sizeof(s_vertices) / sizeof(s_vertices[0])] = {
 		0, 1, 2 };

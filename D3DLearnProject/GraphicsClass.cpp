@@ -286,10 +286,12 @@ bool GraphicsClass::Render()
 	result = m_pSimpleColorShader->Render(m_D3D->GetDeviceContext(),
 		m_pLightAxiModel->GetIndexCount(), LightAxiWorldMatrix, viewMatrix, projectionMatrix);
 
+	
 	//把framebuffer中的图像present到屏幕上.
+	m_D3D->TurnOnAlphaBlending();
 	m_pFlatTriangle->Render(m_D3D->GetDeviceContext());
 	m_pFlatShader->Render(m_D3D->GetDeviceContext(), m_pFlatTriangle->GetIndexCount());
-
+	m_D3D->TurnOffAlphaBlending();
 	// Map The render texture
 	CopyTexture2D copyTexture2D;
 	copyTexture2D.Copy(m_D3D->GetDeviceContext(), m_D3D->GetDevice(), m_D3D->GetSwapChain());

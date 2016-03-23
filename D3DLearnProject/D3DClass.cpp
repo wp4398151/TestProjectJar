@@ -1,4 +1,5 @@
 #include "D3DClass.h"
+#include <assert.h>
 
 D3DClass::D3DClass(void)
 {
@@ -10,6 +11,8 @@ D3DClass::D3DClass(void)
 	m_depthStencilState = 0;
 	m_depthStencilView = 0;
 	m_rasterState = 0;
+	m_pBlendEnableState = 0;
+	m_pBlendDisableState = 0;
 }
 
 D3DClass::D3DClass(const D3DClass& other)
@@ -336,6 +339,25 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	//设置光栅化状态，使其生效
 	m_deviceContext->RSSetState(m_rasterState);
 
+	// create blend state 
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory((void*)&blendDesc, sizeof(D3D11_BLEND_DESC));
+	blendDesc.AlphaToCoverageEnable = FALSE;
+    blendDesc.IndependentBlendEnable = FALSE;
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;//0x0f;
+	result = m_device->CreateBlendState(&blendDesc, &m_pBlendEnableState);
+	assert(SUCCEEDED(result));
+
+	blendDesc.RenderTarget[0].BlendEnable = FALSE;
+	result = m_device->CreateBlendState(&blendDesc, &m_pBlendDisableState);
+	assert(SUCCEEDED(result));
 
 	// 设置视口，显示全部后缓冲内容
 	viewport.Width = (float)screenWidth;
@@ -476,6 +498,18 @@ ID3D11DeviceContext* D3DClass::GetDeviceContext()
 IDXGISwapChain* D3DClass::GetSwapChain()
 {
 	return m_swapChain;
+}
+
+void D3DClass::TurnOnAlphaBlending()
+{
+	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	m_deviceContext->OMSetBlendState(m_pBlendEnableState, blendFactor, 0xffffffff);
+}
+
+void D3DClass::TurnOffAlphaBlending()
+{
+	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	m_deviceContext->OMSetBlendState(m_pBlendDisableState, blendFactor, 0xffffffff);
 }
 
 void D3DClass::GetProjectionMatrix(D3DXMATRIX& projectionMatrix)
