@@ -13,6 +13,8 @@ D3DClass::D3DClass(void)
 	m_rasterState = 0;
 	m_pBlendEnableState = 0;
 	m_pBlendDisableState = 0;
+	m_pDepthStencilStateMirror = 0;
+	m_pDepthStencilStateReflect = 0;
 }
 
 D3DClass::D3DClass(const D3DClass& other)
@@ -297,6 +299,39 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// 设置深度模版状态.
 	m_deviceContext->OMSetDepthStencilState(m_depthStencilState, 1);
+	// 创建镜像深度模板
+	D3D11_DEPTH_STENCIL_DESC mirrorStateDesc;
+	ZeroMemory(&mirrorStateDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	mirrorStateDesc.DepthEnable = true;
+	mirrorStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	mirrorStateDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	mirrorStateDesc.StencilEnable = true;
+	mirrorStateDesc.StencilReadMask = 0xFF;
+	mirrorStateDesc.StencilWriteMask = 0xFF;
+	// front face 的模板操作
+	mirrorStateDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	mirrorStateDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	mirrorStateDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	mirrorStateDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	// back fase 的模板操作
+	mirrorStateDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	mirrorStateDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	mirrorStateDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	mirrorStateDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	result= m_device->CreateDepthStencilState(&mirrorStateDesc, &m_pDepthStencilStateMirror);
+	assert(SUCCEEDED(result));
+
+	mirrorStateDesc.DepthEnable = true;
+	mirrorStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;//D3D11_DEPTH_WRITE_MASK_ZERO禁止写深度缓冲 
+	mirrorStateDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+
+	mirrorStateDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	mirrorStateDesc.FrontFace.StencilFunc= D3D11_COMPARISON_EQUAL;
+	result = m_device->CreateDepthStencilState(&depthStencilDesc, &m_pDepthStencilStateReflect);
+
+	assert(SUCCEEDED(result));
+
 
 	// 初始化深度模版视图.
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
@@ -314,7 +349,6 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	}
 	// 绑定渲染目标视图和深度缓冲到渲染管线.
 	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
-
 
 	// 设置光栅化描述，指定多边形如何被渲染.
 	rasterDesc.AntialiasedLineEnable = false;
@@ -462,7 +496,7 @@ void D3DClass::BeginScene(float red, float green, float blue, float alpha)
 	m_deviceContext->ClearRenderTargetView(m_renderTargetView, color);
 
 	//清除深度缓冲.
-	m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	return;
 }
@@ -504,6 +538,46 @@ void D3DClass::TurnOnAlphaBlending()
 {
 	float blendFactor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	m_deviceContext->OMSetBlendState(m_pBlendEnableState, blendFactor, 0xffffffff);
+}
+
+void D3DClass::ChangeBackCullMode(bool bIsCull)
+{
+	HRESULT hr = S_OK;
+	if (m_rasterState)
+	{
+		m_rasterState->Release();
+	}
+	D3D11_RASTERIZER_DESC rasterDesc;
+	ZeroMemory(&rasterDesc, sizeof(D3D11_RASTERIZER_DESC));
+	rasterDesc.AntialiasedLineEnable = false;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = true;
+	rasterDesc.FillMode = D3D11_FILL_SOLID; //D3D11_FILL_SOLID
+	rasterDesc.FrontCounterClockwise = bIsCull;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+	hr = m_device->CreateRasterizerState(&rasterDesc, &m_rasterState);
+	assert(SUCCEEDED(hr));
+	m_deviceContext->RSSetState(m_rasterState);
+}
+
+void D3DClass::EnableMirrorDepthStancil()
+{
+	m_deviceContext->OMSetDepthStencilState(m_pDepthStencilStateMirror, 1);
+}
+
+void D3DClass::EnableReflectDepthStancil()
+{
+	m_deviceContext->OMSetDepthStencilState(m_pDepthStencilStateReflect, 1);
+}
+
+void D3DClass::EnableDefaultDepthStencil()
+{
+	m_deviceContext->OMSetDepthStencilState(this->m_depthStencilState, 1);
 }
 
 void D3DClass::TurnOffAlphaBlending()

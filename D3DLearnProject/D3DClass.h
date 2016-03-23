@@ -36,6 +36,11 @@ class D3DClass
 		void GetOrthoMatrix(D3DXMATRIX&);
 
 		void GetVideoCardInfo(char*, int&);
+	
+		void ChangeBackCullMode(bool bIsCull);
+		void EnableMirrorDepthStancil();
+		void EnableReflectDepthStancil();
+		void EnableDefaultDepthStencil();
 
 	private:
 		bool m_vsync_enabled; //是否启用垂直同步
@@ -54,5 +59,8 @@ class D3DClass
 		D3DXMATRIX m_orthoMatrix;//正交投影矩阵
 		ID3D11BlendState *m_pBlendEnableState;
 		ID3D11BlendState *m_pBlendDisableState;
+		
+		ID3D11DepthStencilState* m_pDepthStencilStateMirror;
+		ID3D11DepthStencilState* m_pDepthStencilStateReflect;
 	};
 
