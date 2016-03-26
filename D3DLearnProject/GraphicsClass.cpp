@@ -299,12 +299,27 @@ bool GraphicsClass::Render()
 	copyTexture2D.Copy(m_D3D->GetDeviceContext(), m_D3D->GetDevice(), m_D3D->GetSwapChain());
 	copyTexture2D.CheckCopyTextureContent(m_D3D->GetDeviceContext());
 
+
+
 	//一块两面都能看的面
+
+	m_D3D->ChangeBackCullMode(true);
 	m_D3D->EnableMirrorDepthStancil();
 	D3DXMATRIX rectWorldMatrix;
 	D3DXMatrixTranslation(&rectWorldMatrix, 5.0, 0.0, 10.0);
-	m_pRect->Render(m_D3D->GetDeviceContext(), rectWorldMatrix, viewMatrix, projectionMatrix);
+
+	// 构造一个旋转角度，让指定的物体，固定朝摄像机
+	D3DXVECTOR3 posCamera = m_pCamera->GetPosition();
+	// 得到(x, 0, z)射线的围绕y轴的旋转弧度
+	float angleToCamera = atan2(posCamera.x - 5.0, posCamera.z - 10.0);
+	D3DXMATRIX angleToCameraMatrix;
+	D3DXMatrixRotationY(&angleToCameraMatrix, angleToCamera);
+	D3DXMATRIX rectEndMatrix;
+	D3DXMatrixMultiply(&rectEndMatrix, &angleToCameraMatrix,  &rectWorldMatrix);
+
+	m_pRect->Render(m_D3D->GetDeviceContext(), rectEndMatrix, viewMatrix, projectionMatrix);
 	m_D3D->EnableDefaultDepthStencil();
+	m_D3D->ChangeBackCullMode(false);
 
 	// 构造一个Reflect平面
 	D3DXPLANE mirrorPlane;
@@ -327,8 +342,7 @@ bool GraphicsClass::Render()
 		realcamerpos, Ke, Ka, Kd, Ks, m_pLightClass->GetDirection(), m_pLightClass->GetShininess());
 	m_D3D->EnableDefaultDepthStencil();
 	m_D3D->TurnOffAlphaBlending();
-	 m_D3D->ChangeBackCullMode(false);
-
+	m_D3D->ChangeBackCullMode(false);
 
 	//把framebuffer中的图像present到屏幕上.
 	m_D3D->TurnOnAlphaBlending();
@@ -337,6 +351,5 @@ bool GraphicsClass::Render()
 	m_D3D->TurnOffAlphaBlending();
 
 	m_D3D->EndScene();
-
 	return true;
 }
