@@ -12,6 +12,7 @@
 #include "SimpleColorShader.h"
 #include "AxisModelClass.h"
 #include "FlatColorShader.h"
+#include "RectClass.h"
 
 /////////////
 // GLOBALS //
@@ -48,5 +49,6 @@ class GraphicsClass
 		AxisModelClass* m_pLightAxiModel;
 		FlatTriangle* m_pFlatTriangle;
 		FlatColorShader* m_pFlatShader;
+		RectClass*		m_pRect;
 	};
 

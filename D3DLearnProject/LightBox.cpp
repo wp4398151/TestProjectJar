@@ -121,7 +121,7 @@ bool LightBox::InitializeBuffers(ID3D11Device* pDevice)
 
 	// 设置顶点缓冲描述
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_vertexCount;
+	vertexBufferDesc.ByteWidth = sizeof(g_LightBoxVertices);
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // 将资源绑定到顶点，供管线访问
 	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.MiscFlags = 0;
@@ -138,7 +138,7 @@ bool LightBox::InitializeBuffers(ID3D11Device* pDevice)
 
 	// 设置顶点索引缓冲描述
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(g_LightBoxIndexVertice[0]) *m_indexCount;
+	indexBufferDesc.ByteWidth = sizeof(g_LightBoxIndexVertice);
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER; // 将资源绑定到顶点索引，供管线访问
 	indexBufferDesc.CPUAccessFlags = 0;
 	indexBufferDesc.MiscFlags = 0;

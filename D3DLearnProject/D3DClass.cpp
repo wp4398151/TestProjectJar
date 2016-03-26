@@ -294,7 +294,6 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	if(FAILED(result))
 	{
 		return false;
-
 	}
 
 	// 设置深度模版状态.
@@ -302,9 +301,11 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	// 创建镜像深度模板
 	D3D11_DEPTH_STENCIL_DESC mirrorStateDesc;
 	ZeroMemory(&mirrorStateDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+
 	mirrorStateDesc.DepthEnable = true;
 	mirrorStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	mirrorStateDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
 	mirrorStateDesc.StencilEnable = true;
 	mirrorStateDesc.StencilReadMask = 0xFF;
 	mirrorStateDesc.StencilWriteMask = 0xFF;
@@ -328,10 +329,9 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	mirrorStateDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	mirrorStateDesc.FrontFace.StencilFunc= D3D11_COMPARISON_EQUAL;
-	result = m_device->CreateDepthStencilState(&depthStencilDesc, &m_pDepthStencilStateReflect);
+	result = m_device->CreateDepthStencilState(&mirrorStateDesc, &m_pDepthStencilStateReflect);
 
 	assert(SUCCEEDED(result));
-
 
 	// 初始化深度模版视图.
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
@@ -551,10 +551,19 @@ void D3DClass::ChangeBackCullMode(bool bIsCull)
 	ZeroMemory(&rasterDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rasterDesc.AntialiasedLineEnable = false;
 	rasterDesc.CullMode = D3D11_CULL_BACK;
+	//if (bIsCull)
+	//{
+	//	rasterDesc.CullMode = D3D11_CULL_BACK;
+	//}
+	//else
+	//{
+	//	rasterDesc.CullMode = D3D11_CULL_NONE;
+	//}
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
 	rasterDesc.DepthClipEnable = true;
 	rasterDesc.FillMode = D3D11_FILL_SOLID; //D3D11_FILL_SOLID
+
 	rasterDesc.FrontCounterClockwise = bIsCull;
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
@@ -577,7 +586,7 @@ void D3DClass::EnableReflectDepthStancil()
 
 void D3DClass::EnableDefaultDepthStencil()
 {
-	m_deviceContext->OMSetDepthStencilState(this->m_depthStencilState, 1);
+	m_deviceContext->OMSetDepthStencilState(m_depthStencilState, 0);
 }
 
 void D3DClass::TurnOffAlphaBlending()

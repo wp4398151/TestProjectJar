@@ -16,6 +16,7 @@ GraphicsClass::GraphicsClass(void)
 	m_pLightAxiModel = NULL;
 	m_pFlatTriangle = NULL;
 	m_pFlatShader = NULL;
+	m_pRect = NULL;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -138,6 +139,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_pFlatShader->Init(m_D3D->GetDevice());
+
+	m_pRect = new RectClass;
+	if (!m_pRect)
+	{
+		return false;
+	}
+	m_pRect->Initialize(m_D3D->GetDevice());
 
 	return true;
 }
@@ -285,17 +293,48 @@ bool GraphicsClass::Render()
 	m_pLightAxiModel->Render(m_D3D->GetDeviceContext());
 	result = m_pSimpleColorShader->Render(m_D3D->GetDeviceContext(),
 		m_pLightAxiModel->GetIndexCount(), LightAxiWorldMatrix, viewMatrix, projectionMatrix);
-
 	
+	// Map The render texture
+	CopyTexture2D copyTexture2D;
+	copyTexture2D.Copy(m_D3D->GetDeviceContext(), m_D3D->GetDevice(), m_D3D->GetSwapChain());
+	copyTexture2D.CheckCopyTextureContent(m_D3D->GetDeviceContext());
+
+	//一块两面都能看的面
+	m_D3D->EnableMirrorDepthStancil();
+	D3DXMATRIX rectWorldMatrix;
+	D3DXMatrixTranslation(&rectWorldMatrix, 5.0, 0.0, 10.0);
+	m_pRect->Render(m_D3D->GetDeviceContext(), rectWorldMatrix, viewMatrix, projectionMatrix);
+	m_D3D->EnableDefaultDepthStencil();
+
+	// 构造一个Reflect平面
+	D3DXPLANE mirrorPlane;
+	D3DXVECTOR3 v1(5.0, 0.0, 10.0);
+	D3DXVECTOR3 v2(4.0, 0.0, 10.0);
+	D3DXVECTOR3 v3(5.0, 1.0, 10.0);
+	D3DXPlaneFromPoints(&mirrorPlane, &v1, &v2, &v3);
+	D3DXMATRIX reflectMatrix;
+	//得到基于mirrorPlane平面的反射矩阵 
+	D3DXMatrixReflect(&reflectMatrix, &mirrorPlane);
+	D3DXMATRIX reflectWorld = LightColorWorldMatrix * reflectMatrix;
+
+	m_D3D->EnableReflectDepthStancil();
+	m_D3D->TurnOnAlphaBlending();
+	 m_D3D->ChangeBackCullMode(true);
+	m_pLightBox->Render(m_D3D->GetDeviceContext());
+	result = m_pLightShaderClass->Render(m_D3D->GetDeviceContext(),
+		m_pLightBox->GetIndexCount(), reflectWorld, viewMatrix, projectionMatrix,
+		m_pLightClass->GetPosition(), m_pLightClass->GetLightColor(), m_pLightClass->GetGlobalAmbient(),
+		realcamerpos, Ke, Ka, Kd, Ks, m_pLightClass->GetDirection(), m_pLightClass->GetShininess());
+	m_D3D->EnableDefaultDepthStencil();
+	m_D3D->TurnOffAlphaBlending();
+	 m_D3D->ChangeBackCullMode(false);
+
+
 	//把framebuffer中的图像present到屏幕上.
 	m_D3D->TurnOnAlphaBlending();
 	m_pFlatTriangle->Render(m_D3D->GetDeviceContext());
 	m_pFlatShader->Render(m_D3D->GetDeviceContext(), m_pFlatTriangle->GetIndexCount());
 	m_D3D->TurnOffAlphaBlending();
-	// Map The render texture
-	CopyTexture2D copyTexture2D;
-	copyTexture2D.Copy(m_D3D->GetDeviceContext(), m_D3D->GetDevice(), m_D3D->GetSwapChain());
-	copyTexture2D.CheckCopyTextureContent(m_D3D->GetDeviceContext());
 
 	m_D3D->EndScene();
 

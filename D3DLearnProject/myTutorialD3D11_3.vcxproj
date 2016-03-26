@@ -90,6 +90,7 @@
     <ClCompile Include="LightClass.cpp" />
     <ClCompile Include="LightShaderClass.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RectClass.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
     <ClCompile Include="SimpleColorShader.cpp" />
     <ClCompile Include="SystemClass.cpp" />
@@ -110,6 +111,7 @@
     <ClInclude Include="LightBox.h" />
     <ClInclude Include="LightClass.h" />
     <ClInclude Include="LightShaderClass.h" />
+    <ClInclude Include="RectClass.h" />
     <ClInclude Include="ShaderClass.h" />
     <ClInclude Include="SimpleColorShader.h" />
     <ClInclude Include="SystemClass.h" />
