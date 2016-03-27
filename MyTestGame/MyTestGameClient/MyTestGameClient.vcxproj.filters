@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SystemClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AxisModelClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Box.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CameraClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\D3DClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FlatColorShader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GraphicsClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LightBox.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LightClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LightShaderClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RectClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShaderClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SimpleColorShader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextureClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TimerClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TriangleClass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="inc\SystemClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\AxisModelClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Box.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CameraClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Common.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\D3DClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\FlatColorShader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\GraphicsClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\InputClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\LightBox.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\LightClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\LightShaderClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\RectClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\ShaderClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\SimpleColorShader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\TextureClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\TimerClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\TriangleClass.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

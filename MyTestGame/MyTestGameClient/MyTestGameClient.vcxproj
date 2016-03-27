@@ -11,19 +11,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1E2284E8-21B0-4310-A3F6-5772726AF1DB}</ProjectGuid>
+    <ProjectGuid>{5E9A4B9A-079C-45C2-87C9-BAB101A8E549}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>LibHelper</RootNamespace>
+    <RootNamespace>MyTestGameClient</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -39,16 +39,23 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(DXSDK_DIR)Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)inc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Project\git\TestProjectJar\LibHelper\inc;$(ProjectDir)inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -63,7 +70,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -74,21 +81,46 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <ClCompile Include="src\AxisModelClass.cpp" />
+    <ClCompile Include="src\Box.cpp" />
+    <ClCompile Include="src\CameraClass.cpp" />
+    <ClCompile Include="src\D3DClass.cpp" />
+    <ClCompile Include="src\FlatColorShader.cpp" />
+    <ClCompile Include="src\GraphicsClass.cpp" />
+    <ClCompile Include="src\InputClass.cpp" />
+    <ClCompile Include="src\LightBox.cpp" />
+    <ClCompile Include="src\LightClass.cpp" />
+    <ClCompile Include="src\LightShaderClass.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\RectClass.cpp" />
+    <ClCompile Include="src\ShaderClass.cpp" />
+    <ClCompile Include="src\SimpleColorShader.cpp" />
+    <ClCompile Include="src\SystemClass.cpp" />
+    <ClCompile Include="src\TextureClass.cpp" />
+    <ClCompile Include="src\TimerClass.cpp" />
+    <ClCompile Include="src\TriangleClass.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="inc\CInjectHelper.h" />
-    <ClInclude Include="inc\CNameEvent.h" />
-    <ClInclude Include="inc\CNameShareMemory.h" />
-    <ClInclude Include="inc\Helper.h" />
-    <ClInclude Include="inc\WindowsSystemHelper.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\CNameEvent.cpp" />
-    <ClCompile Include="src\CNameShareMemory.cpp" />
-    <ClCompile Include="src\Helper.cpp" />
-    <ClCompile Include="src\UtilHelper.cpp" />
-    <ClCompile Include="src\WindowsSystemHelper.cpp" />
+    <ClInclude Include="inc\AxisModelClass.h" />
+    <ClInclude Include="inc\Box.h" />
+    <ClInclude Include="inc\CameraClass.h" />
+    <ClInclude Include="inc\Common.h" />
+    <ClInclude Include="inc\D3DClass.h" />
+    <ClInclude Include="inc\FlatColorShader.h" />
+    <ClInclude Include="inc\GraphicsClass.h" />
+    <ClInclude Include="inc\InputClass.h" />
+    <ClInclude Include="inc\LightBox.h" />
+    <ClInclude Include="inc\LightClass.h" />
+    <ClInclude Include="inc\LightShaderClass.h" />
+    <ClInclude Include="inc\RectClass.h" />
+    <ClInclude Include="inc\ShaderClass.h" />
+    <ClInclude Include="inc\SimpleColorShader.h" />
+    <ClInclude Include="inc\SystemClass.h" />
+    <ClInclude Include="inc\TextureClass.h" />
+    <ClInclude Include="inc\TimerClass.h" />
+    <ClInclude Include="inc\TriangleClass.h" />
+    <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
