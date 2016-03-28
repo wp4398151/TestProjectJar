@@ -3,16 +3,8 @@
 #include <windows.h>
 #include "d3dclass.h"
 #include "CameraClass.h"
-#include "ShaderClass.h"
-#include "TriangleClass.h"
-#include "Box.h"
-#include "LightBox.h"
-#include "LightClass.h"
-#include "LightShaderClass.h"
-#include "SimpleColorShader.h"
-#include "AxisModelClass.h"
-#include "FlatColorShader.h"
 #include "RectClass.h"
+#include "TextureManager.h"
 
 /////////////
 // GLOBALS //
@@ -39,4 +31,5 @@ private:
 	//定义一个D3DClass类成员变量
 	D3DClass* m_D3D;
 	RectClass* m_pRect;
+	TextureManager *m_pTextureManager;
 };

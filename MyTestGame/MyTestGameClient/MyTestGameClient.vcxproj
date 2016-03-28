@@ -81,46 +81,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\AxisModelClass.cpp" />
-    <ClCompile Include="src\Box.cpp" />
     <ClCompile Include="src\CameraClass.cpp" />
     <ClCompile Include="src\D3DClass.cpp" />
-    <ClCompile Include="src\FlatColorShader.cpp" />
     <ClCompile Include="src\GraphicsClass.cpp" />
     <ClCompile Include="src\InputClass.cpp" />
-    <ClCompile Include="src\LightBox.cpp" />
-    <ClCompile Include="src\LightClass.cpp" />
-    <ClCompile Include="src\LightShaderClass.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\RectClass.cpp" />
-    <ClCompile Include="src\ShaderClass.cpp" />
-    <ClCompile Include="src\SimpleColorShader.cpp" />
     <ClCompile Include="src\SystemClass.cpp" />
-    <ClCompile Include="src\TextureClass.cpp" />
+    <ClCompile Include="src\TextureManager.cpp" />
     <ClCompile Include="src\TimerClass.cpp" />
-    <ClCompile Include="src\TriangleClass.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="inc\AxisModelClass.h" />
-    <ClInclude Include="inc\Box.h" />
     <ClInclude Include="inc\CameraClass.h" />
     <ClInclude Include="inc\Common.h" />
     <ClInclude Include="inc\D3DClass.h" />
-    <ClInclude Include="inc\FlatColorShader.h" />
     <ClInclude Include="inc\GraphicsClass.h" />
     <ClInclude Include="inc\InputClass.h" />
-    <ClInclude Include="inc\LightBox.h" />
-    <ClInclude Include="inc\LightClass.h" />
-    <ClInclude Include="inc\LightShaderClass.h" />
     <ClInclude Include="inc\RectClass.h" />
-    <ClInclude Include="inc\ShaderClass.h" />
-    <ClInclude Include="inc\SimpleColorShader.h" />
     <ClInclude Include="inc\SystemClass.h" />
-    <ClInclude Include="inc\TextureClass.h" />
+    <ClInclude Include="inc\TextureManager.h" />
     <ClInclude Include="inc\TimerClass.h" />
-    <ClInclude Include="inc\TriangleClass.h" />
-    <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

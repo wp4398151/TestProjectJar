@@ -7,6 +7,7 @@ GraphicsClass::GraphicsClass(void)
 	m_D3D = NULL;
 	m_pCamera = NULL;
 	m_pRect = NULL;
+	m_pTextureManager = NULL;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -55,6 +56,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	m_pRect->Initialize(m_D3D->GetDevice());
+	
+	m_pTextureManager = new TextureManager();
+	assert(m_pTextureManager);
+	if (m_pTextureManager)
+	{
+		return false;
+	}
+	m_pTextureManager->Initialize(m_D3D->GetDevice());
 	return true;
 }
 
@@ -100,10 +109,12 @@ bool GraphicsClass::Render()
 
 	// TODO: need to enumerate all rect
 	D3DXMATRIX rectEndMatrix;
-	m_pRect->Render(m_D3D->GetDeviceContext(), 
-						rectEndMatrix, 
-							viewMatrix, 
-								projectionMatrix);
+	m_pRect->Render(m_D3D->GetDeviceContext(),
+		rectEndMatrix,
+		viewMatrix,
+		projectionMatrix,
+		m_pTextureManager->LoadTextureFromFile(m_D3D->GetDevice(), wstring(L"fdhsf")),
+										m_pTextureManager->GetSamplaState());
 
 	m_D3D->EndScene();
 	return true;
