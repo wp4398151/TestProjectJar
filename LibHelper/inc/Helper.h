@@ -115,7 +115,13 @@ bool IsByteLittleEndian(bool &bIsLittleEndian);
 // 得到当前执行程序的路径
 // Wupeng 
 ////////////////////////////////////////////////////
-bool GetAppPath(string& strPath);
+bool GetAppPathA(string& strPath);
+bool GetAppPathW(wstring& strPath);
+//只得到APP的名字
+bool GetAppNameA(string& strPath);
+bool GetAppNameW(wstring& strPath);
+
+
 
 ////////////////////////////////////////////////////
 // 替换所有匹配的字符串

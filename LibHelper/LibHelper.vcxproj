@@ -46,7 +46,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)inc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -77,16 +77,17 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="inc\CInjectHelper.h" />
     <ClInclude Include="inc\CNameEvent.h" />
     <ClInclude Include="inc\CNameShareMemory.h" />
     <ClInclude Include="inc\Helper.h" />
+    <ClInclude Include="inc\UnitTest.h" />
     <ClInclude Include="inc\WindowsSystemHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CNameEvent.cpp" />
     <ClCompile Include="src\CNameShareMemory.cpp" />
     <ClCompile Include="src\Helper.cpp" />
+    <ClCompile Include="src\UnitTest.cpp" />
     <ClCompile Include="src\UtilHelper.cpp" />
     <ClCompile Include="src\WindowsSystemHelper.cpp" />
   </ItemGroup>

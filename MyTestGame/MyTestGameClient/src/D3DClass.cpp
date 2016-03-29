@@ -416,9 +416,10 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	//初始化world矩阵为单位矩阵.
 	//该矩阵实现局部坐标到世界坐标的转换
 	D3DXMatrixIdentity(&m_worldMatrix);
-
 	// 创建正交投影矩阵，主要用来实施2D渲染.
-	D3DXMatrixOrthoLH(&m_orthoMatrix, (float)screenWidth, (float)screenHeight, screenNear, screenDepth);
+	D3DXMatrixOrthoLH(&m_orthoMatrix, 
+			(float)screenWidth, (float)screenHeight, 
+			screenNear, screenDepth);
 
 	return true;
 }

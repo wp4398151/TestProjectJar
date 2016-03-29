@@ -51,13 +51,20 @@ void TextureManager::Uninitialize()
 	}
 }
 
+// 支持jpg
 ID3D11ShaderResourceView* 
-TextureManager::LoadTextureFromFile(
-		ID3D11Device* pDevice, wstring &rWTextureFilePath)
+TextureManager::LoadTextureFromFileW(
+		ID3D11Device* pDevice, LPWSTR pWTextureFilePath)
 {
+	assert(pWTextureFilePath);
+	wstring jpgPath;
+	GetAppPathW(jpgPath);
+	jpgPath += L"\\";
+	jpgPath += pWTextureFilePath;
+
 	ID3D11ShaderResourceView* pShaderResourceView = NULL;
 	assert(pDevice);
-	map<wstring, ID3D11ShaderResourceView*>::iterator itor = m_TextureMap.find(rWTextureFilePath);
+	map<wstring, ID3D11ShaderResourceView*>::iterator itor = m_TextureMap.find(pWTextureFilePath);
 	if (itor != m_TextureMap.end())
 	{
 		pShaderResourceView = itor->second;
@@ -65,11 +72,27 @@ TextureManager::LoadTextureFromFile(
 	else
 	{
 		HRESULT res = S_OK;
-		res = D3DX11CreateShaderResourceViewFromFileW(pDevice, rWTextureFilePath.c_str(), 
-				NULL, NULL, &pShaderResourceView, NULL);
+		D3DX11_IMAGE_LOAD_INFO loadInfo;
+		ZeroMemory(&loadInfo, sizeof(D3DX11_IMAGE_LOAD_INFO));
+		loadInfo.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		loadInfo.Format = DXGI_FORMAT_BC3_UNORM;
+		loadInfo.MipLevels = D3DX11_DEFAULT; //这时会产生最大的mipmaps层。 
+		loadInfo.MipFilter = D3DX11_FILTER_LINEAR;
+
+		res = D3DX11CreateShaderResourceViewFromFileW(pDevice, jpgPath.c_str(), 
+				&loadInfo, NULL, &pShaderResourceView, NULL);
 		assert(SUCCEEDED(res));
 
-		m_TextureMap.insert(make_pair(rWTextureFilePath, pShaderResourceView));
+		//------------------------------
+		// 查看加载的纹理的格式	
+		ID3D11Texture2D *pTex2D = NULL;
+		pShaderResourceView->GetResource((ID3D11Resource**)&pTex2D);
+		assert(pTex2D);
+		D3D11_TEXTURE2D_DESC tex2Ddesc;
+		pTex2D->GetDesc(&tex2Ddesc);
+		//------------------------------
+
+		m_TextureMap.insert(make_pair(pWTextureFilePath, pShaderResourceView));
 		pShaderResourceView = pShaderResourceView;
 	}
 	return pShaderResourceView;

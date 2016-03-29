@@ -30,8 +30,61 @@ bool IsByteLittleEndian(bool &bIsLittleEndian)
 	}
 }
 
+bool GetAppNameW(wstring& strPath)
+{
+	TCHAR modulePath[MAX_PATH];
+	if (0 == GetModuleFileNameW(NULL, modulePath, MAX_PATH))
+	{
+		DOLOG("Get Current Module Name Failed!");
+		return false;
+	}
+	strPath = modulePath;
+	int pos = strPath.find_last_of(L'\\');
+	if (wstring::npos == pos)
+	{
+		return false;
+	}
+	int count = strPath.size() - pos;
+	strPath = strPath.substr(strPath.find_last_of(L'\\')+1, count);
+	return true;
+}
+
+// 得到当前程序的EXE名字
+bool GetAppNameA(string& strPath)
+{
+	char modulePath[MAX_PATH];
+	if (0 == GetModuleFileNameA(NULL, modulePath, MAX_PATH))
+	{
+		DOLOG("Get Current Module Name Failed!");
+		return false;
+	}
+	strPath = modulePath;
+	int pos = strPath.find_last_of('\\');
+	if (string::npos == pos)
+	{
+		return false;
+	}
+	int count = strPath.size() - pos;
+	strPath = strPath.substr(strPath.find_last_of('\\')+1, count);
+	return true;
+}
+
 // 得到当前程序的路径
-bool GetAppPath(string& strPath)
+bool GetAppPathW(wstring& strPath)
+{
+	TCHAR modulePath[MAX_PATH];
+	if (0 == GetModuleFileNameW(NULL, modulePath, MAX_PATH))
+	{
+		DOLOG("Get Current Module Name Failed!");
+		return false;
+	}
+	strPath = modulePath;
+	strPath  = strPath.substr(0, strPath.find_last_of(L'\\'));
+	return true;
+}
+
+// 得到当前程序的路径
+bool GetAppPathA(string& strPath)
 {
 	char modulePath[MAX_PATH];
 	if (0 == GetModuleFileNameA(NULL, modulePath, MAX_PATH))

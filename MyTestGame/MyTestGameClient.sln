@@ -4,6 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyTestGameClient", "MyTestGameClient\MyTestGameClient.vcxproj", "{5E9A4B9A-079C-45C2-87C9-BAB101A8E549}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1E2284E8-21B0-4310-A3F6-5772726AF1DB} = {1E2284E8-21B0-4310-A3F6-5772726AF1DB}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibHelper", "..\LibHelper\LibHelper.vcxproj", "{1E2284E8-21B0-4310-A3F6-5772726AF1DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{5E9A4B9A-079C-45C2-87C9-BAB101A8E549}.Debug|Win32.Build.0 = Debug|Win32
 		{5E9A4B9A-079C-45C2-87C9-BAB101A8E549}.Release|Win32.ActiveCfg = Release|Win32
 		{5E9A4B9A-079C-45C2-87C9-BAB101A8E549}.Release|Win32.Build.0 = Release|Win32
+		{1E2284E8-21B0-4310-A3F6-5772726AF1DB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1E2284E8-21B0-4310-A3F6-5772726AF1DB}.Debug|Win32.Build.0 = Debug|Win32
+		{1E2284E8-21B0-4310-A3F6-5772726AF1DB}.Release|Win32.ActiveCfg = Release|Win32
+		{1E2284E8-21B0-4310-A3F6-5772726AF1DB}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

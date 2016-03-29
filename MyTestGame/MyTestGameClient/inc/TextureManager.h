@@ -14,7 +14,7 @@ public:
 	
 	bool Initialize(ID3D11Device* pDevice);
 	void Uninitialize();
-	ID3D11ShaderResourceView* LoadTextureFromFile(ID3D11Device* pDevice, wstring &rWTextureFilePath);
+	ID3D11ShaderResourceView* LoadTextureFromFileW(ID3D11Device* pDevice, LPWSTR rWTextureFilePath);
 	
 	ID3D11SamplerState *GetSamplaState();
 	

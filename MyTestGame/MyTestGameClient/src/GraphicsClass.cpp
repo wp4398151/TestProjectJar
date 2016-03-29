@@ -47,7 +47,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	// 设置摄像机位置.
-	m_pCamera->SetPosition(0.0f, 0.0f, -10.0f);
+	m_pCamera->SetPosition(0.0f, 0.0f, -1.0f);
 
 	m_pRect = new RectClass;
 	assert(m_pRect );
@@ -59,11 +59,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	
 	m_pTextureManager = new TextureManager();
 	assert(m_pTextureManager);
-	if (m_pTextureManager)
+	if (!m_pTextureManager)
 	{
 		return false;
 	}
 	m_pTextureManager->Initialize(m_D3D->GetDevice());
+	
+	m_pTextureManager->LoadTextureFromFileW(m_D3D->GetDevice(), L"SingleTile.jpg");
 	return true;
 }
 
@@ -103,18 +105,21 @@ bool GraphicsClass::Render()
 	m_pCamera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetOrthoMatrix(projectionMatrix);
+	//m_D3D->GetProjectionMatrix(projectionMatrix);
 
 	// 构造一个旋转角度，让指定的物体，固定朝摄像机
 	D3DXVECTOR3 posCamera = m_pCamera->GetPosition();
 
 	// TODO: need to enumerate all rect
 	D3DXMATRIX rectEndMatrix;
+	D3DXMatrixIdentity(&rectEndMatrix);
+
 	m_pRect->Render(m_D3D->GetDeviceContext(),
 		rectEndMatrix,
 		viewMatrix,
 		projectionMatrix,
-		m_pTextureManager->LoadTextureFromFile(m_D3D->GetDevice(), wstring(L"fdhsf")),
-										m_pTextureManager->GetSamplaState());
+		m_pTextureManager->LoadTextureFromFileW(m_D3D->GetDevice(), L"SingleTile.jpg"),
+		m_pTextureManager->GetSamplaState());
 
 	m_D3D->EndScene();
 	return true;

@@ -10,10 +10,10 @@ struct MatrixBufferType
 };
 
 static RectClass::VertexType s_RectClassVertexs[] = {
-	{ D3DXVECTOR3(-10.0f, 10.0f, 0.0f), D3DXVECTOR4(0.5f, 0.0f, 0.0f, 0.5f), D3DXVECTOR2(0.0f, 0.0f)},
-	{ D3DXVECTOR3(10.0f, 10.0f, 0.0f), D3DXVECTOR4(0.5f, 0.0f, 0.0f, 0.5f), D3DXVECTOR2(0.0f, 0.0f)},
-	{ D3DXVECTOR3(-10.0f, -10.0f, 0.0f), D3DXVECTOR4(0.5f, 0.0f, 0.0f, 0.5f), D3DXVECTOR2(0.0f, 0.0f)},
-	{ D3DXVECTOR3(10.0f, -10.0f, 0.0f), D3DXVECTOR4(0.5f, 0.0f, 0.0f, 0.5f), D3DXVECTOR2(0.0f, 0.0f)},
+	{ D3DXVECTOR3(-50.0f, 50.0f, 0.0f), D3DXVECTOR4(0.5f, 0.0f, 0.0f, 0.5f), D3DXVECTOR2(0.0f, 0.0f)},
+	{ D3DXVECTOR3(50.0f, 50.0f, 0.0f), D3DXVECTOR4(0.5f, 0.0f, 0.0f, 0.5f), D3DXVECTOR2(1.0f, 0.0f)},
+	{ D3DXVECTOR3(-50.0f, -50.0f, 0.0f), D3DXVECTOR4(0.5f, 0.0f, 0.0f, 0.5f), D3DXVECTOR2(0.0f, 1.0f)},
+	{ D3DXVECTOR3(50.0f, -50.0f, 0.0f), D3DXVECTOR4(0.5f, 0.0f, 0.0f, 0.5f), D3DXVECTOR2(1.0f, 1.0f)},
 };
 
 static int s_RectClassIndexs[] = {0,1,2,2,1,3};
@@ -47,8 +47,9 @@ static char s_RectShaderStr[] =
 "	return output;												"
 "}								"
 "float4 ColorPixelShader(PixelInputType input) : SV_TARGET{"
-"	textureColor = shaderTexture.Sample(SampleType, input.texcoord);"
-"	return input.color;											"
+"	float4 texturecolor;									"
+"	texturecolor = shaderTexture.Sample(SampleType, input.texcoord);"
+"	return texturecolor;											"
 "}";
 
 RectClass::RectClass()
@@ -133,7 +134,7 @@ bool RectClass::Initialize(ID3D11Device* pDevice)
 	res = D3DX11CompileFromMemory((LPCSTR)s_RectShaderStr,
 		sizeof(s_RectShaderStr),
 		NULL, NULL, NULL,
-		"ColorPixelShaderColor",
+		"ColorPixelShader",
 		"ps_5_0",
 		D3D10_SHADER_ENABLE_STRICTNESS,
 		0, NULL, &pPixelShaderBuffer, &pErr, NULL);
@@ -167,9 +168,9 @@ bool RectClass::Initialize(ID3D11Device* pDevice)
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[1].InstanceDataStepRate = 0;
 
-	polygonLayout[2].SemanticName = "NORMAL";	// 语义
+	polygonLayout[2].SemanticName = "TEXCOORD";	// 语义
 	polygonLayout[2].SemanticIndex = 0;	// 语义
-	polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;	// 语义
+	polygonLayout[2].Format = DXGI_FORMAT_R32G32_FLOAT;	// 语义
 	polygonLayout[2].InputSlot = 0;
 	polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
