@@ -1,10 +1,12 @@
 #include "Helper.h"
 #include <windows.h>
 #include <Psapi.h>
+#include <assert.h>
 
 #undef UNICODE
 #include <Tlhelp32.h>
 #undef UNICODE
+#include <tchar.h>
 
 // [2015/12/17 wupeng] 
 // test
@@ -213,4 +215,132 @@ BOOL EnableDebugPrivilege(BOOL bEnableDebugPrivilege)
 	CloseHandle(hToken);
 
 	return TRUE;
+}
+
+
+void CreateBMPFile(LPTSTR pszFile, PBITMAPINFO pbi,
+	HBITMAP hBMP, HDC hDC)
+{
+	HANDLE hf;                 // file handle  
+	BITMAPFILEHEADER hdr;       // bitmap file-header  
+	PBITMAPINFOHEADER pbih;     // bitmap info-header  
+	LPBYTE lpBits;              // memory pointer  
+	DWORD dwTotal;              // total count of bytes  
+	DWORD cb;                   // incremental count of bytes  
+	BYTE *hp;                   // byte pointer  
+	DWORD dwTmp;
+
+	pbih = (PBITMAPINFOHEADER)pbi;
+	lpBits = (LPBYTE)GlobalAlloc(GMEM_FIXED, pbih->biSizeImage);
+	assert(lpBits);
+
+	// Retrieve the color table (RGBQUAD array) and the bits  
+	// (array of palette indices) from the DIB.  
+	int res = GetDIBits(hDC, hBMP, 0, (WORD)pbih->biHeight, lpBits, pbi,
+		DIB_RGB_COLORS);
+	assert(res != 0);
+
+	// Create the .BMP file.  
+	hf = CreateFile(pszFile,
+		GENERIC_READ | GENERIC_WRITE,
+		(DWORD)0,
+		NULL,
+		CREATE_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL,
+		(HANDLE)NULL);
+	assert(hf != INVALID_HANDLE_VALUE);
+	hdr.bfType = 0x4d42;        // 0x42 = "B"  0x4d = "M"  
+	// Compute the size of the entire file.  
+	hdr.bfSize = (DWORD)(sizeof(BITMAPFILEHEADER) +
+		pbih->biSize + pbih->biClrUsed
+		* sizeof(RGBQUAD) + pbih->biSizeImage);
+	hdr.bfReserved1 = 0;
+	hdr.bfReserved2 = 0;
+
+	// Compute the offset to the array of color indices.  
+	hdr.bfOffBits = (DWORD) sizeof(BITMAPFILEHEADER) +
+		pbih->biSize + pbih->biClrUsed
+		* sizeof(RGBQUAD);
+
+	// Copy the BITMAPFILEHEADER into the .BMP file.  
+	res = WriteFile(hf, (LPVOID)&hdr, sizeof(BITMAPFILEHEADER),
+		(LPDWORD)&dwTmp, NULL);
+	assert(res != 0);
+
+	// Copy the BITMAPINFOHEADER and RGBQUAD array into the file.  
+	WriteFile(hf, (LPVOID)pbih, sizeof(BITMAPINFOHEADER)
+		+ pbih->biClrUsed * sizeof(RGBQUAD),
+		(LPDWORD)&dwTmp, (NULL));
+
+	// Copy the array of color indices into the .BMP file.  
+	dwTotal = cb = pbih->biSizeImage;
+	hp = lpBits;
+	WriteFile(hf, (LPSTR)hp, (int)cb, (LPDWORD)&dwTmp, NULL);
+
+	// Close the .BMP file.  
+	CloseHandle(hf);
+
+	// Free memory.  
+	GlobalFree((HGLOBAL)lpBits);
+}
+
+void GetCurDisplay(HDC& rCompatibleHDC, HBITMAP& rHbitmap)
+{
+	HDC desktopDC = CreateDCW(L"DISPLAY1", NULL, NULL, NULL);
+	if (desktopDC == NULL)
+	{
+		return;
+	}
+	int cx = GetDeviceCaps(desktopDC, HORZRES);
+	int cy = GetDeviceCaps(desktopDC, VERTRES);
+
+	rCompatibleHDC = CreateCompatibleDC(desktopDC);
+	assert(rCompatibleHDC != NULL);
+
+	rHbitmap = CreateCompatibleBitmap(desktopDC, cx, cy);
+	assert(rHbitmap != NULL);
+	HBITMAP oldbitMap = (HBITMAP)SelectObject(rCompatibleHDC, rHbitmap);
+
+	int res = BitBlt(rCompatibleHDC, 0, 0, cx, cy, desktopDC, 0, 0, SRCCOPY);
+	assert(res != 0);
+
+	rHbitmap = (HBITMAP)SelectObject(rCompatibleHDC, oldbitMap);
+
+	DeleteDC(desktopDC);
+}
+
+void GetBitmapInfo(BITMAPINFO &rBmpinfo, HBITMAP compatibleHbitmap)
+{
+	BITMAP bitmap = {0};
+	GetObjectA(compatibleHbitmap, sizeof(bitmap), &bitmap);
+
+	rBmpinfo.bmiHeader.biBitCount = bitmap.bmBitsPixel;//颜色位数
+	rBmpinfo.bmiHeader.biClrImportant = 0;
+	rBmpinfo.bmiHeader.biCompression = BI_RGB;
+	rBmpinfo.bmiHeader.biHeight = bitmap.bmHeight;
+	rBmpinfo.bmiHeader.biPlanes = bitmap.bmPlanes; //级别?必须为1
+	rBmpinfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	rBmpinfo.bmiHeader.biSizeImage = bitmap.bmHeight*bitmap.bmWidth*bitmap.bmBitsPixel;
+	rBmpinfo.bmiHeader.biWidth = bitmap.bmWidth;
+	rBmpinfo.bmiHeader.biXPelsPerMeter = 0;
+	rBmpinfo.bmiHeader.biYPelsPerMeter = 0;
+}
+
+void CaptureUseDC()
+{
+	TCHAR filename[MAX_PATH] = { 0 };
+	HDC compatibleHDC = NULL;
+	HBITMAP compatibleHbitmap = NULL;
+
+	compatibleHDC = NULL;
+	compatibleHbitmap = NULL;
+	GetCurDisplay(compatibleHDC, compatibleHbitmap);
+	BITMAPINFO rBmpinfo = { 0 };
+	GetBitmapInfo(rBmpinfo, compatibleHbitmap);
+
+	ZeroMemory(filename, sizeof(filename));
+	_stprintf_s(filename, MAX_PATH, L"%d.bmp", GetTickCount());
+	CreateBMPFile(filename, &rBmpinfo, compatibleHbitmap, compatibleHDC);
+	DeleteDC(compatibleHDC);
+	DeleteObject(compatibleHbitmap);
 }

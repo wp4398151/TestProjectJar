@@ -1,3 +1,8 @@
+////////////////////////////////////////////////////
+// 常用帮助函数
+// Wupeng 
+// qq:4398151
+////////////////////////////////////////////////////
 #ifndef _HELPER_H_
 #define _HELPER_H_
 
@@ -259,7 +264,17 @@ public:
 	static void PrintTime(time_t atime);
 };
 
+// 在指定位置插入字符串
 // [2015/12/17 wupeng] 
 BOOL InsertStrInStrSpecifyPosA(LPSTR lpTarBuf, UINT cBufLen, LPSTR lpSrcStr, LPSTR lpInsertStr, UINT iPos);
+
+
+////////////////////////////////////////////////////
+// 将当前显示器截图保存到当前目录
+// wupeng 
+////////////////////////////////////////////////////
+void CaptureUseDC();
+
+
 
 #endif //HELPER_H_
