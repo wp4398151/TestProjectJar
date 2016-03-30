@@ -11,6 +11,7 @@
 #include <string>
 #include <process.h>
 #include <time.h>
+#include <assert.h>
 
 using namespace std;
 
@@ -20,6 +21,10 @@ using namespace std;
 #define SAFE_RELEASE(ptr) if(ptr){ ptr->Release(); ptr = NULL;}
 #define SAFE_DELETEEX(ptr, op) if(ptr){ op; delete ptr; ptr = NULL;}
 
+#define ASSERT_NOTNULL(x) assert((x)!=NULL);
+#define ASSERT_NOTZERO(x) assert((x)!=0);
+#define ASSERT_TRUE(x) assert((x)==TRUE);
+#define ASSERT_FALSE(x) assert((x)==FALSE);
 // [2015/12/11 wupeng] 
 // Convinient to cat string
 class SstringEx
@@ -268,13 +273,16 @@ public:
 // [2015/12/17 wupeng] 
 BOOL InsertStrInStrSpecifyPosA(LPSTR lpTarBuf, UINT cBufLen, LPSTR lpSrcStr, LPSTR lpInsertStr, UINT iPos);
 
-
 ////////////////////////////////////////////////////
 // 将当前显示器截图保存到当前目录
 // wupeng 
 ////////////////////////////////////////////////////
 void CaptureUseDC();
 
-
+////////////////////////////////////////////////////
+// 得到当前Screen的RGB内容
+// wupeng 
+// return 需要使用free来释放
+char* GetCaptureScreenDCRGBbits(int& rWidth, int& rHeight, int& rPixelBitSize);
 
 #endif //HELPER_H_

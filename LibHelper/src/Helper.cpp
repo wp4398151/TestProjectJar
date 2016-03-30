@@ -1,7 +1,6 @@
 #include "Helper.h"
 #include <windows.h>
 #include <Psapi.h>
-#include <assert.h>
 
 #undef UNICODE
 #include <Tlhelp32.h>
@@ -217,18 +216,29 @@ BOOL EnableDebugPrivilege(BOOL bEnableDebugPrivilege)
 	return TRUE;
 }
 
-
+char* GetBMPBinaryData(PBITMAPINFO pbi, HBITMAP hBMP, HDC hDC)
+{
+	assert(pbi!=NULL);
+	char* lpBits = (char*)malloc(pbi->bmiHeader.biSizeImage);
+	assert(lpBits != NULL);
+	ZeroMemory(lpBits, pbi->bmiHeader.biSizeImage);
+	int res = GetDIBits(hDC, hBMP, 0, (WORD)pbi->bmiHeader.biHeight, lpBits, pbi,
+		DIB_RGB_COLORS);
+	assert(res != 0);
+	
+	return lpBits;
+}
 void CreateBMPFile(LPTSTR pszFile, PBITMAPINFO pbi,
 	HBITMAP hBMP, HDC hDC)
 {
-	HANDLE hf;                 // file handle  
-	BITMAPFILEHEADER hdr;       // bitmap file-header  
-	PBITMAPINFOHEADER pbih;     // bitmap info-header  
-	LPBYTE lpBits;              // memory pointer  
-	DWORD dwTotal;              // total count of bytes  
-	DWORD cb;                   // incremental count of bytes  
-	BYTE *hp;                   // byte pointer  
-	DWORD dwTmp;
+	HANDLE hf = NULL;                 // file handle  
+	BITMAPFILEHEADER hdr = {0};       // bitmap file-header  
+	PBITMAPINFOHEADER pbih = NULL;    // bitmap info-header  
+	LPBYTE lpBits = NULL;             // memory pointer  
+	DWORD dwTotal = 0;				// total count of bytes  
+	DWORD cb = 0;                   // incremental count of bytes  
+	BYTE *hp = 0;                   // byte pointer  
+	DWORD dwTmp = 0;
 
 	pbih = (PBITMAPINFOHEADER)pbi;
 	lpBits = (LPBYTE)GlobalAlloc(GMEM_FIXED, pbih->biSizeImage);
@@ -286,23 +296,21 @@ void CreateBMPFile(LPTSTR pszFile, PBITMAPINFO pbi,
 
 void GetCurDisplay(HDC& rCompatibleHDC, HBITMAP& rHbitmap)
 {
-	HDC desktopDC = CreateDCW(L"DISPLAY1", NULL, NULL, NULL);
-	if (desktopDC == NULL)
-	{
-		return;
-	}
+	HDC desktopDC = CreateDCW(L"DISPLAY", NULL, NULL, NULL);
+	ASSERT_NOTNULL(desktopDC);
+
 	int cx = GetDeviceCaps(desktopDC, HORZRES);
 	int cy = GetDeviceCaps(desktopDC, VERTRES);
 
 	rCompatibleHDC = CreateCompatibleDC(desktopDC);
-	assert(rCompatibleHDC != NULL);
+	ASSERT_NOTNULL(rCompatibleHDC);
 
 	rHbitmap = CreateCompatibleBitmap(desktopDC, cx, cy);
-	assert(rHbitmap != NULL);
+	ASSERT_NOTNULL(rHbitmap);
 	HBITMAP oldbitMap = (HBITMAP)SelectObject(rCompatibleHDC, rHbitmap);
 
 	int res = BitBlt(rCompatibleHDC, 0, 0, cx, cy, desktopDC, 0, 0, SRCCOPY);
-	assert(res != 0);
+	ASSERT_NOTZERO(res);
 
 	rHbitmap = (HBITMAP)SelectObject(rCompatibleHDC, oldbitMap);
 
@@ -324,6 +332,28 @@ void GetBitmapInfo(BITMAPINFO &rBmpinfo, HBITMAP compatibleHbitmap)
 	rBmpinfo.bmiHeader.biWidth = bitmap.bmWidth;
 	rBmpinfo.bmiHeader.biXPelsPerMeter = 0;
 	rBmpinfo.bmiHeader.biYPelsPerMeter = 0;
+}
+
+char* GetCaptureScreenDCRGBbits(int& rWidth,int& rHeight, int& rPixelBitSize)
+{
+	HDC compatibleHDC = NULL;
+	HBITMAP compatibleHbitmap = NULL;
+
+	compatibleHDC = NULL;
+	compatibleHbitmap = NULL;
+	GetCurDisplay(compatibleHDC, compatibleHbitmap);
+	ASSERT_NOTNULL(compatibleHDC);
+	ASSERT_NOTNULL(compatibleHbitmap);
+	BITMAPINFO rBmpinfo = { 0 };
+	GetBitmapInfo(rBmpinfo, compatibleHbitmap);
+	rWidth = rBmpinfo.bmiHeader.biWidth;
+	rHeight = rBmpinfo.bmiHeader.biWidth;
+	rPixelBitSize = rBmpinfo.bmiHeader.biBitCount;
+	char* lpRGBBits = GetBMPBinaryData(&rBmpinfo, compatibleHbitmap, compatibleHDC);
+	ASSERT_NOTNULL(lpRGBBits);
+	DeleteDC(compatibleHDC);
+	DeleteObject(compatibleHbitmap);
+	return lpRGBBits;
 }
 
 void CaptureUseDC()

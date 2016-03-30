@@ -31,26 +31,35 @@ public:
 	static std::list<UNITTESTPROC> m_TestFuncList;
 
 WPUNITTESTSTART(GetAppPathA)
-	string appPath;
-	assert(GetAppPathA(appPath));
-	OutputDebugStringA(appPath.c_str());
-WPUNITTESTEND 
+		string appPath;
+		assert(GetAppPathA(appPath));
+		OutputDebugStringA(appPath.c_str());
+WPUNITTESTEND
 
 WPUNITTESTSTART(GetAppPathW)
-	wstring appPath;
-	assert(GetAppPathW(appPath));
-	OutputDebugStringW(appPath.c_str());
+			wstring appPath;
+			assert(GetAppPathW(appPath));
+			OutputDebugStringW(appPath.c_str());
 WPUNITTESTEND
 
 WPUNITTESTSTART(GetAppNameA)
-	string appNameA;
-	assert(GetAppNameA(appNameA));
-	OutputDebugStringA(appNameA.c_str());
+			string appNameA;
+			assert(GetAppNameA(appNameA));
+			OutputDebugStringA(appNameA.c_str());
 WPUNITTESTEND
 
 WPUNITTESTSTART(GetAppNameW)
-	wstring appNameW;
-	assert(GetAppNameW(appNameW));
-	OutputDebugStringW(appNameW.c_str());
+			wstring appNameW;
+			assert(GetAppNameW(appNameW));
+			OutputDebugStringW(appNameW.c_str());
+WPUNITTESTEND
+
+WPUNITTESTSTART(GetCaptureScreenDCRGBbits)
+	int width = 0;
+	int height = 0;
+	int platebitsCount = 0;
+	char* lpRGBBits = GetCaptureScreenDCRGBbits(width, height, platebitsCount);
+	ASSERT_NOTNULL(lpRGBBits);
+	free(lpRGBBits);
 WPUNITTESTEND
 };

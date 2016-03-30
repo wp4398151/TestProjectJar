@@ -33,6 +33,9 @@
     <ClInclude Include="inc\UnitTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\CH264Encoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\WindowsSystemHelper.cpp">
@@ -51,6 +54,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\UtilHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CH264Encoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

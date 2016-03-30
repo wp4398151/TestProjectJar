@@ -48,12 +48,18 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)inc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)3rd\x264;$(ProjectDir)inc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>libx264.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProjectDir)3rd\x264\libs\32bit</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -77,6 +83,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="inc\CH264Encoder.h" />
     <ClInclude Include="inc\CNameEvent.h" />
     <ClInclude Include="inc\CNameShareMemory.h" />
     <ClInclude Include="inc\Helper.h" />
@@ -84,6 +91,7 @@
     <ClInclude Include="inc\WindowsSystemHelper.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\CH264Encoder.cpp" />
     <ClCompile Include="src\CNameEvent.cpp" />
     <ClCompile Include="src\CNameShareMemory.cpp" />
     <ClCompile Include="src\Helper.cpp" />

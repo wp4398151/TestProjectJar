@@ -5,8 +5,8 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
 	// Ω¯––≤‚ ‘
-	//UnitTest::Instance().testAll();
-	//return 0;
+	UnitTest::Instance().testAll();
+	return 0;
 	SystemClass* System;
 	bool result;
 
