@@ -1,0 +1,5 @@
+Screen recording with WDDM 1.2
+http://www.virtualdub.org/blog/pivot/entry.php?id=356
+
+Desktop Duplication API
+https://msdn.microsoft.com/en-us/library/windows/desktop/hh404487(v=vs.85).aspx
