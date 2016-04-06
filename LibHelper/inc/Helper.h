@@ -21,6 +21,15 @@ using namespace std;
 #define SAFE_RELEASE(ptr) if(ptr){ ptr->Release(); ptr = NULL;}
 #define SAFE_DELETEEX(ptr, op) if(ptr){ op; delete ptr; ptr = NULL;}
 
+#define ASSERT_NOTNULLRET(x, retval) assert((x)!=NULL); if((x)==NULL) return (retval);
+#define ASSERT_NOTZERORET(x, retval) assert((x)!=0); if((x)==0) return (retval);
+#define ASSERT_TRUERET(x, retval) assert((x)==TRUE); if((x)!=TRUE) return (retval);
+#define ASSERT_FALSERET(x, retval) assert((x)==FALSE); if((x)!=FALSE) return (retval);
+#define ASSERT_EQURET(x, val, retval) assert((x)==(val)); if((x)!=(val)) return (retval);
+#define ASSERT_NEQURET(x, val, retval) assert((x)!=(val)); if((x)==(val)) return (retval);
+#define ASSERT_BETWEEN(valgtr, x, valls, retval) assert((valgtr)>(x) && (x)>(valls)); if((x)==(val)) return (retval);
+
+
 #define ASSERT_NOTNULL(x) assert((x)!=NULL);
 #define ASSERT_NOTZERO(x) assert((x)!=0);
 #define ASSERT_TRUE(x) assert((x)==TRUE);

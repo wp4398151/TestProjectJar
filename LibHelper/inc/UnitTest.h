@@ -2,6 +2,8 @@
 #include "Helper.h"
 #include <list>
 #include <assert.h>
+#include "C2DimensionParser.h"
+
 ////////////////////////////////////////////////////
 // 简单的单元测试类 
 // Wupeng 
@@ -61,5 +63,15 @@ WPUNITTESTSTART(GetCaptureScreenDCRGBbits)
 	char* lpRGBBits = GetCaptureScreenDCRGBbits(width, height, platebitsCount);
 	ASSERT_NOTNULL(lpRGBBits);
 	free(lpRGBBits);
+WPUNITTESTEND
+
+
+WPUNITTESTSTART(LoadTableFromFile)
+
+	wstring appPath;
+	assert(GetAppPathW(appPath));
+	appPath += L"\\UserTable.txt";
+	C2DimensionParser paser;
+	paser.LoadTableFromFile(appPath);
 WPUNITTESTEND
 };

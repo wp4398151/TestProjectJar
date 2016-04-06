@@ -83,6 +83,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="inc\C2DimensionParser.h" />
     <ClInclude Include="inc\CH264Encoder.h" />
     <ClInclude Include="inc\CNameEvent.h" />
     <ClInclude Include="inc\CNameShareMemory.h" />
@@ -91,6 +92,7 @@
     <ClInclude Include="inc\WindowsSystemHelper.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\C2DimensionParser.cpp" />
     <ClCompile Include="src\CH264Encoder.cpp" />
     <ClCompile Include="src\CNameEvent.cpp" />
     <ClCompile Include="src\CNameShareMemory.cpp" />
