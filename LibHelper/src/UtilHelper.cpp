@@ -382,6 +382,17 @@ BOOL CRTConvertWidechar2UTF8(const wstring& rWStr, string& rStr)
 	return TRUE;
 }
 
+BOOL CopyStringToWString(wstring &targetWStr, string &srcStr)
+{
+	WCHAR* wStrBuffer = (WCHAR*)malloc(srcStr.size() + 2);
+	ASSERT_NOTNULLRET(wStrBuffer, FALSE);
+	ZeroMemory(wStrBuffer, srcStr.size() + 2);
+	memcpy(wStrBuffer, srcStr.c_str(), srcStr.size());
+	targetWStr = wStrBuffer;
+	free(wStrBuffer);
+	return TRUE;
+}
+
 BOOL CRTConvertWidechar2ANSI(const wstring& rWStr, string& rStr)
 {
 	//char *psz = setlocale(LC_ALL,"Chinese_People's Republic of China.936")

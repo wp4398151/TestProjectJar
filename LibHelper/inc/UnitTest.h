@@ -65,13 +65,20 @@ WPUNITTESTSTART(GetCaptureScreenDCRGBbits)
 	free(lpRGBBits);
 WPUNITTESTEND
 
-
 WPUNITTESTSTART(LoadTableFromFile)
 
 	wstring appPath;
 	assert(GetAppPathW(appPath));
 	appPath += L"\\UserTable.txt";
 	C2DimensionParser paser;
-	paser.LoadTableFromFile(appPath);
+	paser.LoadTableFromFile(appPath, false);
+WPUNITTESTEND
+
+WPUNITTESTSTART(LoadIndexTableFromFile)
+	wstring appPath;
+	assert(GetAppPathW(appPath));
+	appPath += L"\\UserIndexTable.txt";
+	C2DimensionParser paser;
+	paser.LoadTableFromFile(appPath, true);
 WPUNITTESTEND
 };

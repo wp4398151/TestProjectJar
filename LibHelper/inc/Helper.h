@@ -30,6 +30,8 @@ using namespace std;
 #define ASSERT_BETWEEN(valgtr, x, valls, retval) assert((valgtr)>(x) && (x)>(valls)); if((x)==(val)) return (retval);
 
 
+#define ASSERT_EQU(x, val) assert((x)==(val));
+#define ASSERT_NEQU(x, val) assert((x)!=(val));
 #define ASSERT_NOTNULL(x) assert((x)!=NULL);
 #define ASSERT_NOTZERO(x) assert((x)!=0);
 #define ASSERT_TRUE(x) assert((x)==TRUE);
@@ -123,6 +125,9 @@ BOOL CRTConvertANSI2Widechar(const string& rStr, wstring& rWStr);
 BOOL CRTConvertUTF82Widechar(const string& rStr, wstring& rWStr);
 BOOL CRTConvertWidechar2ANSI(const wstring& rWStr, string& rStr);
 BOOL CRTConvertWidechar2UTF8(const wstring& rWStr, string& rStr);
+
+// 适用于从保存有little ending的unicode string 内容拷贝到真正的wstring中
+BOOL CopyStringToWString(wstring &targetWStr, string &srcStr);
 
 ////////////////////////////////////////////////////
 // 判断是否是小端序

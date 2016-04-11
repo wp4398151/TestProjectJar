@@ -17,21 +17,33 @@ struct TypeContainer{
 	const WCHAR* pMemberStr;
 };
 
-class C2DimensionSourceFile
-{
+class C2DimensionFile{
 public:
-	C2DimensionSourceFile();
-	bool Generate(wstring &firstMetaRow);
+	bool Generate(wstring &firstMetaRow, int row, int colounm);
 
-private:
+protected:
 	bool GenerateHeader();
-	bool GenerateType();
+	virtual bool GenerateType() = 0;
 	bool GenerateRear();
-	TypeContainer* GetTypeContaner(LPWSTR lpwTypeName);
+	TypeContainer* GetTypeContaner(const WCHAR* lpwTypeName);
 
-private:
+protected:
 	wstring m_wstrMetaRow;
 	wstring m_wstrResultContent;
+	int m_RowCount;
+	int m_ColumnCount;
+};
+
+class C2DimensionSourceFile : public C2DimensionFile
+{
+public:
+	bool GenerateType();
+};
+
+class C2DimensionSourceIndexFile : public C2DimensionFile
+{
+public:
+	bool GenerateType();
 };
 
 class C2DimensionParser
@@ -41,7 +53,7 @@ public:
 		m_RowCount = 0;
 		m_ColCount = 0;
 	}
-	bool LoadTableFromFile(wstring& filePath);
+	bool LoadTableFromFile(wstring& filePath, bool bIsIndexFile);
 	
 private:
 	int m_RowCount;
