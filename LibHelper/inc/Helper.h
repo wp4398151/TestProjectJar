@@ -299,4 +299,10 @@ void CaptureUseDC();
 // return 需要使用free来释放
 char* GetCaptureScreenDCRGBbits(int& rWidth, int& rHeight, int& rPixelBitSize);
 
+////////////////////////////////////////////////////
+// 不依赖于menifest. 得到真正操作系统的版本号，
+// wupeng 
+// return 需要使用free来释放
+BOOL GetNtVersionNumbers32(DWORD& dwMajorVer, DWORD& dwMinorVer, DWORD& dwBuildNumber);
+
 #endif //HELPER_H_

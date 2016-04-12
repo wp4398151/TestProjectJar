@@ -374,3 +374,26 @@ void CaptureUseDC()
 	DeleteDC(compatibleHDC);
 	DeleteObject(compatibleHbitmap);
 }
+
+BOOL GetNtVersionNumbers32(DWORD&dwMajorVer, DWORD& dwMinorVer, DWORD& dwBuildNumber)
+{
+	BOOL bRet = FALSE;
+
+	HMODULE hModNtdll = NULL;
+
+	if (hModNtdll = ::LoadLibraryW(L"ntdll.dll"))
+	{
+		typedef void (WINAPI *pfRTLGETNTVERSIONNUMBERS)(DWORD*, DWORD*, DWORD*);
+		pfRTLGETNTVERSIONNUMBERS pfRtlGetNtVersionNumbers;
+		pfRtlGetNtVersionNumbers = (pfRTLGETNTVERSIONNUMBERS)::GetProcAddress(hModNtdll, "RtlGetNtVersionNumbers");
+		if (pfRtlGetNtVersionNumbers)
+		{
+			pfRtlGetNtVersionNumbers(&dwMajorVer, &dwMinorVer, &dwBuildNumber);
+			dwBuildNumber &= 0x0ffff;
+			bRet = TRUE;
+		}
+		::FreeLibrary(hModNtdll);
+		hModNtdll = NULL;
+	}
+	return bRet;
+}

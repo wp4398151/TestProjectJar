@@ -2,6 +2,7 @@
 #include "Helper.h"
 #include <list>
 #include <assert.h>
+
 #include "C2DimensionParser.h"
 
 ////////////////////////////////////////////////////
@@ -33,27 +34,27 @@ public:
 	static std::list<UNITTESTPROC> m_TestFuncList;
 
 WPUNITTESTSTART(GetAppPathA)
-		string appPath;
-		assert(GetAppPathA(appPath));
-		OutputDebugStringA(appPath.c_str());
+	string appPath;
+	assert(GetAppPathA(appPath));
+	OutputDebugStringA(appPath.c_str());
 WPUNITTESTEND
 
 WPUNITTESTSTART(GetAppPathW)
-			wstring appPath;
-			assert(GetAppPathW(appPath));
-			OutputDebugStringW(appPath.c_str());
+	wstring appPath;
+	assert(GetAppPathW(appPath));
+	OutputDebugStringW(appPath.c_str());
 WPUNITTESTEND
 
 WPUNITTESTSTART(GetAppNameA)
-			string appNameA;
-			assert(GetAppNameA(appNameA));
-			OutputDebugStringA(appNameA.c_str());
+	string appNameA;
+	assert(GetAppNameA(appNameA));
+	OutputDebugStringA(appNameA.c_str());
 WPUNITTESTEND
 
 WPUNITTESTSTART(GetAppNameW)
-			wstring appNameW;
-			assert(GetAppNameW(appNameW));
-			OutputDebugStringW(appNameW.c_str());
+	wstring appNameW;
+	assert(GetAppNameW(appNameW));
+	OutputDebugStringW(appNameW.c_str());
 WPUNITTESTEND
 
 WPUNITTESTSTART(GetCaptureScreenDCRGBbits)
@@ -81,4 +82,13 @@ WPUNITTESTSTART(LoadIndexTableFromFile)
 	C2DimensionParser paser;
 	paser.LoadTableFromFile(appPath, true);
 WPUNITTESTEND
+
+WPUNITTESTSTART(GetWindowsVersion)
+	DWORD dwMajorVer = 0;
+	DWORD dwMinorVer = 0;
+	DWORD dwBuildNumber = 0;
+	ASSERT_TRUE(GetNtVersionNumbers32(dwMajorVer, dwMinorVer, dwBuildNumber));
+	DOLOG("windows version: ("+dwMajorVer + "." + dwMinorVer + "." + dwBuildNumber+")\r\n");
+WPUNITTESTEND
+
 };
