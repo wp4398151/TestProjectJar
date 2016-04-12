@@ -101,6 +101,7 @@
     <ClInclude Include="inc\InputClass.h" />
     <ClInclude Include="inc\RectClass.h" />
     <ClInclude Include="inc\SystemClass.h" />
+    <ClInclude Include="inc\TestTable.h" />
     <ClInclude Include="inc\TextureManager.h" />
     <ClInclude Include="inc\TimerClass.h" />
   </ItemGroup>

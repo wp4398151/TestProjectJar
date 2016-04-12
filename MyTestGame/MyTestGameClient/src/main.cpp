@@ -1,5 +1,6 @@
 #include "SystemClass.h"
 #include "UnitTest.h"
+#include "TestTable.h"
 
 //应用程序入口main函数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
