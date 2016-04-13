@@ -20,7 +20,10 @@ using namespace std;
 
 #define SAFE_RELEASE(ptr) if(ptr){ ptr->Release(); ptr = NULL;}
 #define SAFE_DELETEEX(ptr, op) if(ptr){ op; delete ptr; ptr = NULL;}
+#define SAFE_FREE(ptr) if(ptr){  free(ptr); ptr = NULL;}
 
+
+#define ASSERT_ZERORET(x, retval) assert(x==0); if((x)!=0) return (retval);
 #define ASSERT_NOTNULLRET(x, retval) assert((x)!=NULL); if((x)==NULL) return (retval);
 #define ASSERT_NOTZERORET(x, retval) assert((x)!=0); if((x)==0) return (retval);
 #define ASSERT_TRUERET(x, retval) assert((x)==TRUE); if((x)!=TRUE) return (retval);
@@ -304,5 +307,12 @@ char* GetCaptureScreenDCRGBbits(int& rWidth, int& rHeight, int& rPixelBitSize);
 // wupeng 
 // return 需要使用free来释放
 BOOL GetNtVersionNumbers32(DWORD& dwMajorVer, DWORD& dwMinorVer, DWORD& dwBuildNumber);
+
+////////////////////////////////////////////////////
+// 得到integer对应的字符串,不可重入
+// wupeng 
+// return 不需要释放
+wchar_t* ItoWStatic(int integer);
+char* ItoAStatic(int integer);
 
 #endif //HELPER_H_

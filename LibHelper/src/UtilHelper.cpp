@@ -387,7 +387,7 @@ BOOL CopyStringToWString(wstring &targetWStr, string &srcStr)
 	WCHAR* wStrBuffer = (WCHAR*)malloc(srcStr.size() + 2);
 	ASSERT_NOTNULLRET(wStrBuffer, FALSE);
 	ZeroMemory(wStrBuffer, srcStr.size() + 2);
-	memcpy(wStrBuffer, srcStr.c_str(), srcStr.size());
+	memcpy((char*)wStrBuffer, srcStr.c_str(), srcStr.size());
 	targetWStr = wStrBuffer;
 	free(wStrBuffer);
 	return TRUE;

@@ -397,3 +397,17 @@ BOOL GetNtVersionNumbers32(DWORD&dwMajorVer, DWORD& dwMinorVer, DWORD& dwBuildNu
 	}
 	return bRet;
 }
+
+static wchar_t s_ItoWCacheBuff[MAX_PATH];
+wchar_t* ItoWStatic(int integer)
+{
+	ASSERT_ZERORET(_ltow_s(integer, s_ItoWCacheBuff, MAX_PATH, 10), NULL);
+	return s_ItoWCacheBuff;
+}
+
+static char s_ItoACacheBuff[MAX_PATH];
+char* ItoAStatic(int integer)
+{
+	ASSERT_ZERORET(_ltoa_s(integer, s_ItoACacheBuff, MAX_PATH, 10), NULL);
+	return s_ItoACacheBuff;
+}
