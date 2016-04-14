@@ -32,10 +32,13 @@ char* CH264Encoder::convertRGB2YUV420(char* pRGBBits)	// 将RGB的内容转换成YUV420
 	return NULL;
 }
 
-bool CH264Encoder::Init()
+bool CH264Encoder::Init(){
+	return true;
+}
+
+bool CH264Encoder::TestEncodeScreen()
 {
 	int res = 0;
-	x264_t* pX264Handle = NULL;
 	x264_param_t* pX264Param = new x264_param_t;
 	assert(pX264Param!=NULL);
 	
@@ -67,9 +70,29 @@ bool CH264Encoder::Init()
 	res = x264_param_apply_profile(pX264Param, x264_profile_names[0]);
 	assert(res == 0);
 
+	x264_t* pX264Handle = NULL;
+	pX264Handle = x264_encoder_open(pX264Param);
+	x264_encoder_parameters(pX264Handle, pX264Param);
+
+	x264_picture_t pic_in;
+	int width = GetSystemMetrics(SM_CXSCREEN);
+	int height = GetSystemMetrics(SM_CYSCREEN);
+	res = x264_picture_alloc(&pic_in, X264_CSP_I420, width, height);
+
+	size_t yuv_size = width * height * 3 / 2;
+	uint8_t* pBuf = (uint8_t*)malloc(yuv_size);
+
+	pic_in.img.plane[0] = pBuf;
+	pic_in.img.plane[1] = pic_in.img.plane[0] + width * height;
+	pic_in.img.plane[2] = pic_in.img.plane[1] + width * height / 4;
+
+	int picWidth = 0;
+	int picHeight = 0;
+	int pixelBitSize = 0;
+	char* pRBG = GetCaptureScreenDCRGBbits(picWidth, picHeight, pixelBitSize);
+
 	return false;
 }
-
 
 // Conversion from RGB to YUV420
 int RGB2YUV_YR[256], RGB2YUV_YG[256], RGB2YUV_YB[256];
