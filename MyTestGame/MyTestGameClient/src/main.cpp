@@ -5,9 +5,6 @@
 //应用程序入口main函数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
-	int a = UserIndexTable::GetCell<int>(4,2);
-	
-
 	// 进行测试
 	UnitTest::Instance().testAll();
 	return 0;
@@ -34,4 +31,3 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 	System = 0;
 	return 0;
 }
-
