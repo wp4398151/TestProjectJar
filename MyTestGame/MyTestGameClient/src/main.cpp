@@ -1,15 +1,14 @@
 #include "SystemClass.h"
 #include "UnitTest.h"
-#include "TestTable.h"
+#include "CH264Encoder.h"
 
 //应用程序入口main函数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
-	int a = UserIndexTable::GetCell<int>(4,2);
+	CH264Encoder::TestEncodeScreen();
 	
-
 	// 进行测试
-	UnitTest::Instance().testAll();
+	//UnitTest::Instance().testAll();
 	return 0;
 	SystemClass* System;
 	bool result;
@@ -34,4 +33,3 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 	System = 0;
 	return 0;
 }
-
