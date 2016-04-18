@@ -24,20 +24,13 @@ struct TypeContainer{
 
 class C2DimensionFile{
 public:
-	C2DimensionFile(){
-		m_RowCount = 0;
-		m_ColumnCount = 0;
-		m_ConvertFunc = NULL;
-	}
-	~C2DimensionFile(){
-		SAFE_FREE(m_ConvertFunc);
-	}
-
+	C2DimensionFile();
+	~C2DimensionFile();
 	bool Generate(wstring &firstMetaRow, int row, int colounm, list<wstring>& contentStrList);
 protected:
 	bool GenerateHeader();
-	virtual bool GenerateType() = 0;
-	virtual bool GenerateFill(list<wstring>& contentList) = 0;
+	virtual bool GenerateType(wstring* wstrColoumnName) = 0;
+	virtual bool GenerateFill(wstring* wstrColoumnName, list<wstring>& contentList) = 0;
 	bool GenerateRear();
 
 	TypeContainer* GetTypeContaner(const WCHAR* lpwTypeName);
@@ -54,15 +47,15 @@ protected:
 class C2DimensionSourceFile : public C2DimensionFile
 {
 public:
-	bool GenerateType();
-	bool GenerateFill(list<wstring>& contentList);
+	bool GenerateType(wstring* wstrColoumnName);
+	bool GenerateFill(wstring* wstrColoumnName, list<wstring>& contentList);
 };
 
 class C2DimensionSourceIndexFile : public C2DimensionFile
 {
 public:
-	bool GenerateType();
-	bool GenerateFill(list<wstring>& contentList);
+	bool GenerateType(wstring* wstrColoumnName);
+	bool GenerateFill(wstring* wstrColoumnName, list<wstring>& contentList);
 };
 
 class C2DimensionParser

@@ -28,36 +28,29 @@ const UserTable::Row UserTable::m_Row[9]= {
 
 class UserIndexTable{
 public:
-	const static void* s_pColounm[5];
-	const static int m_1[3];
-	const static int m_2[3];
-	const static int m_3[3];
-	const static int m_4[3];
-	const static int m_5[3];
+	static const void* s_pColounm[5];
+	static const int m_1[9];
+	static const int m_2[9];
+	static const int m_3[9];
+	static const int m_4[9];
+	static const int m_5[9];
 	const static int m_Size;
-
 	template<typename T>
-	static bool GetCell(int x, int y, T& res)
-	{
-		if (ISINRANGE(x, 0, 2) && ISINRANGE(y, 0, 4))
-		{
+	static bool GetCell(int x, int y, T& res){
+		if (ISINRANGE(x, 0, 8) && ISINRANGE(y, 0, 4)){
 			res = ((T*)s_pColounm[y])[x];
 			return true;
 		}
-		else
-		{
+		else{
 			return false;
 		}
 	}
 };
 
-const int UserIndexTable::m_Size = 3;
-const void* UserIndexTable::s_pColounm[5] = {
-	(void*)m_1, (void*)m_2, (void*)m_3, (void*)m_4, (void*)m_5,
-};
-
-const int UserIndexTable::m_1[3] = { 1, 2, 3 };
-const int UserIndexTable::m_2[3] = { 2, 3, 4 };
-const int UserIndexTable::m_3[3] = { 3, 4, 5 };
-const int UserIndexTable::m_4[3] = { 4, 5, 6 };
-const int UserIndexTable::m_5[3] = { 5, 6, 7 };
+const int UserIndexTable::m_Size = 9;
+const void* UserIndexTable::s_pColounm[5] = { (void*)m_1, (void*)m_2, (void*)m_3, (void*)m_4, (void*)m_5, };
+const int UserIndexTable::m_1[9] = { 0, 0, 0, 1, 1, 0, 0, 0, 1, };
+const int UserIndexTable::m_2[9] = { 1, 1, 0, 0, 1, 0, 1, 0, 1, };
+const int UserIndexTable::m_3[9] = { 1, 1, 1, 0, 1, 0, 1, 0, 1, };
+const int UserIndexTable::m_4[9] = { 1, 1, 1, 0, 1, 0, 1, 0, 0, };
+const int UserIndexTable::m_5[9] = { 1, 1, 1, 0, 0, 0, 1, 1, 1, };
