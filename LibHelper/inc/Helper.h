@@ -117,6 +117,10 @@ using namespace std;
 // Wupeng 
 ////////////////////////////////////////////////////
 const int kConvertCodepageCacheLen = 2048;
+///////////////////////////////////////////////////
+// 需要使用free来释放所得到的字符串内存
+BOOL ConvertWidechar2ANSIMalloc(const wchar_t* pwStr, char** pStr);
+
 // Windows可用
 BOOL ConvertWidechar2UTF8(const wstring &rWStr, string &rStr);
 BOOL ConvertWidechar2ANSI(const wstring &rWStr, string &rStr);

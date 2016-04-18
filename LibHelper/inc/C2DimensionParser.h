@@ -27,14 +27,13 @@ public:
 	C2DimensionFile();
 	~C2DimensionFile();
 	bool Generate(wstring &firstMetaRow, int row, int colounm, list<wstring>& contentStrList);
+	wstring *GetResult(){ return &m_wstrResultContent; }
 protected:
 	bool GenerateHeader();
 	virtual bool GenerateType(wstring* wstrColoumnName) = 0;
 	virtual bool GenerateFill(wstring* wstrColoumnName, list<wstring>& contentList) = 0;
-	bool GenerateRear();
 
 	TypeContainer* GetTypeContaner(const WCHAR* lpwTypeName);
-
 protected:
 	wstring m_wstrMetaRow;
 	wstring m_wstrResultContent;
@@ -65,7 +64,7 @@ public:
 		m_RowCount = 0;
 		m_ColCount = 0;
 	}
-	bool LoadTableFromFile(wstring& filePath, bool bIsIndexFile);
+	bool LoadTableFromFile(wstring& filePath, wstring& fileOutpath, bool bIsIndexFile);
 	
 private:
 	int m_RowCount;
