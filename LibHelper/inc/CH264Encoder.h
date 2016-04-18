@@ -15,7 +15,6 @@ public:
 public:
 	static char* convertRGB2YUV420(char* pBits);	// 将RGB的内容转换成YUV420，x264以这种格式输入
 
-	bool TestEncodeScreen();
+	static bool TestEncodeScreen();
 	bool Init();
-	
 };

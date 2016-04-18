@@ -347,7 +347,7 @@ char* GetCaptureScreenDCRGBbits(int& rWidth,int& rHeight, int& rPixelBitSize)
 	BITMAPINFO rBmpinfo = { 0 };
 	GetBitmapInfo(rBmpinfo, compatibleHbitmap);
 	rWidth = rBmpinfo.bmiHeader.biWidth;
-	rHeight = rBmpinfo.bmiHeader.biWidth;
+	rHeight = rBmpinfo.bmiHeader.biHeight;
 	rPixelBitSize = rBmpinfo.bmiHeader.biBitCount;
 	char* lpRGBBits = GetBMPBinaryData(&rBmpinfo, compatibleHbitmap, compatibleHDC);
 	ASSERT_NOTNULL(lpRGBBits);

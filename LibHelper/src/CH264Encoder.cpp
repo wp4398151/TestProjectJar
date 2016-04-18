@@ -5,7 +5,10 @@
 ////////////////////////////////////////////////////
 #include "CH264Encoder.h"
 #include <stdint.h>
-#include "x264.h"
+extern "C"
+{
+	#include "x264.h"
+}
 #include <assert.h>
 
 // 网上搜的几个用查表来实现的RGB24 toYUV240的算法
@@ -38,8 +41,15 @@ bool CH264Encoder::Init(){
 
 bool CH264Encoder::TestEncodeScreen()
 {
+	int width = GetSystemMetrics(SM_CXSCREEN);
+	int height = GetSystemMetrics(SM_CYSCREEN);
+
+	encoderParam.picWidth = width;
+	encoderParam.picHeight = height;
+
 	int res = 0;
 	x264_param_t* pX264Param = new x264_param_t;
+
 	assert(pX264Param!=NULL);
 	
 	res = x264_param_default_preset(pX264Param,
@@ -70,28 +80,37 @@ bool CH264Encoder::TestEncodeScreen()
 	res = x264_param_apply_profile(pX264Param, x264_profile_names[0]);
 	assert(res == 0);
 
+	InitLookupTable();	// 初始化RGB到YUV的表
+
 	x264_t* pX264Handle = NULL;
 	pX264Handle = x264_encoder_open(pX264Param);
 	x264_encoder_parameters(pX264Handle, pX264Param);
+	res = x264_encoder_headers(pX264Handle, &pNals, &iNal);
+	//NAL_SPS
 
 	x264_picture_t pic_in;
-	int width = GetSystemMetrics(SM_CXSCREEN);
-	int height = GetSystemMetrics(SM_CYSCREEN);
 	res = x264_picture_alloc(&pic_in, X264_CSP_I420, width, height);
 
-	size_t yuv_size = width * height * 3 / 2;
+	//------------------------------ 
+	// 组织当前的桌面RGBA转换成YUV420
+	size_t yuv_size = (width * height * 4 * 3)/2;
 	uint8_t* pBuf = (uint8_t*)malloc(yuv_size);
+	int picWidth = 0;
+	int picHeight = 0;
+	int pixelBitSize = 0;
+	// 获取当前桌面的RGBA
+	char* pRBG = GetCaptureScreenDCRGBbits(picWidth, picHeight, pixelBitSize);
+
+	res = ConvertRGBtoYUV(picWidth, picHeight, (unsigned char*)pRBG, (unsigned int*)pBuf, true);
+	assert(res);
 
 	pic_in.img.plane[0] = pBuf;
 	pic_in.img.plane[1] = pic_in.img.plane[0] + width * height;
 	pic_in.img.plane[2] = pic_in.img.plane[1] + width * height / 4;
+	//---------------------------------------------------------------
+	
 
-	int picWidth = 0;
-	int picHeight = 0;
-	int pixelBitSize = 0;
-	char* pRBG = GetCaptureScreenDCRGBbits(picWidth, picHeight, pixelBitSize);
-
-	return false;
+	return true;
 }
 
 // Conversion from RGB to YUV420
@@ -150,9 +169,9 @@ int ConvertRGBtoYUV(int w, int h, unsigned char *bmp, unsigned int *yuv, bool bI
 	{
 		for (j = 0; j<w; j++)
 		{
-			*y++ = (RGB2YUV_YR[*r] + RGB2YUV_YG[*g] + RGB2YUV_YB[*b] + 1048576) >> 16;
-			*u++ = (-RGB2YUV_UR[*r] - RGB2YUV_UG[*g] + RGB2YUV_UBVR[*b] + 8388608) >> 16;
-			*v++ = (RGB2YUV_UBVR[*r] - RGB2YUV_VG[*g] - RGB2YUV_VB[*b] + 8388608) >> 16;
+			*(y++) = (RGB2YUV_YR[*r] + RGB2YUV_YG[*g] + RGB2YUV_YB[*b] + 1048576) >> 16;
+			*(u++) = (-RGB2YUV_UR[*r] - RGB2YUV_UG[*g] + RGB2YUV_UBVR[*b] + 8388608) >> 16;
+			*(v++) = (RGB2YUV_UBVR[*r] - RGB2YUV_VG[*g] - RGB2YUV_VB[*b] + 8388608) >> 16;
 			r += stepCount;
 			g += stepCount;
 			b += stepCount;
@@ -189,8 +208,8 @@ int ConvertRGBtoYUV(int w, int h, unsigned char *bmp, unsigned int *yuv, bool bI
 	{
 		for (j = 0; j<w; j += 2)
 		{
-			*u++ = (*pu1 + *pu2 + *pu3 + *pu4) >> 2;
-			*v++ = (*pv1 + *pv2 + *pv3 + *pv4) >> 2;
+			*(u++) = (*pu1 + *pu2 + *pu3 + *pu4) >> 2;
+			*(v++) = (*pv1 + *pv2 + *pv3 + *pv4) >> 2;
 			pu1 += 2;
 			pu2 += 2;
 			pu3 += 2;
