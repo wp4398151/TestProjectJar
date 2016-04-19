@@ -211,9 +211,12 @@ bool C2DimensionParser::LoadTableFromFile(wstring& filePath, wstring& fileOutpat
 		++m_RowCount;
 	}
 
-	ofstream ofs;
-	ofs.open(fileOutpath, ios_base::out|ios_base::trunc);
-	if (ofs.is_open())
+	FILE *pFile = _wfopen(fileOutpath.c_str(), L"wb");
+	// modify the way of write file, because the ofstream mode need 
+	// set to right, or the infomation write is wrong.
+	//ofstream ofs;
+	//ofs.open(fileOutpath, ios_base::out|ios_base::trunc);
+	if (pFile)
 	{
 		char* pStr = NULL;
 		if (bIsIndexTable)
@@ -238,12 +241,19 @@ bool C2DimensionParser::LoadTableFromFile(wstring& filePath, wstring& fileOutpat
 		assert(res);
 		if (res)
 		{
-			ofs.write(pStr, lstrlenA(pStr));
+			assert(fwrite(pStr, 1, lstrlenA(pStr), pFile) > 0);
+			//ofs.write(pStr, lstrlenA(pStr));
 			SAFE_FREE(pStr);
 		}
 	}
+	else
+	{
+		DOLOG("open file failed");
+		ifs.close();
+		return false;
+	}
 	
-	ofs.close();
+	fclose(pFile);
 	ifs.close();
 	return true;
 }
