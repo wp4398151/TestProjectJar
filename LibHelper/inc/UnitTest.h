@@ -67,20 +67,24 @@ WPUNITTESTSTART(GetCaptureScreenDCRGBbits)
 WPUNITTESTEND
 
 WPUNITTESTSTART(LoadTableFromFile)
-
 	wstring appPath;
+	wstring outputTableFile;
 	assert(GetAppPathW(appPath));
+	outputTableFile = (appPath + L"\\..\\MyTestGameClient\\inc\\GenerateTables\\UserTable.h");
 	appPath += L"\\UserTable.txt";
 	C2DimensionParser paser;
-	paser.LoadTableFromFile(appPath, false);
+	paser.LoadTableFromFile(appPath, outputTableFile, false);
 WPUNITTESTEND
 
 WPUNITTESTSTART(LoadIndexTableFromFile)
 	wstring appPath;
+	wstring outputIndexTableFile;
 	assert(GetAppPathW(appPath));
+	outputIndexTableFile = (appPath + L"\\..\\MyTestGameClient\\inc\\GenerateTables\\UserIndexTable.h");
+
 	appPath += L"\\UserIndexTable.txt";
 	C2DimensionParser paser;
-	paser.LoadTableFromFile(appPath, true);
+	paser.LoadTableFromFile(appPath, outputIndexTableFile, true);
 WPUNITTESTEND
 
 WPUNITTESTSTART(GetWindowsVersion)

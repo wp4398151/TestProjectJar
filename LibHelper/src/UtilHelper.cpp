@@ -154,6 +154,46 @@ BOOL ConvertWidechar2UTF8(const wstring &rWStr, string &rStr)
 	return TRUE;
 }
 
+BOOL ConvertWidechar2ANSIMalloc(const wchar_t* pwStr, char** pStr)
+{
+	ASSERT_NOTNULLRET(pwStr, FALSE);
+	ASSERT_NOTNULLRET(pStr, FALSE);
+
+	int iReceiveSize = 0;
+	iReceiveSize = WideCharToMultiByte(CP_ACP,		// 多字节的代码页
+							0,				// 控制转换细节，0不控制
+							pwStr,	// 需要转换的款字节字符串
+							-1,				// 宽字节字符串的长度
+							NULL,			// 获得转换之后的字符串的缓存
+							0,				// 缓存的大小
+							NULL,			// 不能转换的默认字符
+							NULL);			// 是否完全转换成功
+
+	if (0 == iReceiveSize)
+	{
+		DOLOG("计算字符串转换字节数失败");
+		return FALSE;
+	}
+	char* pTempAnsiStr = (char*)malloc(iReceiveSize);
+	ZeroMemory(pTempAnsiStr, iReceiveSize);
+	if (0 == WideCharToMultiByte(
+		CP_ACP,					// 多字节的代码页
+		0,						// 控制转换细节，0不控制
+		pwStr,					// 需要转换的宽字节字符串
+		-1,						// 宽字节字符串的长度
+		pTempAnsiStr,			// 获得转换之后的字符串的缓存
+		iReceiveSize,			// 缓存的大小
+		NULL,					// 不能转换的默认字符
+		NULL					// 是否完全转换成功
+		))
+	{
+		DOLOG("宽字符转换ANSI错误");
+		return FALSE;
+	}
+	*pStr = pTempAnsiStr;
+	return TRUE;
+}
+
 ////////////////////////////////////////////////////
 // widechar Unicode 转换成ANSI
 // Wupeng 
@@ -183,7 +223,7 @@ BOOL ConvertWidechar2ANSI(const wstring &rWStr, string &rStr)
 	CHAR bufChar[kConvertCodepageCacheLen] = { 0 };
 
 	if (0 == WideCharToMultiByte(
-		CP_UTF8,				// 多字节的代码页
+		CP_ACP,					// 多字节的代码页
 		0,						// 控制转换细节，0不控制
 		rWStr.c_str(),			// 需要转换的款字节字符串
 		-1,						// 宽字节字符串的长度
@@ -193,7 +233,7 @@ BOOL ConvertWidechar2ANSI(const wstring &rWStr, string &rStr)
 		NULL					// 是否完全转换成功
 		))
 	{
-		DOLOG("宽字符转换UTF8错误");
+		DOLOG("宽字符转换ANSI错误");
 		return FALSE;
 	}
 	rStr = bufChar;

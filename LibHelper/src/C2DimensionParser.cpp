@@ -51,7 +51,6 @@ C2DimensionFile::~C2DimensionFile(){
 	SAFE_FREE(m_ConvertFunc);
 }
 
-
 bool C2DimensionFile::Generate(wstring& wstrMetaRow, int row, int colounm, list<wstring>& contentStrList)
 {
 	m_ConvertFunc = (ValueFunc*)malloc(row * sizeof(ValueFunc));
@@ -68,11 +67,11 @@ bool C2DimensionFile::Generate(wstring& wstrMetaRow, int row, int colounm, list<
 	GenerateType(wstrColoumnName);
 
 	GenerateFill(wstrColoumnName, contentStrList);
-	GenerateRear();
 	
 	delete[] wstrColoumnName;
 
 	OutputDebugStringW(m_wstrResultContent.c_str());
+
 	return true;
 }
 
@@ -98,7 +97,7 @@ bool C2DimensionSourceFile::GenerateFill(wstring* wstrColoumnName, list<wstring>
 	
 	m_wstrResultContent += L"const ";
 	m_wstrResultContent += m_wstrTableName;
-	m_wstrResultContent += L"::Row ";
+	m_wstrResultContent += L"Table::Row ";
 	m_wstrResultContent += m_wstrTableName;
 	m_wstrResultContent += L"Table::m_Row[";
 	m_wstrResultContent += ItoWStatic(m_RowCount);
@@ -122,6 +121,7 @@ bool C2DimensionSourceFile::GenerateFill(wstring* wstrColoumnName, list<wstring>
 		}
 		m_wstrResultContent += L"},\r\n";
 	}
+	m_wstrResultContent += L"};\r\n";
 	return true;
 }
 
@@ -152,7 +152,9 @@ bool C2DimensionSourceFile::GenerateType(wstring* wstrColoumnName)
 		m_wstrResultContent += L";\r\n";
 		curPos = m_wstrMetaRow.find(L"\t", curPos) + 1;
 	}
-	m_wstrResultContent += L"\tRow m_Row[";
+
+	m_wstrResultContent += L"};\r\n";
+	m_wstrResultContent += L"\t static const Row m_Row[";
 	m_wstrResultContent += ItoWStatic(m_RowCount);
 	m_wstrResultContent += L"];\r\n";
 	m_wstrResultContent += L"\t const static int m_Size;\r\n";
@@ -160,14 +162,9 @@ bool C2DimensionSourceFile::GenerateType(wstring* wstrColoumnName)
 	return true;
 }
 
-bool C2DimensionFile::GenerateRear()
+bool C2DimensionParser::LoadTableFromFile(wstring& filePath, wstring& fileOutpath, bool bIsIndexTable)
 {
-	m_wstrResultContent += L"}; \r\n";
-	return true;
-}
-
-bool C2DimensionParser::LoadTableFromFile(wstring& filePath, bool bIsIndexTable)
-{
+	bool res;
 	ifstream ifs;
 	ifs.open(filePath, ios_base::in);
 	ASSERT_TRUERET(ifs.is_open(), false);
@@ -214,18 +211,39 @@ bool C2DimensionParser::LoadTableFromFile(wstring& filePath, bool bIsIndexTable)
 		++m_RowCount;
 	}
 
-	if (bIsIndexTable)
+	ofstream ofs;
+	ofs.open(fileOutpath, ios_base::out|ios_base::trunc);
+	if (ofs.is_open())
 	{
-		C2DimensionSourceIndexFile indexFile;
-		indexFile.Generate(wstrLine, m_RowCount, m_ColCount, contentList);
+		char* pStr = NULL;
+		if (bIsIndexTable)
+		{
+			C2DimensionSourceIndexFile indexFile;
+			res = indexFile.Generate(wstrLine, m_RowCount, m_ColCount, contentList);
+			assert(res);
+			wstring* pContent = indexFile.GetResult();
+			assert(pContent);
+			res = ConvertWidechar2ANSIMalloc(pContent->c_str(), &pStr);
+		}
+		else
+		{
+			// 第一行给用来生成源文件
+			C2DimensionSourceFile sourceFile;
+			res = sourceFile.Generate(wstrLine, m_RowCount, m_ColCount, contentList);
+			assert(res);
+			wstring* pContent = sourceFile.GetResult();
+			assert(pContent);
+			res = ConvertWidechar2ANSIMalloc(pContent->c_str(), &pStr);
+		}
+		assert(res);
+		if (res)
+		{
+			ofs.write(pStr, lstrlenA(pStr));
+			SAFE_FREE(pStr);
+		}
 	}
-	else
-	{
-		// 第一行给用来生成源文件
-		C2DimensionSourceFile sourceFile;
-		sourceFile.Generate(wstrLine, m_RowCount, m_ColCount, contentList);
-	}
-
+	
+	ofs.close();
 	ifs.close();
 	return true;
 }

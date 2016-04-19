@@ -85,9 +85,11 @@ bool CH264Encoder::TestEncodeScreen()
 	x264_t* pX264Handle = NULL;
 	pX264Handle = x264_encoder_open(pX264Param);
 	x264_encoder_parameters(pX264Handle, pX264Param);
-	//res = x264_encoder_headers(pX264Handle, &pNals, &iNal);
-	//NAL_SPS
+	x264_nal_t *pNals = NULL;
+	int iNal = 0;
+	res = x264_encoder_headers(pX264Handle, &pNals, &iNal);
 
+	//NAL_SPS
 	x264_picture_t pic_in;
 	res = x264_picture_alloc(&pic_in, X264_CSP_I420, width, height);
 	assert(res == 0);
