@@ -85,11 +85,12 @@ bool CH264Encoder::TestEncodeScreen()
 	x264_t* pX264Handle = NULL;
 	pX264Handle = x264_encoder_open(pX264Param);
 	x264_encoder_parameters(pX264Handle, pX264Param);
-	res = x264_encoder_headers(pX264Handle, &pNals, &iNal);
+	//res = x264_encoder_headers(pX264Handle, &pNals, &iNal);
 	//NAL_SPS
 
 	x264_picture_t pic_in;
 	res = x264_picture_alloc(&pic_in, X264_CSP_I420, width, height);
+	assert(res == 0);
 
 	//------------------------------ 
 	// 组织当前的桌面RGBA转换成YUV420
@@ -104,9 +105,16 @@ bool CH264Encoder::TestEncodeScreen()
 	res = ConvertRGBtoYUV(picWidth, picHeight, (unsigned char*)pRBG, (unsigned int*)pBuf, true);
 	assert(res);
 
+	pic_in.img.i_csp = X264_CSP_I420;
 	pic_in.img.plane[0] = pBuf;
 	pic_in.img.plane[1] = pic_in.img.plane[0] + width * height;
 	pic_in.img.plane[2] = pic_in.img.plane[1] + width * height / 4;
+
+	x264_picture_t pic_out;
+
+	
+	SAFE_FREE(pRBG);
+
 	//---------------------------------------------------------------
 	
 
