@@ -1,13 +1,11 @@
 #include "SystemClass.h"
 #include "UnitTest.h"
 #include "CH264Encoder.h"
-#include "UserTable.h"
-#include "UserIndexTable.h"
 
 //应用程序入口main函数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
-	//CH264Encoder::TestEncodeScreen();
+	CH264Encoder::TestEncodeScreen();
 	
 	// 进行测试
 	//UnitTest::Instance().testAll();

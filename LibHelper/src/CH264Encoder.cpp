@@ -41,6 +41,9 @@ bool CH264Encoder::Init(){
 
 bool CH264Encoder::TestEncodeScreen()
 {
+	string targetPath;
+	GetAppPathA(targetPath);
+	targetPath += "\\test.h264";
 	int width = GetSystemMetrics(SM_CXSCREEN);
 	int height = GetSystemMetrics(SM_CYSCREEN);
 
@@ -88,38 +91,83 @@ bool CH264Encoder::TestEncodeScreen()
 	x264_nal_t *pNals = NULL;
 	int iNal = 0;
 	res = x264_encoder_headers(pX264Handle, &pNals, &iNal);
-
+	
+	int totalFrame = 200;
 	//NAL_SPS
 	x264_picture_t pic_in;
+	x264_picture_t pic_out;
 	res = x264_picture_alloc(&pic_in, X264_CSP_I420, width, height);
 	assert(res == 0);
 
+	x264_picture_init(&pic_out);
+	assert(res == 0);
+
+	FILE* pFile = fopen(targetPath.c_str(), "wb");
+	assert(pFile);
 	//------------------------------ 
 	// 组织当前的桌面RGBA转换成YUV420
 	size_t yuv_size = (width * height * 4 * 3)/2;
 	uint8_t* pBuf = (uint8_t*)malloc(yuv_size);
+	uint8_t* pRealBuf = (uint8_t*)malloc(yuv_size);
+	
 	int picWidth = 0;
 	int picHeight = 0;
 	int pixelBitSize = 0;
-	// 获取当前桌面的RGBA
-	char* pRBG = GetCaptureScreenDCRGBbits(picWidth, picHeight, pixelBitSize);
+	// 当前所能缓冲的最大帧数
+	int iMaxFrames = x264_encoder_maximum_delayed_frames(pX264Handle);
 
-	res = ConvertRGBtoYUV(picWidth, picHeight, (unsigned char*)pRBG, (unsigned int*)pBuf, true);
-	assert(res);
+	int yuv420ByteCount = (width * height * 3 / 2);
+	for (int i = 0; i < totalFrame; ++i)
+	{
+		// 获取当前桌面的RGBA
+		char* pRBG = GetCaptureScreenDCRGBbits(picWidth, picHeight, pixelBitSize);
+		res = ConvertRGBtoYUV(picWidth, picHeight, (unsigned char*)pRBG, (unsigned int*)pBuf, true);
 
-	pic_in.img.i_csp = X264_CSP_I420;
-	pic_in.img.plane[0] = pBuf;
-	pic_in.img.plane[1] = pic_in.img.plane[0] + width * height;
-	pic_in.img.plane[2] = pic_in.img.plane[1] + width * height / 4;
-
-	x264_picture_t pic_out;
-
+		
+	 	char* pNewBuf = RgbaToYUV420(pRBG, picWidth, picHeight);
 	
-	SAFE_FREE(pRBG);
+		for (int j = 0; j < yuv420ByteCount ; ++j)
+		{
+			pRealBuf[j] = pBuf[j];
+		}
 
-	//---------------------------------------------------------------
+		assert(res);
+		pic_in.img.i_csp = X264_CSP_I420;
+		pic_in.img.plane[0] = pRealBuf;
+		pic_in.img.plane[1] = pic_in.img.plane[0] + width * height;
+		pic_in.img.plane[2] = pic_in.img.plane[1] + width * height / 4;
+		pic_in.i_pts = i;
+
+		x264_nal_t *pNals = NULL;
+		int iNal = 0;
+		res = x264_encoder_encode(pX264Handle, &pNals, &iNal, &pic_in, &pic_out);
+		if (res > 0)			// 成功获得编码数据
+		{
+			DOLOG("编码成功");
+			for (int nalId = 0; nalId < iNal ;++nalId)
+			{
+				ASSERT_EQU(fwrite(pNals[nalId].p_payload, 1, pNals[nalId].i_payload, pFile), pNals[nalId].i_payload);
+			}
+		}
+		else if (res == 0 )		// 编码成功，但是数据被缓存
+		{
+			DOLOG("编码结果数据被缓存");
+		}
+		else// < 0 为编码失败
+		{
+			DOLOG("编码出错");
+		}
+		
+		int countCacheFrame = x264_encoder_delayed_frames(pX264Handle);
+		DOLOG("当前被缓存的帧数为" + countCacheFrame );
+		SAFE_FREE(pRBG);
+	}
 	
-
+	fclose(pFile);
+	x264_picture_clean(&pic_out);
+	x264_picture_clean(&pic_in);
+	x264_encoder_close(pX264Handle);
+	SAFE_DELETE(pX264Param);
 	return true;
 }
 
@@ -326,4 +374,83 @@ void ConvertYUVtoRGB(unsigned char *src0, unsigned char *src1, unsigned char *sr
 		py1 += width;
 		py2 += width;
 	}
+}
+////////////////////////////////////////
+// return the buffer of yuv420 on success, return NULL when error occur.
+// return buffer mast free
+char* CH264Encoder::RgbaToYUV420(char* pRgbaBuf, int width, int height)
+{
+	DOLOG("witdh:" + width + ", height:" + height);
+	int yuvSize = width*height * 3 / 2;
+	char* pYBuf = NULL;
+	char* pUBuf = NULL;
+	char *pVBuf = NULL;
+	char* pYUVBuf = NULL;
+
+	pYUVBuf = (char*)malloc(yuvSize);
+	memset(pYUVBuf, 0, yuvSize);
+
+	//yuv格式按YUV排列 
+	pYBuf = pYUVBuf;
+	pUBuf = pYBuf + width*height;
+	pVBuf = pUBuf + width*height / 4;
+
+	unsigned char r, g, b;
+	unsigned char y, u, v;
+
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			b = *(pRgbaBuf);
+			g = *(pRgbaBuf + 1);
+			r = *(pRgbaBuf + 2);
+			/*y = (unsigned char)(  0.299* r + 0.587* g +  0.114 * b )   ;
+			u = (unsigned char)( -0.169 * r -  0.332 * g + 0.500 * b + 128)  ;
+			v = (unsigned char)( 0.500 * r +0.419 * g -  0.0813 * b + 128);  */
+
+			//这才是正确的公式？？？？ 
+			y = (UCHAR)(0.257*r + 0.504*g + 0.098*b + 16);
+			u = (UCHAR)(-0.148*r - 0.291*g + 0.439*b + 128);
+			v = (UCHAR)(0.439*r - 0.368*g - 0.071*b + 128);
+
+			/*y=0.299*r + 0.587*g + 0.114*b;
+			u=(r-y)*0.713 + 128;
+			v=(b-y)*0.564 + 128;*/
+
+			if (y>255)y = 255;
+			else if (y < 0)y = 0;
+			if (u>255)u = 255;
+			else if (u < 0)u = 0;
+			if (v>255)v = 255;
+			else if (v < 0)v = 0;
+			*(pYBuf++) = y;
+			/**(pVBuf++)=v;
+			*(pUBuf++)=u;*/
+			pRgbaBuf += 4;
+			/**(pRgbBuf++)=y;
+			*(pRgbBuf++)=v;
+			*(pRgbBuf++)=u;*/
+
+			if (i % 2 == 0 && j % 2 == 0)
+			{
+				//对uv取样 
+				*(pVBuf++) = v;
+				*(pUBuf++) = u;
+			}
+		}
+	}
+
+	//pImage->imageData=pYUVBuf; 
+	/*IplImage* yimg = cvCreateImageHeader(cvSize(width, height),IPL_DEPTH_8U,1);
+	cvSetData(yimg,pYUVBuf,width);*/
+	//pImage->imageSize=yuvSize; 
+	//fprintf(pFile,"%s",pYUVBuf); 
+	//fwrite(pYUVBuf, 1, yuvSize, pFile);
+	//pImage->imageData=pYBuf; 
+	//pImage->imageDataOrigin=pYBuf; 
+	/*strcpy_s(pImage->channelSeq,"YVU");
+	pImage->dataOrder=1;*/
+
+	return pYUVBuf;
 }
