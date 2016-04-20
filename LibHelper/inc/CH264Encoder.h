@@ -13,9 +13,9 @@ public:
 	CH264Encoder(CH264Encoder& rh264Endoer){}
 	
 public:
-	static char* convertRGB2YUV420(char* pBits);	// 将RGB的内容转换成YUV420，x264以这种格式输入
-
-	static char* RgbaToYUV420(char* pRgbaBuf, int width, int height);
+	// 将RGB的内容转换成YUV420，x264以这种格式输入
+	static char* ConvertRBGA2YUV420(char* pRgbaBuf, int width, int height);
+	static BOOL ConvertRBGA2YUV420Ex(char* pRgbaBuf, int width, int height, char* pYUVBuf);
 
 	static bool TestEncodeScreen();
 	bool Init();

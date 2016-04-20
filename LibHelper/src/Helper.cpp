@@ -216,6 +216,20 @@ BOOL EnableDebugPrivilege(BOOL bEnableDebugPrivilege)
 	return TRUE;
 }
 
+////////////////////////////////////////////////////
+// return the color bits content of specific bitmap.
+// pBuf Need height*wid*4
+// wupeng
+BOOL GetBMPBinaryDataEx(PBITMAPINFO pbi, HBITMAP hBMP, HDC hDC, char* pBuf)
+{
+	ASSERT_NOTNULLRET(pbi, FALSE);
+	ASSERT_NOTNULLRET(pBuf,  FALSE);
+	int res = GetDIBits(hDC, hBMP, 0, (WORD)pbi->bmiHeader.biHeight, pBuf, pbi,
+		DIB_RGB_COLORS);
+	ASSERT_NOTZERORET(res, FALSE);
+	return TRUE;
+}
+
 char* GetBMPBinaryData(PBITMAPINFO pbi, HBITMAP hBMP, HDC hDC)
 {
 	assert(pbi!=NULL);
@@ -309,7 +323,17 @@ void GetCurDisplay(HDC& rCompatibleHDC, HBITMAP& rHbitmap)
 	ASSERT_NOTNULL(rHbitmap);
 	HBITMAP oldbitMap = (HBITMAP)SelectObject(rCompatibleHDC, rHbitmap);
 
-	int res = BitBlt(rCompatibleHDC, 0, 0, cx, cy, desktopDC, 0, 0, SRCCOPY);
+	// 因为在正常得到的图像是颠倒的，所以需要在之前处理成反的
+	//int res = BitBlt(rCompatibleHDC, 0, cy, cx, -1*cy, desktopDC, 0, 0, SRCCOPY);
+	/*
+	StretchBlt也允许水平或垂直翻转图像。如果cxSrc和cxDst标记（转换成设备单位以后）不同，
+	那么StretchBlt就建立一个镜像：左右翻转。在STRETCH程序中，通过将xDst参数改为cxClient并将cxDst参数改成-cxClient，
+	就可以做到这一点。如果cySrc和cyDst不同，则StretchBlt会上下翻转图像。要在STRETCH程序中测试这一点，
+	可将yDst参数改为cyClient并将cyDst参数改成-cyClient。
+	*/
+	int res = StretchBlt(rCompatibleHDC, 0, cy, cx, -1*cy, desktopDC, 0, 0, cx, cy,SRCCOPY);
+	//int res = StretchDIBits(rCompatibleHDC, 0, 0, cx, -1*cy, desktopDC, 0, 0, cx, cy,SRCCOPY);
+	
 	ASSERT_NOTZERO(res);
 
 	rHbitmap = (HBITMAP)SelectObject(rCompatibleHDC, oldbitMap);
@@ -332,6 +356,33 @@ void GetBitmapInfo(BITMAPINFO &rBmpinfo, HBITMAP compatibleHbitmap)
 	rBmpinfo.bmiHeader.biWidth = bitmap.bmWidth;
 	rBmpinfo.bmiHeader.biXPelsPerMeter = 0;
 	rBmpinfo.bmiHeader.biYPelsPerMeter = 0;
+}
+	
+///////////////////////////////////////////////
+// pBuf size need to be width*height*4
+// wupeng
+BOOL GetCaptureScreenDCRGBAbitsEx(int& rWidth, int& rHeight, int& rPixelBitSize, char* pBuf)
+{
+	ASSERT_NOTNULLRET(pBuf, FALSE);
+	HDC compatibleHDC = NULL;
+	HBITMAP compatibleHbitmap = NULL;
+
+	compatibleHDC = NULL;
+	compatibleHbitmap = NULL;
+	GetCurDisplay(compatibleHDC, compatibleHbitmap);
+	ASSERT_NOTNULLRET(compatibleHDC, FALSE);
+	ASSERT_NOTNULLRET(compatibleHbitmap, FALSE);
+	BITMAPINFO rBmpinfo = { 0 };
+	GetBitmapInfo(rBmpinfo, compatibleHbitmap);
+	rWidth = rBmpinfo.bmiHeader.biWidth;
+	rHeight = rBmpinfo.bmiHeader.biHeight;
+	rPixelBitSize = rBmpinfo.bmiHeader.biBitCount;
+	BOOL bRes = FALSE;
+	bRes = GetBMPBinaryDataEx(&rBmpinfo, compatibleHbitmap, compatibleHDC, pBuf);
+	ASSERT_NOTFALSERET(bRes, FALSE);
+	DeleteDC(compatibleHDC);
+	DeleteObject(compatibleHbitmap);
+	return true;
 }
 
 char* GetCaptureScreenDCRGBbits(int& rWidth,int& rHeight, int& rPixelBitSize)

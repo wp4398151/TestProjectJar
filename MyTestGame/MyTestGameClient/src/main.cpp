@@ -7,9 +7,9 @@
 //应用程序入口main函数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
-	//CH264Encoder::TestEncodeScreen();
-	int res = 0;
-	UserIndexTable::GetCell(1, 1, res);
+	CH264Encoder::TestEncodeScreen();
+	//int res = 0;
+	//UserIndexTable::GetCell(1, 1, res);
 	// 进行测试
 	UnitTest::Instance().testAll();
 	return 0;

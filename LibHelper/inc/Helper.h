@@ -24,6 +24,7 @@ using namespace std;
 
 
 #define ASSERT_ZERORET(x, retval) assert(x==0); if((x)!=0) return (retval);
+#define ASSERT_NOTFALSERET(x, retval) assert((x)!=FALSE); if((x)==FALSE) return (retval);
 #define ASSERT_NOTNULLRET(x, retval) assert((x)!=NULL); if((x)==NULL) return (retval);
 #define ASSERT_NOTZERORET(x, retval) assert((x)!=0); if((x)==0) return (retval);
 #define ASSERT_TRUERET(x, retval) assert((x)==TRUE); if((x)!=TRUE) return (retval);
@@ -305,6 +306,11 @@ void CaptureUseDC();
 // wupeng 
 // return 需要使用free来释放
 char* GetCaptureScreenDCRGBbits(int& rWidth, int& rHeight, int& rPixelBitSize);
+
+////////////////////////////////////////////////////
+// 得到当前桌面的RGBA的内容, pBuf的大小应该是width*height*4
+// wupeng 
+BOOL GetCaptureScreenDCRGBAbitsEx(int& rWidth, int& rHeight, int& rPixelBitSize, char* pBuf);
 
 ////////////////////////////////////////////////////
 // 不依赖于menifest. 得到真正操作系统的版本号，
