@@ -59,7 +59,7 @@ bool CH264Encoder::TestEncodeScreen()
 	
 	pX264Param->rc.i_bitrate = 1024*30;	// 环境允许的情况下，越大越好，否则会出现跳帧
 	pX264Param->i_fps_den = 1;			//帧率分母  
-	pX264Param->i_fps_num = 10;			//帧率分子  
+	pX264Param->i_fps_num = 30;			//帧率分子  
 	// 帧间间隔时间
 	pX264Param->i_timebase_den = pX264Param->i_fps_num;
 	pX264Param->i_timebase_num = pX264Param->i_fps_den;
@@ -112,7 +112,7 @@ bool CH264Encoder::TestEncodeScreen()
 		pic_in.img.plane[0] = (uint8_t*)pYUVBuf;
 		pic_in.img.plane[1] = pic_in.img.plane[0] + width * height;
 		pic_in.img.plane[2] = pic_in.img.plane[1] + width * height / 4;
-		pic_in.i_pts = i;
+		//pic_in.i_pts = i*3000;
 
 		x264_nal_t *pNals = NULL;
 		int iNal = 0;
