@@ -74,7 +74,7 @@ bool CH264Encoder::TestEncodeScreen()
 	int iNal = 0;
 	res = x264_encoder_headers(pX264Handle, &pNals, &iNal);
 	
-	int totalFrame = 50;
+	int totalFrame = 200;
 	//NAL_SP
 	x264_picture_t pic_in;
 	x264_picture_t pic_out;
@@ -99,30 +99,46 @@ bool CH264Encoder::TestEncodeScreen()
 	char* pYUVBuf= (char*)malloc(yuv420ByteCount);
 	char* pRBGA = (char*)malloc(width*height*4);
 	assert(pYUVBuf);
-	
+
+	INT startCount = GetTickCount();
+
+	HighQualityResolutionTimeLite timeLite;
 	for (int i = 0; i < totalFrame; ++i)
 	{
+		timeLite.Reset();
+		DOLOG("---------------------------------------------\r\n");
 		// 获取当前桌面的RGBA
 		res = GetCaptureScreenDCRGBAbitsEx(picWidth, picHeight, pixelBitSize, pRBGA);
 		ASSERT_TRUE(res);
+
+		DOLOG(">> Capture Use :"+timeLite.GetTimelapse()+"ms \r\n");
+		timeLite.Reset();
+
 		res = ConvertRBGA2YUV420Ex(pRBGA, picWidth, picHeight, pYUVBuf);
 		ASSERT_TRUE(res);
+
+		DOLOG(">> Counvert Use :"+timeLite.GetTimelapse()+"ms \r\n");
+		timeLite.Reset();
 
 		pic_in.img.i_csp = X264_CSP_I420;
 		pic_in.img.plane[0] = (uint8_t*)pYUVBuf;
 		pic_in.img.plane[1] = pic_in.img.plane[0] + width * height;
 		pic_in.img.plane[2] = pic_in.img.plane[1] + width * height / 4;
-		//pic_in.i_pts = i*3000;
+		//pic_in.i_pts = i*30;
 
 		x264_nal_t *pNals = NULL;
 		int iNal = 0;
 		res = x264_encoder_encode(pX264Handle, &pNals, &iNal, &pic_in, &pic_out);
 		if (res > 0)			// 成功获得编码数据
 		{
-			DOLOG("编码成功");
+			DOLOG(">> Encode Use :"+timeLite.GetTimelapse()+"ms \r\n");
+			timeLite.Reset();
 			for (int nalId = 0; nalId < iNal ;++nalId)
 			{
-				ASSERT_EQU(fwrite(pNals[nalId].p_payload, 1, pNals[nalId].i_payload, pFile), pNals[nalId].i_payload);
+				res = fwrite(pNals[nalId].p_payload, 1, pNals[nalId].i_payload, pFile);
+				assert(res > 0);
+				DOLOG(">> Write Use :"+timeLite.GetTimelapse()+"ms \r\n");
+				timeLite.Reset();
 			}
 		}
 		else if (res == 0 )		// 编码成功，但是数据被缓存
@@ -138,6 +154,9 @@ bool CH264Encoder::TestEncodeScreen()
 		DOLOG("当前被缓存的帧数为" + countCacheFrame );
 	}
 	
+	startCount = GetTickCount() - startCount;
+	DOLOG("Total " + totalFrame + " Lapse : " + startCount + "mili sec \r\n");
+
 	fclose(pFile);
 	SAFE_FREE(pRBGA);
 	SAFE_FREE(pYUVBuf);

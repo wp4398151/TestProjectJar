@@ -325,4 +325,30 @@ BOOL GetNtVersionNumbers32(DWORD& dwMajorVer, DWORD& dwMinorVer, DWORD& dwBuildN
 wchar_t* ItoWStatic(int integer);
 char* ItoAStatic(int integer);
 
+/////////////////////////////////////////////////////
+// use count time pass by high time resolution
+// wupeng
+class HighQualityResolutionTimeLite
+{
+public:
+	HighQualityResolutionTimeLite(){
+		m_StartingTime.QuadPart = 0;
+		QueryPerformanceFrequency(&m_Frequency);
+	}
+	void Reset(){
+		QueryPerformanceCounter(&m_StartingTime);
+	}
+
+	// Unit is micro second
+	LONGLONG GetTimelapse(){
+		LARGE_INTEGER performanceCount;
+		QueryPerformanceCounter(&performanceCount);
+		performanceCount.QuadPart = performanceCount.QuadPart - m_StartingTime.QuadPart;
+		return (performanceCount.QuadPart * 1000000 / m_Frequency.QuadPart);
+	}
+private:	
+	LARGE_INTEGER m_StartingTime;
+	LARGE_INTEGER m_Frequency;
+};
+
 #endif //HELPER_H_

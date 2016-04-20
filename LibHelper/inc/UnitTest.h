@@ -93,6 +93,29 @@ WPUNITTESTSTART(GetWindowsVersion)
 	DWORD dwBuildNumber = 0;
 	ASSERT_TRUE(GetNtVersionNumbers32(dwMajorVer, dwMinorVer, dwBuildNumber));
 	DOLOG("windows version: ("+dwMajorVer + "." + dwMinorVer + "." + dwBuildNumber+")\r\n");
+	WPUNITTESTEND
+
+WPUNITTESTSTART(GetElapse)
+
+	INT startCount = GetTickCount();
+	int a = 0;
+	for (LONGLONG i = 0; i < 10000000; ++i)
+	{
+		a += i;
+	}
+	startCount = GetTickCount() - startCount;
+
+	DOLOG("GetTickCount Lapse: " + startCount + "mili sec \r\n");
+
+	HighQualityResolutionTimeLite timeLite;
+	timeLite.Reset();
+	for (LONGLONG i = 0; i < 10000000; ++i)
+	{
+		a += i;
+	}
+	int b = a;
+	LONGLONG timelapse = timeLite.GetTimelapse();
+	DOLOG("HighQualityResolutionTimeLite Lapse: "+ timelapse + "micro sec\r\n");
 WPUNITTESTEND
 
 };
