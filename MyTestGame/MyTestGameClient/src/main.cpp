@@ -4,15 +4,28 @@
 #include "UserTable.h"
 #include "UserIndexTable.h"
 
+void TestGenerateDataTable()
+{
+	wstring appPath;
+	wstring outputTableFile;
+	assert(GetAppPathW(appPath));
+	outputTableFile = (appPath + L"\\..\\MyTestGameClient\\inc\\GenerateTables\\RoleTable.h");
+	appPath += L"\\Role.txt";
+	C2DimensionParser paser;
+	paser.LoadTableFromFile(appPath, outputTableFile, false);
+}
+
 //应用程序入口main函数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
-	//CH264Encoder::TestEncodeScreen();
+	//TestGenerateDataTable();
+	//return true;
+
 	//int res = 0;
 	//UserIndexTable::GetCell(1, 1, res);
 	// 进行测试
 	//UnitTest::Instance().testAll();
-	return 0;
+	//return 0;
 	SystemClass* System;
 	bool result;
 

@@ -23,8 +23,111 @@ bool CH264Encoder::Init(){
 	return true;
 }
 
+bool CH264Encoder::TestEncodeScreenUseX264Encoder()
+{
+	string targetPath;
+	GetAppPathA(targetPath);
+	targetPath += "\\test.h264";
+	int width = GetSystemMetrics(SM_CXSCREEN);
+	int height = GetSystemMetrics(SM_CYSCREEN);
+
+	encoderParam.picWidth = width;
+	encoderParam.picHeight = height;
+
+	int res = 0;
+
+	FILE* pFile = fopen(targetPath.c_str(), "wb");
+	assert(pFile);
+	//------------------------------ 
+	// 组织当前的桌面RGBA转换成YUV420
+	size_t yuv_size = (width * height * 4 * 3) / 2;
+
+	int pixelBitSize = 0;
+	// 当前所能缓冲的最大帧数
+	int yuv420ByteCount = (width * height * 3 / 2);
+	char* pYUVBuf = (char*)malloc(yuv420ByteCount);
+	char* pRBGA = (char*)malloc(width*height * 4);
+	assert(pYUVBuf);
+	int totalFrame = 100;
+	INT startCount = GetTickCount();
+
+	VideoEncoder *pEncoder = CreateX264Encoder(30, width, height, 5, 60000, 60000, false);
+
+	x264_picture_t pic_in;
+	res = x264_picture_alloc(&pic_in, X264_CSP_I420, width, height);
+	
+	HighQualityResolutionTimeLite timeLite;
+	int picWidth = 0; 
+	int picHeight = 0;
+	for (int i = 0; i < totalFrame; ++i)
+	{
+		timeLite.Reset();
+		DOLOG("---------------------------------------------\r\n");
+		// 获取当前桌面的RGBA
+		res = GetCaptureScreenDCRGBAbitsEx(picWidth, picHeight, pixelBitSize, pRBGA);
+		ASSERT_TRUE(res);
+
+		DOLOG(">> Capture Use :" + timeLite.GetTimelapse() + "ms \r\n");
+		timeLite.Reset();
+
+		res = ConvertRBGA2YUV420Ex(pRBGA, picWidth, picHeight, pYUVBuf);
+		ASSERT_TRUE(res);
+
+		DOLOG(">> Counvert Use :" + timeLite.GetTimelapse() + "ms \r\n");
+		timeLite.Reset();
+
+		pic_in.img.i_csp = X264_CSP_I420;
+		pic_in.img.plane[0] = (uint8_t*)pYUVBuf;
+		pic_in.img.plane[1] = pic_in.img.plane[0] + width * height;
+		pic_in.img.plane[2] = pic_in.img.plane[1] + width * height / 4;
+		//pic_in.i_pts = i*30;
+
+		x264_nal_t *pNals = NULL;
+		int iNal = 0;
+		res = pEncoder->Encode(&pic_in, pNals, &iNal);
+
+		if (res)			// 成功获得编码数据
+		{
+			DOLOG(">> Encode Use :" + timeLite.GetTimelapse() + "ms \r\n");
+			timeLite.Reset();
+			for (int nalId = 0; nalId < iNal; ++nalId)
+			{
+				res = fwrite(pNals[nalId].p_payload, 1, pNals[nalId].i_payload, pFile);
+				assert(res > 0);
+				DOLOG(">> Write Use :" + timeLite.GetTimelapse() + "ms \r\n");
+				timeLite.Reset();
+			}
+		}
+		else
+		{
+			DOLOG("编码出错");
+		}
+	}
+
+	startCount = GetTickCount() - startCount;
+	DOLOG("Total " + totalFrame + " Lapse : " + startCount + "mili sec \r\n");
+
+	delete pEncoder;
+	fclose(pFile);
+	SAFE_FREE(pRBGA);
+	SAFE_FREE(pYUVBuf);
+	return true;
+
+}
+
 bool CH264Encoder::TestEncodeScreen()
 {
+// Key param-------------------------------------------------------------
+	//int fps;						// 控制帧数，直接影响录制出来的图像大小
+	//int quality;					// 质量，从1到8， 越大每帧质量越好。同样大小越大 
+	//CTSTR preset,					// 与之配置名
+	//bool bUse444,					// 是否使用444编码
+	//ColorDescription &colorDesc,  // 色彩描述
+	//int maxBitrate,				// 最大比特率	
+	//int bufferSize,				// 缓冲区的大小
+	//bool bUseCFR					// 是否使用固定帧率
+	//bool bUseCBR					// 是否使用固定码率
+//----------------------------------------------------------------------------
 	string targetPath;
 	GetAppPathA(targetPath);
 	targetPath += "\\test.h264";
@@ -56,7 +159,8 @@ bool CH264Encoder::TestEncodeScreen()
 	pX264Param->i_bframe_adaptive = X264_B_ADAPT_TRELLIS;
 	
 	pX264Param->i_log_level = X264_LOG_DEBUG;// 需要启用日志
-	
+
+	pX264Param->b_vfr_input = 0;
 	pX264Param->rc.i_bitrate = 1024*30;	// 环境允许的情况下，越大越好，否则会出现跳帧
 	pX264Param->i_fps_den = 1;			//帧率分母  
 	pX264Param->i_fps_num = 30;			//帧率分子  
@@ -64,7 +168,7 @@ bool CH264Encoder::TestEncodeScreen()
 	pX264Param->i_timebase_den = pX264Param->i_fps_num;
 	pX264Param->i_timebase_num = pX264Param->i_fps_den;
 	
-	res = x264_param_apply_profile(pX264Param, x264_profile_names[0]);
+	res = x264_param_apply_profile(pX264Param, x264_profile_names[1]);
 	assert(res == 0);
 
 	x264_t* pX264Handle = NULL;
@@ -80,9 +184,7 @@ bool CH264Encoder::TestEncodeScreen()
 	x264_picture_t pic_out;
 	res = x264_picture_alloc(&pic_in, X264_CSP_I420, width, height);
 	assert(res == 0);
-
 	x264_picture_init(&pic_out);
-	assert(res == 0);
 
 	FILE* pFile = fopen(targetPath.c_str(), "wb");
 	assert(pFile);
@@ -152,6 +254,29 @@ bool CH264Encoder::TestEncodeScreen()
 		
 		int countCacheFrame = x264_encoder_delayed_frames(pX264Handle);
 		DOLOG("当前被缓存的帧数为" + countCacheFrame );
+		if (countCacheFrame>0)
+		{
+			res = x264_encoder_encode(pX264Handle, &pNals, &iNal, NULL, &pic_out);
+			if (res > 0)
+			{
+				timeLite.Reset();
+				for (int nalId = 0; nalId < iNal ;++nalId)
+				{
+					res = fwrite(pNals[nalId].p_payload, 1, pNals[nalId].i_payload, pFile);
+					assert(res > 0);
+					DOLOG(">> Write Use :"+timeLite.GetTimelapse()+"ms \r\n");
+					timeLite.Reset();
+				}
+			}
+			else if(res == 0)		// 编码成功，但是数据被缓存
+			{
+				DOLOG("编码结果数据被缓存");
+			}
+			else// < 0 为编码失败
+			{
+				DOLOG("编码出错");
+			}
+		}
 	}
 	
 	startCount = GetTickCount() - startCount;
@@ -269,3 +394,4 @@ char* CH264Encoder::ConvertRBGA2YUV420(char* pRgbaBuf, int width, int height)
 
 	return pYUVBuf;
 }
+

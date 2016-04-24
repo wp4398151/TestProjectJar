@@ -53,7 +53,7 @@ C2DimensionFile::~C2DimensionFile(){
 
 bool C2DimensionFile::Generate(wstring& wstrMetaRow, int row, int colounm, list<wstring>& contentStrList)
 {
-	m_ConvertFunc = (ValueFunc*)malloc(row * sizeof(ValueFunc));
+	m_ConvertFunc = (ValueFunc*)malloc(colounm * sizeof(ValueFunc));
 	m_RowCount = row;
 	m_ColumnCount = colounm;
 

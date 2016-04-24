@@ -5,6 +5,10 @@
 #include "CameraClass.h"
 #include "RectClass.h"
 #include "TextureManager.h"
+#include "Role.h"
+
+// 每帧的间隔时间
+#define DEFAULTINTERVAL 30
 
 /////////////
 // GLOBALS //
@@ -22,13 +26,16 @@ public:
 	~GraphicsClass(void);
 	bool Initialize(int, int, HWND);
 	void Shutdown();
-	bool Frame();
+	bool Frame(int elapse);
 
 	CameraClass *m_pCamera;
+	CRole	m_Role;
 private:
 	bool Render();
 
 	//定义一个D3DClass类成员变量
+	
+	Vec2 m_mapSize;
 	D3DClass* m_D3D;
 	RectClass* m_pRect;
 	TextureManager *m_pTextureManager;

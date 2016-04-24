@@ -9,14 +9,8 @@ struct MatrixBufferType
 	D3DXMATRIX projection;
 };
 
-static RectClass::VertexType s_RectClassVertexs[] = {
-	{ D3DXVECTOR3(-50.0f, 50.0f, 0.0f), D3DXVECTOR4(0.5f, 0.0f, 0.0f, 0.5f), D3DXVECTOR2(0.0f, 0.0f)},
-	{ D3DXVECTOR3(50.0f, 50.0f, 0.0f), D3DXVECTOR4(0.5f, 0.0f, 0.0f, 0.5f), D3DXVECTOR2(1.0f, 0.0f)},
-	{ D3DXVECTOR3(-50.0f, -50.0f, 0.0f), D3DXVECTOR4(0.5f, 0.0f, 0.0f, 0.5f), D3DXVECTOR2(0.0f, 1.0f)},
-	{ D3DXVECTOR3(50.0f, -50.0f, 0.0f), D3DXVECTOR4(0.5f, 0.0f, 0.0f, 0.5f), D3DXVECTOR2(1.0f, 1.0f)},
-};
 
-static int s_RectClassIndexs[] = {0,1,2,2,1,3};
+
 
 static char s_RectShaderStr[] =
 "Texture2D shaderTexture;		"
@@ -56,8 +50,8 @@ RectClass::RectClass()
 {
 	m_pVertexBuffer = NULL;
 	m_pIndexBuffer = NULL;
-	m_IndexCount = sizeof(s_RectClassIndexs)/sizeof(s_RectClassIndexs[0]);
-	m_vertexCount = sizeof(s_RectClassVertexs)/sizeof(s_RectClassVertexs[0]);
+	m_IndexCount = 6;
+	m_vertexCount = 4;
 
 	m_pVertexShader = NULL;
 	m_pPixelShader = NULL;
@@ -70,8 +64,18 @@ RectClass::~RectClass()
 
 }
 
-bool RectClass::Initialize(ID3D11Device* pDevice)
+bool RectClass::Initialize(ID3D11Device* pDevice, int rectRidus, float z)
 {
+	float radius = rectRidus;
+	float negRadius = -1 * radius;
+	RectClass::VertexType s_RectClassVertexs[] = {
+			{ D3DXVECTOR3(negRadius, radius, z), D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f) },
+			{ D3DXVECTOR3(radius, radius, z), D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f), D3DXVECTOR2(1.0f, 0.0f) },
+			{ D3DXVECTOR3(negRadius, negRadius, z), D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f), D3DXVECTOR2(0.0f, 1.0f) },
+			{ D3DXVECTOR3(radius, negRadius, z), D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f) },
+	};
+	int s_RectClassIndexs[] = {0,1,2,2,1,3};
+
 	D3D11_BUFFER_DESC vertexBufferDesc;	// 顶点缓存的描述
 	D3D11_BUFFER_DESC indexBufferDesc; // 顶点索引缓存的描述
 	D3D11_SUBRESOURCE_DATA vertexData; // 顶点需要访问的资源

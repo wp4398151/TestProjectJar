@@ -48,7 +48,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)3rd\x264;$(ProjectDir)inc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)inc\3rd\Utility;$(ProjectDir)3rd\x264;$(ProjectDir)inc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -71,7 +71,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)3rd\x264;$(ProjectDir)inc\;C:\Program Files (x86)\Visual Leak Detector\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)inc\3rd\Utility;$(ProjectDir)3rd\x264;$(ProjectDir)inc\;C:\Program Files (x86)\Visual Leak Detector\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,6 +93,7 @@
     <ClInclude Include="inc\CNameEvent.h" />
     <ClInclude Include="inc\CNameShareMemory.h" />
     <ClInclude Include="inc\Helper.h" />
+    <ClInclude Include="inc\MathLite.h" />
     <ClInclude Include="inc\UnitTest.h" />
     <ClInclude Include="inc\WindowsSystemHelper.h" />
   </ItemGroup>
@@ -101,7 +102,9 @@
     <ClCompile Include="src\CH264Encoder.cpp" />
     <ClCompile Include="src\CNameEvent.cpp" />
     <ClCompile Include="src\CNameShareMemory.cpp" />
+    <ClCompile Include="src\Encoder_x264.cpp" />
     <ClCompile Include="src\Helper.cpp" />
+    <ClCompile Include="src\MathLite.cpp" />
     <ClCompile Include="src\UnitTest.cpp" />
     <ClCompile Include="src\UtilHelper.cpp" />
     <ClCompile Include="src\WindowsSystemHelper.cpp" />

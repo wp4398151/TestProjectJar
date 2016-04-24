@@ -2,12 +2,14 @@
 #define _USE_MATH_DEFINES // for C++
 #include <math.h>
 
+
 SystemClass::SystemClass(void)
 {
 	m_Input = 0;
 	m_Graphics = 0;
 	m_pTimer = 0;
-	m_bIsMoveMouse = FALSE;
+	m_elapse = 0;
+	m_LastTickCount = 0;
 }
 
 SystemClass::SystemClass(const SystemClass &)
@@ -105,20 +107,22 @@ void  SystemClass::Run()
 
 		// 接收到WM_QUIT消息，退出程序.
 		if(msg.message == WM_QUIT)
-
 		{
 			done = true;
 		}
 		else
 		{
-
-			//我们的渲染或者其它处理，可以放在这儿
-			//....
-			//.....
-			result = Frame();
-			if(!result)
+			int curTickCount = GetTickCount();
+			if ((m_elapse = curTickCount - m_LastTickCount) > DEFAULTINTERVAL)
 			{
-				done = true;
+				m_LastTickCount = curTickCount;
+				//我们的渲染或者其它处理，可以放在这儿
+				result = Frame();
+				if (!result)
+				{
+					done = true;
+				}
+				Sleep(15);
 			}
 		}
 
@@ -160,9 +164,8 @@ bool SystemClass::Frame()
 		return false;
 	}
 	MoveCamera();
-
 	// 执行帧渲染函数.
-	result = m_Graphics->Frame();
+	result = m_Graphics->Frame(m_elapse);
 	if(!result)
 	{
 		return false;
@@ -315,36 +318,11 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam
 			}
 			return 0;
 		}
-		//任何其它消息发送到windows缺省处理.
+	//任何其它消息发送到windows缺省处理.
 	// 鼠标消息
-	case WM_LBUTTONDOWN:
-		{
-		   if ((wparam & MK_LBUTTON)&&(m_bIsMoveMouse == FALSE))
-		   {
-				m_bIsMoveMouse = TRUE;
-				m_Old_MousePos.x = LOWORD(lparam);
-				m_Old_MousePos.y = HIWORD(lparam);
-		   }
-		}
-		break;
 	case WM_LBUTTONUP:
 		{
-			 m_bIsMoveMouse = FALSE;
-		}
-		break;
-	case WM_MOUSEMOVE:
-		{
-			if ((wparam&MK_LBUTTON) && (m_bIsMoveMouse == TRUE))
-			{
-				int dx,dy;	// 每一次变化增量
-				POINT curPos; // 
-				curPos.x = LOWORD(lparam);
-				curPos.y = HIWORD(lparam);
-				dx = curPos.x - m_Old_MousePos.x;
-				dy = curPos.y - m_Old_MousePos.y;
-				m_Graphics->m_pCamera->pitch(0.01*dy*0.0174532925f);
-				m_Graphics->m_pCamera->yaw(-0.01*dx*0.0174532925f);
-			}
+			m_Graphics->m_Role.Move(Vec2(LOWORD(lparam), HIWORD(lparam)));
 		}
 		break;
 	default:
@@ -360,7 +338,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
 	switch(umessage)
 	{
-
 		// 窗口销毁消息.
 	case WM_DESTROY:
 		{
