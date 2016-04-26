@@ -15,7 +15,7 @@ public:
 		D3DXVECTOR2 texcoord;
 	};
 
-	bool Initialize(ID3D11Device* pDevice);
+	bool Initialize(ID3D11Device* pDevice, int rectRidus, float z);
 	void Shutdown();
 	void Render(ID3D11DeviceContext* pDeviceContext,
 			D3DXMATRIX worldMatrix,

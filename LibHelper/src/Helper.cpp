@@ -64,7 +64,7 @@ BOOL InsertStrInStrSpecifyPosA(LPSTR lpTarBuf, UINT cBufLen, LPSTR lpSrcStr, LPS
 
 // [2015/12/15 wupeng] 
 // if failed return 0, success return the Process ID
-DWORD GetSpecificProcIDByName(LPSTR lpName)
+DWORD GetSpecificProcIDByName(LPWSTR lpName)
 {
 	DWORD resProcessID = 0;
 	if (ISNULL(lpName))
@@ -79,7 +79,7 @@ DWORD GetSpecificProcIDByName(LPSTR lpName)
 		return 0;
 	}
 
-	PROCESSENTRY32 pe32;
+	PROCESSENTRY32W pe32;
 	ZeroMemory(&pe32, sizeof(pe32));
 
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -89,15 +89,15 @@ DWORD GetSpecificProcIDByName(LPSTR lpName)
 		return 0;
 	}
 
-	BOOL bMore = Process32First(hProcessSnap, &pe32);
+	BOOL bMore = Process32FirstW(hProcessSnap, &pe32);
 	while (bMore)
 	{
-		DOLOG(" >>" + pe32.szExeFile + " : " + pe32.th32ProcessID);
-		if (strcmp(pe32.szExeFile, lpName) == 0)
+		DOLOGW(L" >>" + pe32.szExeFile + L" : " + pe32.th32ProcessID);
+		if (lstrcmpW(pe32.szExeFile, lpName) == 0)
 		{
 			resProcessID = pe32.th32ProcessID;
 		}
-		bMore = Process32Next(hProcessSnap, &pe32);
+		bMore = Process32NextW(hProcessSnap, &pe32);
 	}
 
 	// 不要忘记清除掉snapshot对象  
@@ -461,4 +461,97 @@ char* ItoAStatic(int integer)
 {
 	ASSERT_ZERORET(_ltoa_s(integer, s_ItoACacheBuff, MAX_PATH, 10), NULL);
 	return s_ItoACacheBuff;
+}
+
+bool EnumSpecificProcessModule(DWORD processID, list<string>& rModuleNames)
+{
+	HANDLE hProcess = NULL;
+	// Get a handle to the process.
+	hProcess = OpenProcess(PROCESS_QUERY_INFORMATION |
+		PROCESS_VM_READ,
+		FALSE, processID);
+	if (hProcess == NULL)
+	{
+		DOLOG("打开process:" + processID + "失败");
+		return false;
+	}
+
+	DWORD needSize = 0;
+	if (FALSE == EnumProcessModules(hProcess, NULL, 0, &needSize))
+	{
+		DOLOG("EnumProcessModules " + processID + "失败 ErrCode:" + GetLastError());
+		return false;
+	}
+
+	HMODULE *hMods = (HMODULE*)malloc(needSize);
+	if (hMods == NULL)
+	{
+		DOLOG(" malloc 错误");
+		return false;
+	}
+	memset(hMods, 0, needSize);
+
+	UINT fGraphicFeature = 0;
+	if (EnumProcessModules(hProcess, hMods, needSize, &needSize))
+	{
+		for (unsigned int i = 0; i < (needSize / sizeof(HMODULE)); i++)
+		{
+			CHAR szModName[MAX_PATH] = { 0 };
+			// Get the full path to the module's file.
+			if (GetModuleFileNameExA(hProcess, hMods[i], szModName, (sizeof(szModName) / sizeof(TCHAR))))
+			{
+				rModuleNames.push_back(szModName);
+				DOLOG(szModName);
+			}
+		}
+	}
+	SAFE_FREE(hMods);
+	return true;
+}
+
+/////////////////////////////////////////////////////
+// Enum specific process Module 
+// wupeng
+bool EnumSpecificProcessModuleEx(DWORD processID, list<wstring>& rModuleNames)
+{
+	HANDLE hModuleSnap = INVALID_HANDLE_VALUE;
+	MODULEENTRY32W meW;
+
+	// Take a snapshot of all modules in the specified process.
+	hModuleSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, processID);
+	if (hModuleSnap == INVALID_HANDLE_VALUE)
+	{
+		DOLOG("CreateToolhelp32Snapshot (of modules) lastError:"+GetLastError());
+		return false;
+	}
+
+	// Set the size of the structure before using it.
+	meW.dwSize = sizeof(MODULEENTRY32);
+
+	// Retrieve information about the first module,
+	// and exit if unsuccessful
+	if (!Module32First(hModuleSnap, &meW))
+	{
+		DOLOG("Module32First Failed");  // show cause of failure
+		CloseHandle(hModuleSnap);           // clean the snapshot object
+		return false;
+	}
+
+	// Now walk the module list of the process,
+	// and display information about each module
+	do
+	{
+		rModuleNames.push_back(meW.szExePath);
+		DOLOGW(L"\n   MODULE NAME:    = " + meW.szModule
+			+ L"\n Executable     = " + meW.szExePath
+			+ L"\n      Process ID     = " + meW.th32ProcessID
+			+ L"\n      Ref count (g)  = " + meW.GlblcntUsage
+			+ L"\n     Ref count (p)  = " + meW.ProccntUsage
+			+ L"\n     Base address   = " + (DWORD)meW.modBaseAddr
+			+ L"\n     Base size      = " + meW.modBaseSize);
+
+	} while (Module32Next(hModuleSnap, &meW));
+
+	CloseHandle(hModuleSnap);
+	return true;
 }

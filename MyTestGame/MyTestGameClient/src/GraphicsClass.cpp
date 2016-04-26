@@ -2,7 +2,7 @@
 #include <assert.h>
 #include "Helper.h"
 
-GraphicsClass::GraphicsClass(void)
+GraphicsClass::GraphicsClass(void) :m_Role(DEFAULTINTERVAL), m_mapSize(0,0)
 {
 	m_D3D = NULL;
 	m_pCamera = NULL;
@@ -10,7 +10,7 @@ GraphicsClass::GraphicsClass(void)
 	m_pTextureManager = NULL;
 }
 
-GraphicsClass::GraphicsClass(const GraphicsClass&)
+GraphicsClass::GraphicsClass(const GraphicsClass&):m_Role(DEFAULTINTERVAL)
 {
 
 }
@@ -23,6 +23,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	bool result;
 
 	Shutdown();
+	m_mapSize.m_x = screenWidth;
+	m_mapSize.m_y = screenHeight;
 
 	// 创建一个D3DClass对象.
 	m_D3D = new D3DClass;
@@ -50,12 +52,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_pCamera->SetPosition(0.0f, 0.0f, -1.0f);
 
 	m_pRect = new RectClass;
-	assert(m_pRect );
+	assert(m_pRect);
 	if (!m_pRect)
 	{
 		return false;
 	}
-	m_pRect->Initialize(m_D3D->GetDevice());
+	m_pRect->Initialize(m_D3D->GetDevice(), 30, 1.0f);
 	
 	m_pTextureManager = new TextureManager();
 	assert(m_pTextureManager);
@@ -78,11 +80,12 @@ void GraphicsClass::Shutdown()
 	return;
 }
 
-bool GraphicsClass::Frame()
+bool GraphicsClass::Frame(int elapse)
 {
 	bool result;
 	// 调用Render函数，渲染3D场景
 	// Render是GraphicsClass的私有函数.
+	m_Role.Frame(elapse);
 	result = Render();
 	if(!result)
 	{
@@ -111,14 +114,36 @@ bool GraphicsClass::Render()
 	D3DXVECTOR3 posCamera = m_pCamera->GetPosition();
 
 	// TODO: need to enumerate all rect
+	//D3DXMATRIX rectEndMatrix;
+	//D3DXMatrixIdentity(&rectEndMatrix);
+
 	D3DXMATRIX rectEndMatrix;
-	D3DXMatrixIdentity(&rectEndMatrix);
+	LPWSTR lpwTextureFile = NULL;
+
+	//D3DXMatrixTranslation(&rectEndMatrix, 100.0, 0.0, 0.0);
+	//lpwTextureFile = L"SingleTile.jpg";
+	//m_pRect->Render(m_D3D->GetDeviceContext(),
+	//	rectEndMatrix,
+	//	viewMatrix,
+	//	projectionMatrix,
+	//	m_pTextureManager->LoadTextureFromFileW(m_D3D->GetDevice(), lpwTextureFile),
+	//	m_pTextureManager->GetSamplaState());
+	
+	Vec2 pos;
+	m_Role.getPos(pos);
+	// 以左上方为(0,0)来变换成D3D中的坐标
+	pos = pos - (m_mapSize / 2.0);
+	pos.m_y *= -1;
+	DOLOG("-------------------(" + pos.m_x + ":" + pos.m_y + ")");
+
+	D3DXMatrixTranslation(&rectEndMatrix, pos.m_x, pos.m_y, 0.0);
+	lpwTextureFile = m_Role.GetTextureFile();
 
 	m_pRect->Render(m_D3D->GetDeviceContext(),
 		rectEndMatrix,
 		viewMatrix,
 		projectionMatrix,
-		m_pTextureManager->LoadTextureFromFileW(m_D3D->GetDevice(), L"SingleTile.jpg"),
+		m_pTextureManager->LoadTextureFromFileW(m_D3D->GetDevice(), lpwTextureFile),
 		m_pTextureManager->GetSamplaState());
 
 	m_D3D->EndScene();

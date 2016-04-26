@@ -7,11 +7,13 @@
 #define _HELPER_H_
 
 #include <Windows.h>
+#include <Tlhelp32.h>
 #include <sstream>
 #include <string>
 #include <process.h>
 #include <time.h>
 #include <assert.h>
+#include <list>
 
 using namespace std;
 
@@ -67,6 +69,31 @@ public:
 	std::stringstream m_ss;
 };
 
+class WSstringEx
+{
+public:
+	WSstringEx& operator+(const int &v){
+		m_ss << v;
+		return *this;
+	}
+
+	WSstringEx& operator+(wchar_t* v){
+		m_ss << v;
+		return *this;
+	}
+	WSstringEx& operator+(const wchar_t* v){
+		m_ss << v;
+		return *this;
+	}
+
+	WSstringEx& operator+(double &v){
+		m_ss << v;
+		return *this;
+	}
+public:
+	std::wstringstream m_ss;
+};
+
 // [2015/12/11 wupeng] 
 // Debug log help macro
 #ifdef USEDOLOG
@@ -81,6 +108,23 @@ public:
 		OutputDebugStringA((tempMsg + "wupeng::" + msg + " (" + __FILE__ + ":" + __LINE__ + ")\n").m_ss.str().c_str()); \
 	}
 #endif
+
+#define W2(x) L ## x
+#define W(x) W2(x)
+
+#ifdef POPSHOWBOX
+#define DOLOGW(msg) {		\
+		WSstringEx tempMsg;		\
+		MessageBoxA(NULL, (tempMsg +L"wupeng::" + msg + L" (" + W(__FILE__) + L":" + __LINE__ + L")\n").m_ss.str().c_str(), "Infomation", MB_OK); \
+		}
+#else
+#define DOLOGW(msg) {	\
+		WSstringEx tempMsg;	\
+		OutputDebugStringW((tempMsg + L"wupeng::" + msg + L" (" + W(__FILE__) + L":" + __LINE__ + L")\n").m_ss.str().c_str()); \
+	}
+#endif
+
+
 #else // USEDOLOG
 	#define DOLOG(msg)
 #endif // USEDOLOG
@@ -350,5 +394,16 @@ private:
 	LARGE_INTEGER m_StartingTime;
 	LARGE_INTEGER m_Frequency;
 };
+
+
+/////////////////////////////////////////////////////
+// Enum specific process Module, 不能够遍历64位，而且需要Debug权限。
+// wupeng
+bool EnumSpecificProcessModule(DWORD processID, list<string>& pModuleNames);
+
+/////////////////////////////////////////////////////
+// Enum specific process Module 
+// wupeng
+bool EnumSpecificProcessModuleEx(DWORD processID, list<wstring>& pModuleNames);
 
 #endif //HELPER_H_

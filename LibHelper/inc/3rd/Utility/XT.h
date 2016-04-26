@@ -43,7 +43,7 @@
     #define USE_SSE
 #endif*/
 
-#define USE_SSE 1£º
+#define USE_SSE 1
 
 #ifdef USE_SSE
     #include <xmmintrin.h>
@@ -147,7 +147,6 @@ BASE_EXPORT void   STDCALL OSSleepSubMillisecond(double fMSeconds);
 BASE_EXPORT void   STDCALL OSSleepMicrosecond(QWORD qwMicroseconds);
 BASE_EXPORT void   STDCALL OSSleep100NS(QWORD qw100NSTime); //why
 
-BASE_EXPORT bool	STDCALL OSIsWin10Version();
 BASE_EXPORT int    STDCALL OSGetVersion();
 BASE_EXPORT int    STDCALL OSGetTotalCores();
 BASE_EXPORT int    STDCALL OSGetLogicalCores();
