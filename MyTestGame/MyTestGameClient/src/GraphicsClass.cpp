@@ -134,7 +134,6 @@ bool GraphicsClass::Render()
 	// 以左上方为(0,0)来变换成D3D中的坐标
 	pos = pos - (m_mapSize / 2.0);
 	pos.m_y *= -1;
-	DOLOG("-------------------(" + pos.m_x + ":" + pos.m_y + ")");
 
 	D3DXMatrixTranslation(&rectEndMatrix, pos.m_x, pos.m_y, 0.0);
 	lpwTextureFile = m_Role.GetTextureFile();

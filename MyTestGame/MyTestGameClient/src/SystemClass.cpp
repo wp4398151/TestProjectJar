@@ -247,9 +247,13 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 	}
 	else
 	{
-		m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_applicationName, m_applicationName, 
+		m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_applicationName, m_applicationName,
 			WS_OVERLAPPEDWINDOW,
 			posX, posY, screenWidth, screenHeight, NULL, NULL, m_hinstance, NULL);
+		RECT clientRect = {0};
+		GetClientRect(m_hwnd, &clientRect);
+		screenHeight = clientRect.bottom - clientRect.top;
+		screenWidth = clientRect.right - clientRect.left;
 	}
 
 	// 显示窗口并设置其为焦点.
@@ -259,8 +263,6 @@ void SystemClass::InitializeWindows(int& screenWidth, int& screenHeight)
 
 	// 隐藏鼠标.
 	//ShowCursor(false);
-
-
 }
 
 void SystemClass::ShutdownWindows()

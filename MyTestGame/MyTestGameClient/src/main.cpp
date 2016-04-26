@@ -26,12 +26,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 	//int res = 0;
 	//UserIndexTable::GetCell(1, 1, res);
 	// 进行测试
-	UnitTest::Instance().testAll();
+	//UnitTest::Instance().testAll();
 	//return 0;	SystemClass* System;
 	bool result;
 
 	// 创建一个system对象.
-	System = new SystemClass;
+	SystemClass* System = new SystemClass;
 	if(!System)
 	{
 		return 0;

@@ -1,6 +1,7 @@
 #include "Role.h"
 #include "RoleTable.h"
 #include <cmath>
+#include "Helper.h"
 
 CRole::CRole(int timeIntervalms){
 	m_Pos = Vec2(RoleTable::m_Row[0].m_StartPosX, RoleTable::m_Row[0].m_StartPosY);
@@ -22,6 +23,7 @@ wchar_t* CRole::GetTextureFile(){
 // 而是直接加帧移动向量
 void CRole::Move(Vec2 pos)
 {
+	DOLOG("--------->>>>(" + pos.m_x + "," + pos.m_y + ")<<<--------");
 	m_TargetPos = pos;
 	m_TargetVec2Frame = m_TargetPos - m_Pos;
 	m_TargetVec2Frame.normalize();
@@ -38,6 +40,7 @@ void CRole::Frame(int elapse)
 		{
 			m_bMove = false;
 			m_Pos = m_TargetPos;
+			DOLOG("-------------------(" + m_Pos.m_x + ":" + m_Pos.m_y + ")--------");
 		}
 		else
 		{
