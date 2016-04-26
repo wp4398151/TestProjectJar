@@ -93,13 +93,13 @@ WPUNITTESTSTART(GetWindowsVersion)
 	DWORD dwBuildNumber = 0;
 	ASSERT_TRUE(GetNtVersionNumbers32(dwMajorVer, dwMinorVer, dwBuildNumber));
 	DOLOG("windows version: ("+dwMajorVer + "." + dwMinorVer + "." + dwBuildNumber+")\r\n");
-	WPUNITTESTEND
+WPUNITTESTEND
 
 WPUNITTESTSTART(GetElapse)
 
 	INT startCount = GetTickCount();
 	int a = 0;
-	for (LONGLONG i = 0; i < 10000000; ++i)
+	for (LONGLONG i = 0; i < 1000; ++i)
 	{
 		a += i;
 	}
@@ -109,13 +109,25 @@ WPUNITTESTSTART(GetElapse)
 
 	HighQualityResolutionTimeLite timeLite;
 	timeLite.Reset();
-	for (LONGLONG i = 0; i < 10000000; ++i)
+	for (LONGLONG i = 0; i < 1000; ++i)
 	{
 		a += i;
 	}
 	int b = a;
 	LONGLONG timelapse = timeLite.GetTimelapse();
 	DOLOG("HighQualityResolutionTimeLite Lapse: "+ timelapse + "micro sec\r\n");
+WPUNITTESTEND
+
+WPUNITTESTSTART(GetProcessModule)
+	int processID = GetCurrentProcessId();
+	list<string> moduleNames;
+	ASSERT_TRUE(EnumSpecificProcessModule(processID, moduleNames));
+WPUNITTESTEND
+
+WPUNITTESTSTART(GetProcessModuleEx)
+	int processID = GetCurrentProcessId();
+	list<wstring> moduleNames;
+	ASSERT_TRUE(EnumSpecificProcessModuleEx(processID, moduleNames))
 WPUNITTESTEND
 
 };
