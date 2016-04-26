@@ -12,7 +12,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 	//UserIndexTable::GetCell(1, 1, res);
 	// Ω¯––≤‚ ‘
 	//UnitTest::Instance().testAll();
-	return 0;
+	//return 0;
 	SystemClass* System;
 	bool result;
 
