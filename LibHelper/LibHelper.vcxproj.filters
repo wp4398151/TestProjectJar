@@ -42,6 +42,12 @@
     <ClInclude Include="inc\MathLite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\SharedMemObj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\WpObjPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\WindowsSystemHelper.cpp">
@@ -72,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\MathLite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SharedMemObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

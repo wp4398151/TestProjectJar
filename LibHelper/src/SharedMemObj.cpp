@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "SharedMemObj.h"
 #include "stdio.h"
 

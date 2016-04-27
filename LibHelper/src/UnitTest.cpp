@@ -26,3 +26,35 @@ void UnitTest::testAll()
 	}
 }
 
+// TODO: add libevent
+bool UnitTest::StartSimpleLibeventServer()
+{
+	return true;
+}
+
+bool UnitTest::StartSimpleLibeventClient()
+{
+	return true;
+}
+
+// TODO: add plain socket class
+bool UnitTest::StartPlainSocketServer()
+{
+	return true;
+}
+
+bool UnitTest::StartPlainSocketClient()
+{
+	return true;
+}
+
+// TODO: add plain socket select class
+bool UnitTest::StartSelectSocketServer()
+{
+	return true;
+}
+
+bool UnitTest::StartSelectSocketClient()
+{
+	return true;
+}

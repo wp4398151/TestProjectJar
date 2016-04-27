@@ -1,8 +1,8 @@
 #ifndef _WPOBJPOOL_H_
 #define _WPOBJPOOL_H_
+#include "Helper.h"
 #include <queue>
 #include <assert.h>
-#include "UtilHelper.h"
 
 using namespace std;
 

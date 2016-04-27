@@ -33,6 +33,13 @@ public:
 public:
 	static std::list<UNITTESTPROC> m_TestFuncList;
 
+	static bool StartSimpleLibeventServer();
+	static bool StartSimpleLibeventClient();
+	static bool StartPlainSocketServer();
+	static bool StartPlainSocketClient();
+	static bool StartSelectSocketServer();
+	static bool StartSelectSocketClient();
+
 WPUNITTESTSTART(GetAppPathA)
 	string appPath;
 	assert(GetAppPathA(appPath));
