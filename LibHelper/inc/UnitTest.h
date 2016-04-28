@@ -40,6 +40,8 @@ public:
 	static bool StartSelectSocketServer();
 	static bool StartSelectSocketClient();
 
+	static bool ShowATopMostInfoWindow(wstring &showText);
+
 WPUNITTESTSTART(GetAppPathA)
 	string appPath;
 	assert(GetAppPathA(appPath));
