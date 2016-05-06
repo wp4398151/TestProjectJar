@@ -48,6 +48,12 @@
     <ClInclude Include="inc\WpObjPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\TipMsgWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\SecurityHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\WindowsSystemHelper.cpp">
@@ -81,6 +87,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SharedMemObj.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SecurityHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TipMsgWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

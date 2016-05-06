@@ -1,37 +1,13 @@
+////////////////////////////////////////////////////
+// include the functions of the windows security.
+// Wupeng 
+// qq:4398151
+////////////////////////////////////////////////////
+
 #include <Windows.h>
 #include <assert.h>
 #include <Sddl.h>
-
-//EventState evnet(L"TestEvent");
-//while (true){
-//	printf(" %d\r\n", evnet.GetState());
-//	Sleep(1000);
-//}
-class EventState
-{
-public:
-	EventState(LPWSTR lpEvnetName){
-		m_hEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, lpEvnetName);
-	}
-	~EventState(){
-		if (m_hEvent)
-		{
-			CloseHandle(m_hEvent);
-		}
-	}
-	bool GetState()
-	{
-		if (m_hEvent != NULL){
-			DWORD res = WaitForSingleObject(m_hEvent, 0);
-			if (res == WAIT_TIMEOUT){
-				return true;
-			}
-		}
-		return false;
-	}
-private:
-	HANDLE m_hEvent;
-};
+#include "SecurityHelper.h"
 
 LPVOID RetrieveTokenInformation(HANDLE hToken,
 	TOKEN_INFORMATION_CLASS infoClass,
@@ -42,12 +18,14 @@ LPVOID RetrieveTokenInformation(HANDLE hToken,
 	GetTokenInformation(hToken, infoClass, NULL, 0, &rSize);
 	if (rSize == 0)
 	{
+		DOLOG("GetTokenInformation GetSize Failed!");
 		return NULL;
 	}
 	pInfo = malloc(rSize);
 
 	if (TRUE != GetTokenInformation(hToken, infoClass, pInfo, rSize, &rSize))
 	{
+		DOLOG("GetTokenInformation Failed!");
 		return NULL;
 	}
 	return pInfo;
@@ -78,13 +56,12 @@ BOOL DisplayGroupInfo(HANDLE hToken)
 					strcpy_s(lpName, dwSize, "NONE_MAPPED");
 				else
 				{
-					printf("LookupAccountSid Error %u\n", GetLastError());
+					DOLOG("LookupAccountSid Error:"+ GetLastError());
 					return FALSE;
 				}
 			}
-			printf("gourpName:%s\\%s: \r\n \tenable:%d,  \tdeny_only:%d \r\n", lpDomain, lpName,
-				(pGroupsInfo->Groups[i].Attributes & SE_GROUP_ENABLED) ? 1 : 0,
-				(pGroupsInfo->Groups[i].Attributes & SE_GROUP_USE_FOR_DENY_ONLY) ? 1 : 0);
+			DOLOG("gourpName:" + lpDomain + "\\" + lpName + ": \r\n \tenable:" + ((pGroupsInfo->Groups[i].Attributes & SE_GROUP_ENABLED) ? 1 : 0) +
+				",  \tdeny_only:" + ((pGroupsInfo->Groups[i].Attributes & SE_GROUP_USE_FOR_DENY_ONLY) ? 1 : 0) + " \r\n");
 		}
 
 		free(pGroupsInfo);
@@ -117,18 +94,50 @@ BOOL DisplayUserInfo(HANDLE hToken){
 				strcpy_s(lpName, dwSize, "NONE_MAPPED");
 			else
 			{
-				printf("LookupAccountSid Error %u\n", GetLastError());
+				DOLOG("LookupAccountSid ErrorCode: " + GetLastError());
 				free(pUserInfo);
 				return FALSE;
 			}
 		}
-		printf("Current user is a member of the \r\n \t\t %s\\%s \r\n",
-			lpDomain, lpName);
+		DOLOG("Current user is a member of the \r\n \t\t " + lpDomain + "\\" + lpName + " \r\n");
 
 		free(pUserInfo);
 		bResult = TRUE;
 	} while (false);
 	return bResult;
+}
+
+BOOL DisplayAllPrivileges(HANDLE hToken)
+{
+	BOOL bResult = FALSE;
+	DWORD dwSize = 0;
+	TOKEN_PRIVILEGES* pTokenPrivilegesInfo = NULL;
+	pTokenPrivilegesInfo = (TOKEN_PRIVILEGES*)RetrieveTokenInformation(hToken, TokenPrivileges, dwSize);
+	ASSERT_NOTNULLRET(pTokenPrivilegesInfo, FALSE);
+
+	CHAR lpwNameBuf[MAX_PATH] = { 0 };
+	DWORD bufSize = 0;
+	LUID_AND_ATTRIBUTES *pPrivilegeAttr = NULL;
+	for (UINT i = 0; i < pTokenPrivilegesInfo->PrivilegeCount; ++i)
+	{
+		pPrivilegeAttr = &(pTokenPrivilegesInfo->Privileges[i]);
+		bufSize = MAX_PATH - 1;
+		if (FALSE == LookupPrivilegeNameA("", &(pTokenPrivilegesInfo->Privileges[i].Luid), lpwNameBuf, &bufSize))
+		{
+			DOLOG("LookupPrivilegeNameW failed ErrorCocde: " + GetLastError());
+			bResult = FALSE;
+			break;
+		}
+
+		DOLOG("Privilege Name:" + lpwNameBuf + " , Enable: " + (pPrivilegeAttr->Attributes == SE_PRIVILEGE_ENABLED)
+			+ ", Default Enable: " + (pPrivilegeAttr->Attributes == SE_PRIVILEGE_ENABLED_BY_DEFAULT) 
+			+ ", Remove : " + (pPrivilegeAttr->Attributes == SE_PRIVILEGE_REMOVED)
+			+ ", Access: " + (pPrivilegeAttr->Attributes == SE_PRIVILEGE_USED_FOR_ACCESS));
+		bResult = TRUE;
+	}
+	free(pTokenPrivilegesInfo);
+
+	return bResult ;
 }
 
 BOOL DisplayTokenInformation(HANDLE hToken)
@@ -137,6 +146,7 @@ BOOL DisplayTokenInformation(HANDLE hToken)
 	do{
 		bResult = DisplayUserInfo(hToken);
 		bResult = DisplayGroupInfo(hToken);
+		bResult = DisplayAllPrivileges(hToken);
 	} while (false);
 	return bResult;
 }
@@ -150,7 +160,7 @@ BOOL DisplayCallerAccessTokenInformation()
 			TOKEN_QUERY | TOKEN_QUERY_SOURCE, &hToken);
 		if (bResult == FALSE)
 		{
-			int errocode = GetLastError();
+			DOLOG("OpenProcessToken Failed, ErrorCode: " + GetLastError());
 			break;
 		}
 		bResult = DisplayTokenInformation(hToken);

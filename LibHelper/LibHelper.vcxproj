@@ -94,7 +94,9 @@
     <ClInclude Include="inc\CNameShareMemory.h" />
     <ClInclude Include="inc\Helper.h" />
     <ClInclude Include="inc\MathLite.h" />
+    <ClInclude Include="inc\SecurityHelper.h" />
     <ClInclude Include="inc\SharedMemObj.h" />
+    <ClInclude Include="inc\TipMsgWindow.h" />
     <ClInclude Include="inc\UnitTest.h" />
     <ClInclude Include="inc\WindowsSystemHelper.h" />
     <ClInclude Include="inc\WpObjPool.h" />
@@ -107,7 +109,9 @@
     <ClCompile Include="src\Encoder_x264.cpp" />
     <ClCompile Include="src\Helper.cpp" />
     <ClCompile Include="src\MathLite.cpp" />
+    <ClCompile Include="src\SecurityHelper.cpp" />
     <ClCompile Include="src\SharedMemObj.cpp" />
+    <ClCompile Include="src\TipMsgWindow.cpp" />
     <ClCompile Include="src\UnitTest.cpp" />
     <ClCompile Include="src\UtilHelper.cpp" />
     <ClCompile Include="src\WindowsSystemHelper.cpp" />

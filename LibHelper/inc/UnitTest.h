@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include "C2DimensionParser.h"
+#include "SecurityHelper.h"
 
 ////////////////////////////////////////////////////
 // 简单的单元测试类 
@@ -137,6 +138,10 @@ WPUNITTESTSTART(GetProcessModuleEx)
 	int processID = GetCurrentProcessId();
 	list<wstring> moduleNames;
 	ASSERT_TRUE(EnumSpecificProcessModuleEx(processID, moduleNames))
+WPUNITTESTEND
+
+WPUNITTESTSTART(DisplayCallerAccessTokenInformation)
+	ASSERT_TRUE(DisplayCallerAccessTokenInformation());
 WPUNITTESTEND
 
 };
