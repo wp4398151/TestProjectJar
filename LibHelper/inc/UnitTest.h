@@ -2,6 +2,7 @@
 #include "Helper.h"
 #include <list>
 #include <assert.h>
+#include <Winsock2.h>
 
 #include "C2DimensionParser.h"
 
@@ -137,6 +138,18 @@ WPUNITTESTSTART(GetProcessModuleEx)
 	int processID = GetCurrentProcessId();
 	list<wstring> moduleNames;
 	ASSERT_TRUE(EnumSpecificProcessModuleEx(processID, moduleNames))
+WPUNITTESTEND
+
+WPUNITTESTSTART(GetAddressByDomain)
+	WORD wVersionRequested;
+	WSADATA wsaData;
+	int err = 0;
+	wVersionRequested = MAKEWORD(2, 2);
+	err = WSAStartup(wVersionRequested, &wsaData);
+	ASSERT_EQU(err, 0);
+	ULONG addr = getAddrByDomain("www.baidu.com");
+	ASSERT_NOTZERO(addr);
+	WSACleanup();
 WPUNITTESTEND
 
 };

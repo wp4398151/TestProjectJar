@@ -18,7 +18,9 @@ void TestGenerateDataTable()
 //应用程序入口main函数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
-
+	UnitTest::Instance().testAll();
+	//UnitTest::ShowATopMostInfoWindow(wstring(L"tst"));
+	return 0;
 //	CH264Encoder::TestEncodeScreen();
 	//TestGenerateDataTable();
 	//return true;
@@ -28,7 +30,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 	// 进行测试
 	//UnitTest::Instance().testAll();
 	//return 0;	SystemClass* System;
-	bool result;
+	bool result = false;
 
 	// 创建一个system对象.
 	SystemClass* System = new SystemClass;

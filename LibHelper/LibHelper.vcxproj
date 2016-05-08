@@ -55,7 +55,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>libx264.lib;libevent.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libx264.lib;libevent.lib;Ws2_32.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>$(ProjectDir)3rd\x264\libs\32bit;$(ProjectDir)3rd\libevent-2.0.22-stable\libs</AdditionalLibraryDirectories>
@@ -92,6 +92,7 @@
     <ClInclude Include="inc\CH264Encoder.h" />
     <ClInclude Include="inc\CNameEvent.h" />
     <ClInclude Include="inc\CNameShareMemory.h" />
+    <ClInclude Include="inc\CNetControl.h" />
     <ClInclude Include="inc\Helper.h" />
     <ClInclude Include="inc\MathLite.h" />
     <ClInclude Include="inc\SharedMemObj.h" />
@@ -104,6 +105,7 @@
     <ClCompile Include="src\CH264Encoder.cpp" />
     <ClCompile Include="src\CNameEvent.cpp" />
     <ClCompile Include="src\CNameShareMemory.cpp" />
+    <ClCompile Include="src\CNetControl.cpp" />
     <ClCompile Include="src\Encoder_x264.cpp" />
     <ClCompile Include="src\Helper.cpp" />
     <ClCompile Include="src\MathLite.cpp" />
