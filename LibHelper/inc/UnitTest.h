@@ -5,6 +5,7 @@
 #include <Winsock2.h>
 
 #include "C2DimensionParser.h"
+#include "SecurityHelper.h"
 
 ////////////////////////////////////////////////////
 // 简单的单元测试类 
@@ -140,6 +141,10 @@ WPUNITTESTSTART(GetProcessModuleEx)
 	ASSERT_TRUE(EnumSpecificProcessModuleEx(processID, moduleNames))
 WPUNITTESTEND
 
+WPUNITTESTSTART(DisplayCallerAccessTokenInformation)
+	ASSERT_TRUE(DisplayCallerAccessTokenInformation());
+WPUNITTESTEND
+
 WPUNITTESTSTART(GetAddressByDomain)
 	WORD wVersionRequested;
 	WSADATA wsaData;
@@ -150,6 +155,4 @@ WPUNITTESTSTART(GetAddressByDomain)
 	ULONG addr = getAddrByDomain("www.baidu.com");
 	ASSERT_NOTZERO(addr);
 	WSACleanup();
-WPUNITTESTEND
-
-};
+WPUNITTESTEND};

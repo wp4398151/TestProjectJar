@@ -44,4 +44,39 @@ private:
 	CHAR m_cbEventName[MAX_PATH];
 };
 
+
+////////////////////////////////////////////
+// the event used for check state.
+// Example:
+// EventState evnet(L"TestEvent");
+// while (true){
+//	printf(" %d\r\n", evnet.GetState());
+//		Sleep(1000);
+//	}
+class EventState
+{
+public:
+	EventState(LPWSTR lpEvnetName){
+		m_hEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, lpEvnetName);
+	}
+	~EventState(){
+		if (m_hEvent)
+		{
+			CloseHandle(m_hEvent);
+		}
+	}
+	bool GetState()
+	{
+		if (m_hEvent != NULL){
+			DWORD res = WaitForSingleObject(m_hEvent, 0);
+			if (res == WAIT_TIMEOUT){
+				return true;
+			}
+		}
+		return false;
+	}
+private:
+	HANDLE m_hEvent;
+};
+
 #endif //CNAMEEVENT_H_
