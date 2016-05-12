@@ -6,6 +6,7 @@
 
 #include "C2DimensionParser.h"
 #include "SecurityHelper.h"
+#include "CNetControl.h"
 
 ////////////////////////////////////////////////////
 // 简单的单元测试类 
@@ -138,7 +139,7 @@ WPUNITTESTEND
 WPUNITTESTSTART(GetProcessModuleEx)
 	int processID = GetCurrentProcessId();
 	list<wstring> moduleNames;
-	ASSERT_TRUE(EnumSpecificProcessModuleEx(processID, moduleNames))
+	ASSERT_TRUE(EnumSpecificProcessModuleEx(processID, moduleNames));
 WPUNITTESTEND
 
 WPUNITTESTSTART(DisplayCallerAccessTokenInformation)

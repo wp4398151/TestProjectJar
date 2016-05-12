@@ -47,7 +47,8 @@
     </ClInclude>
     <ClInclude Include="inc\WpObjPool.h">
       <Filter>Header Files</Filter>
-    </ClInclude>    <ClInclude Include="inc\TipMsgWindow.h">
+    </ClInclude>
+    <ClInclude Include="inc\TipMsgWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="inc\SecurityHelper.h">
@@ -55,7 +56,8 @@
     </ClInclude>
     <ClInclude Include="inc\CNetControl.h">
       <Filter>Header Files</Filter>
-    </ClInclude>  </ItemGroup>
+    </ClInclude>
+  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\WindowsSystemHelper.cpp">
       <Filter>Source Files</Filter>
@@ -90,20 +92,14 @@
     <ClCompile Include="src\SharedMemObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-<<<<<<< .mine
     <ClCompile Include="src\CNetControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-
-
-
-=======
     <ClCompile Include="src\SecurityHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\TipMsgWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
->>>>>>> .theirs
   </ItemGroup>
 </Project>
