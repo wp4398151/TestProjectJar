@@ -4,21 +4,21 @@
 unsigned long getAddrByDomain(char* pAddr)
 {
 	ASSERT_NOTNULLRET(pAddr, 0);
-	struct hostent* ph;
+	struct hostent* ph = NULL;
 	struct in_addr in;
-	ph = gethostbyname(pAddr);
-
+	//ph = gethostbyname(pAddr);
+	ADDRINFOA hints;
 	ZeroMemory(&hints, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
 
-	int getaddrinfo(
-		_In_opt_       PCSTR      pNodeName,
-		_In_opt_       PCSTR      pServiceName,
-		_In_opt_ const ADDRINFOA  *pHints,
-		_Out_          PADDRINFOA *ppResult
-		);
+	//int getaddrinfo(
+	//	_In_opt_       PCSTR      pNodeName,
+	//	_In_opt_       PCSTR      pServiceName,
+	//	_In_opt_ const ADDRINFOA  *pHints,
+	//	_Out_          PADDRINFOA *ppResult
+	//	);
 
 	if (!ph)
 	{
@@ -110,7 +110,7 @@ bool ConnectToServerByIP(SOCKET sock, LPSTR lpIP, unsigned short port)
 	SOCKADDR_IN addr_in;
 	addr_in.sin_family = AF_INET;
 	addr_in.sin_port = htons(port);
-	addr_in.sin_addr.S_un.S_addr = inet_addr(lpIP);
+	//addr_in.sin_addr.S_un.S_addr = inet_addr(lpIP);
 	if (SOCKET_ERROR == connect(sock, (SOCKADDR*)&addr_in, sizeof(addr_in)))
 	{
 		DOLOG("connect error! code:" + WSAGetLastError());
@@ -191,7 +191,7 @@ void Log(char *buf, ...)
 	time_t timeVal;
 	time(&timeVal);
 	struct tm* currTM = localtime(&timeVal);
-	fp = fopen("log.txt", "w+");
+	fp = fopen("log.txt", "a+");
 	if (!fp){
 		return;
 	}

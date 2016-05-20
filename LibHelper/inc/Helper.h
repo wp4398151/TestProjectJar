@@ -143,7 +143,7 @@ public:
 #define ISNULL(x) ((x) == NULL)
 #define ISNOTNULL(x) ((x) != NULL)
 
-DWORD GetSpecificProcIDByName(LPSTR lpName);
+DWORD GetSpecificProcIDByName(LPWSTR lpName);
 DWORD GetSpecificProcIDByNameEx(LPSTR lpName);
 BOOL EnableDebugPrivilege(BOOL bEnableDebugPrivilege);
 
@@ -405,4 +405,10 @@ bool EnumSpecificProcessModule(DWORD processID, list<string>& pModuleNames);
 // Enum specific process Module 
 // wupeng
 bool EnumSpecificProcessModuleEx(DWORD processID, list<wstring>& pModuleNames);
+
+/////////////////////////////////////////////////////
+// Enum windows in specific process 
+// wupeng
+BOOL EnumWindowsInSpecificProcess(DWORD dwOwnerPID);
+
 #endif //HELPER_H_

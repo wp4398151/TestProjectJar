@@ -597,3 +597,50 @@ bool EnumSpecificProcessModuleEx(DWORD processID, list<wstring>& rModuleNames)
 	CloseHandle(hModuleSnap);
 	return true;
 }
+
+BOOL CALLBACK ProcThreadWindowsEnum(HWND hWnd, LPARAM param)
+{
+	RECT curRect;
+	GetWindowRect(hWnd, &curRect);
+	WCHAR wszClassName[MAX_PATH] = { 0 };
+
+	ZeroMemory((void*)wszClassName, MAX_PATH * sizeof(WCHAR));
+	RealGetWindowClassW(hWnd, (LPWSTR)wszClassName, MAX_PATH);
+	DOLOGW(L"@@@@>> Window: " + (UINT)hWnd + L", Size:[" + curRect.left + L"," + curRect.top + L"," + curRect.right + L"," + curRect.bottom + 
+		L"], ClassName:" + wszClassName+L", Style:"+ GetWindowLongA(hWnd, GWL_STYLE) + L", IsVisible:" + ((GetWindowLongA(hWnd, GWL_STYLE)&WS_VISIBLE)?L"true":L"false"));
+
+	return TRUE;
+}
+
+BOOL EnumWindowsInSpecificProcess(DWORD dwOwnerPID)
+{
+	HANDLE hThreadSnap = INVALID_HANDLE_VALUE;
+	THREADENTRY32 te32;
+
+	hThreadSnap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+	if (hThreadSnap == 0)
+		return FALSE;
+	if (hThreadSnap == INVALID_HANDLE_VALUE)
+		return FALSE;
+
+	te32.dwSize = sizeof(THREADENTRY32);
+
+	if (!Thread32First(hThreadSnap, &te32))
+	{
+		CloseHandle(hThreadSnap);    // Must clean up the
+		//   snapshot object!
+		return FALSE;
+	}
+
+	do
+	{
+		if (te32.th32OwnerProcessID == dwOwnerPID)
+		{
+			EnumThreadWindows(te32.th32ThreadID, ProcThreadWindowsEnum, NULL);
+		}
+	} while (Thread32Next(hThreadSnap, &te32));
+
+	//  Don't forget to clean up the snapshot object.
+	CloseHandle(hThreadSnap);
+	return(TRUE);
+}

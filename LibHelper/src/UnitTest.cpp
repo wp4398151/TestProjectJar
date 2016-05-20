@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////
 
 #include "UnitTest.h"
-
+#include "TipMsgWindow.h"
 std::list<UNITTESTPROC> UnitTest::m_TestFuncList;
 
 UnitTest::UnitTest()
@@ -24,6 +24,13 @@ void UnitTest::testAll()
 	{
 		(*itor)();
 	}
+}
+
+bool UnitTest::ShowATopMostInfoWindow(wstring &showText)
+{
+	TipPureDeskWindow tipWindow;
+	tipWindow.ShowDesktopCoveredWindow();
+	return true;
 }
 
 // TODO: add libevent

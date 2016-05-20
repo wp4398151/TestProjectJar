@@ -15,9 +15,9 @@
 //		UnitTest::Instance().testAll();
 ////////////////////////////////////////////////////
 
-#define WPUNITTESTSTART(x) class Unit##x{		\
+#define WPUNITTESTSTART(x, bActive) class Unit##x{		\
 public:\
-	Unit##x(){ UnitTest::m_TestFuncList.push_back(UnitTest::test##x); }\
+	Unit##x(){ if(bActive){ UnitTest::m_TestFuncList.push_back(UnitTest::test##x);} }\
 } m_Unit##x; \
 	static void test##x(){	\
 		OutputDebugStringA("-----------("###x##" Test Start)---------\r\n");
@@ -45,31 +45,31 @@ public:
 
 	static bool ShowATopMostInfoWindow(wstring &showText);
 
-WPUNITTESTSTART(GetAppPathA)
+WPUNITTESTSTART(GetAppPathA, false)
 	string appPath;
 	assert(GetAppPathA(appPath));
 	OutputDebugStringA(appPath.c_str());
 WPUNITTESTEND
 
-WPUNITTESTSTART(GetAppPathW)
+WPUNITTESTSTART(GetAppPathW, false)
 	wstring appPath;
 	assert(GetAppPathW(appPath));
 	OutputDebugStringW(appPath.c_str());
 WPUNITTESTEND
 
-WPUNITTESTSTART(GetAppNameA)
+WPUNITTESTSTART(GetAppNameA, false)
 	string appNameA;
 	assert(GetAppNameA(appNameA));
 	OutputDebugStringA(appNameA.c_str());
 WPUNITTESTEND
 
-WPUNITTESTSTART(GetAppNameW)
+WPUNITTESTSTART(GetAppNameW, false)
 	wstring appNameW;
 	assert(GetAppNameW(appNameW));
 	OutputDebugStringW(appNameW.c_str());
 WPUNITTESTEND
 
-WPUNITTESTSTART(GetCaptureScreenDCRGBbits)
+WPUNITTESTSTART(GetCaptureScreenDCRGBbits, false)
 	int width = 0;
 	int height = 0;
 	int platebitsCount = 0;
@@ -78,7 +78,7 @@ WPUNITTESTSTART(GetCaptureScreenDCRGBbits)
 	free(lpRGBBits);
 WPUNITTESTEND
 
-WPUNITTESTSTART(LoadTableFromFile)
+WPUNITTESTSTART(LoadTableFromFile, false)
 	wstring appPath;
 	wstring outputTableFile;
 	assert(GetAppPathW(appPath));
@@ -88,7 +88,7 @@ WPUNITTESTSTART(LoadTableFromFile)
 	paser.LoadTableFromFile(appPath, outputTableFile, false);
 WPUNITTESTEND
 
-WPUNITTESTSTART(LoadIndexTableFromFile)
+WPUNITTESTSTART(LoadIndexTableFromFile, false)
 	wstring appPath;
 	wstring outputIndexTableFile;
 	assert(GetAppPathW(appPath));
@@ -99,7 +99,7 @@ WPUNITTESTSTART(LoadIndexTableFromFile)
 	paser.LoadTableFromFile(appPath, outputIndexTableFile, true);
 WPUNITTESTEND
 
-WPUNITTESTSTART(GetWindowsVersion)
+WPUNITTESTSTART(GetWindowsVersion, false)
 	DWORD dwMajorVer = 0;
 	DWORD dwMinorVer = 0;
 	DWORD dwBuildNumber = 0;
@@ -107,7 +107,7 @@ WPUNITTESTSTART(GetWindowsVersion)
 	DOLOG("windows version: ("+dwMajorVer + "." + dwMinorVer + "." + dwBuildNumber+")\r\n");
 WPUNITTESTEND
 
-WPUNITTESTSTART(GetElapse)
+WPUNITTESTSTART(GetElapse, false)
 
 	INT startCount = GetTickCount();
 	int a = 0;
@@ -130,23 +130,23 @@ WPUNITTESTSTART(GetElapse)
 	DOLOG("HighQualityResolutionTimeLite Lapse: "+ timelapse + "micro sec\r\n");
 WPUNITTESTEND
 
-WPUNITTESTSTART(GetProcessModule)
+WPUNITTESTSTART(GetProcessModule, false)
 	int processID = GetCurrentProcessId();
 	list<string> moduleNames;
 	ASSERT_TRUE(EnumSpecificProcessModule(processID, moduleNames));
 WPUNITTESTEND
 
-WPUNITTESTSTART(GetProcessModuleEx)
+WPUNITTESTSTART(GetProcessModuleEx, false)
 	int processID = GetCurrentProcessId();
 	list<wstring> moduleNames;
 	ASSERT_TRUE(EnumSpecificProcessModuleEx(processID, moduleNames));
 WPUNITTESTEND
 
-WPUNITTESTSTART(DisplayCallerAccessTokenInformation)
+WPUNITTESTSTART(DisplayCallerAccessTokenInformation, false)
 	ASSERT_TRUE(DisplayCallerAccessTokenInformation());
 WPUNITTESTEND
 
-WPUNITTESTSTART(GetAddressByDomain)
+WPUNITTESTSTART(GetAddressByDomain, false)
 	WORD wVersionRequested;
 	WSADATA wsaData;
 	int err = 0;
@@ -156,4 +156,12 @@ WPUNITTESTSTART(GetAddressByDomain)
 	ULONG addr = getAddrByDomain("www.baidu.com");
 	ASSERT_NOTZERO(addr);
 	WSACleanup();
-WPUNITTESTEND};
+WPUNITTESTEND
+
+WPUNITTESTSTART(EnumWindowsInSpecificProcess, true)
+	Sleep(5000);
+	DWORD procID = GetSpecificProcIDByNameEx("DMC-DevilMayCry.exe");
+	EnumWindowsInSpecificProcess(procID);
+WPUNITTESTEND
+
+};
