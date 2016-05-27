@@ -644,3 +644,79 @@ BOOL EnumWindowsInSpecificProcess(DWORD dwOwnerPID)
 	CloseHandle(hThreadSnap);
 	return(TRUE);
 }
+
+void CreateBMPFileEx(LPTSTR pszFile, PBITMAPINFO pbi, LPBYTE lpBits)
+{
+	HANDLE hf = NULL;                 // file handle  
+	BITMAPFILEHEADER hdr = { 0 };       // bitmap file-header  
+	PBITMAPINFOHEADER pbih = NULL;    // bitmap info-header  
+	DWORD dwTotal = 0;				// total count of bytes  
+	DWORD cb = 0;                   // incremental count of bytes  
+	BYTE *hp = 0;                   // byte pointer  
+	DWORD dwTmp = 0;
+
+	pbih = (PBITMAPINFOHEADER)pbi;
+
+	// Retrieve the color table (RGBQUAD array) and the bits  
+	// (array of palette indices) from the DIB.  
+	// Create the .BMP file.  
+	hf = CreateFile(pszFile,
+		GENERIC_READ | GENERIC_WRITE,
+		(DWORD)0,
+		NULL,
+		CREATE_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL,
+		(HANDLE)NULL);
+	assert(hf != INVALID_HANDLE_VALUE);
+	hdr.bfType = 0x4d42;        // 0x42 = "B"  0x4d = "M"  
+	// Compute the size of the entire file.  
+	hdr.bfSize = (DWORD)(sizeof(BITMAPFILEHEADER) +
+		pbih->biSize + pbih->biClrUsed
+		* sizeof(RGBQUAD) + pbih->biSizeImage);
+	hdr.bfReserved1 = 0;
+	hdr.bfReserved2 = 0;
+
+
+	// Compute the offset to the array of color indices.  
+	hdr.bfOffBits = (DWORD) sizeof(BITMAPFILEHEADER) +
+		pbih->biSize + pbih->biClrUsed
+		* sizeof(RGBQUAD);
+
+	// Copy the BITMAPFILEHEADER into the .BMP file.  
+	BOOL res = WriteFile(hf, (LPVOID)&hdr, sizeof(BITMAPFILEHEADER),
+		(LPDWORD)&dwTmp, NULL);
+	assert(res != 0);
+
+	// Copy the BITMAPINFOHEADER and RGBQUAD array into the file.  
+	WriteFile(hf, (LPVOID)pbih, sizeof(BITMAPINFOHEADER)
+		+ pbih->biClrUsed * sizeof(RGBQUAD),
+		(LPDWORD)&dwTmp, (NULL));
+
+	// Copy the array of color indices into the .BMP file.  
+	dwTotal = cb = pbih->biSizeImage;
+	hp = lpBits;
+	WriteFile(hf, (LPSTR)hp, (int)cb, (LPDWORD)&dwTmp, NULL);
+
+	// Close the .BMP file.  
+	CloseHandle(hf);
+}
+
+#include <sstream>
+
+void WriteCaptureSpecificDCRGBbitsEx(LPBYTE lpBits, LPTSTR lpFilePath, UINT width, UINT height, UINT pixelBitSize)
+{
+	BITMAPINFO bmpinfo = { 0 };
+
+	bmpinfo.bmiHeader.biBitCount = 32;//颜色位数
+	bmpinfo.bmiHeader.biClrImportant = 0;
+	bmpinfo.bmiHeader.biCompression = BI_RGB;
+	bmpinfo.bmiHeader.biHeight = height;
+	bmpinfo.bmiHeader.biWidth = width;
+	bmpinfo.bmiHeader.biPlanes = 1; //级别?必须为1
+	bmpinfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmpinfo.bmiHeader.biSizeImage = height*width*pixelBitSize;
+	bmpinfo.bmiHeader.biXPelsPerMeter = 0;
+	bmpinfo.bmiHeader.biYPelsPerMeter = 0;
+
+	CreateBMPFileEx(lpFilePath, &bmpinfo, lpBits);
+}

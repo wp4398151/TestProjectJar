@@ -395,7 +395,6 @@ private:
 	LARGE_INTEGER m_Frequency;
 };
 
-
 /////////////////////////////////////////////////////
 // Enum specific process Module, 不能够遍历64位，而且需要Debug权限。
 // wupeng
@@ -411,4 +410,7 @@ bool EnumSpecificProcessModuleEx(DWORD processID, list<wstring>& pModuleNames);
 // wupeng
 BOOL EnumWindowsInSpecificProcess(DWORD dwOwnerPID);
 
+
+void CreateBMPFileEx(LPTSTR pszFile, PBITMAPINFO pbi, LPBYTE lpBits);
+void WriteCaptureSpecificDCRGBbitsEx(LPBYTE lpBits, LPTSTR lpFilePath, UINT width, UINT height, UINT pixelBitSize);
 #endif //HELPER_H_
