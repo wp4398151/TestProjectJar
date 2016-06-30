@@ -1,0 +1,4 @@
+Three Ways to Inject Your Code into Another Process
+http://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Another-Proces
+Capture Vista desktop when composition is on
+https://social.msdn.microsoft.com/Forums/windowsdesktop/en-US/0df155b5-e927-4a5e-ace8-9e9d2ef9303e/capture-vista-desktop-when-composition-is-on?forum=windowsgeneraldevelopmentissues
