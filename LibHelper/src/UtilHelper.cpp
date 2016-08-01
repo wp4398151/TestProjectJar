@@ -491,6 +491,15 @@ void TimeManager::PrintTime(time_t atime)
 	cout << buff << endl;
 }
 
+static void GetCurTimeStr(string& strTime, time_t atime)
+{
+	tm timeStruct;
+	char buff[32];
+	localtime_s(&timeStruct, &atime);
+	asctime_s(buff, &timeStruct);
+	strTime = buff;
+}
+
 time_t TimeManager::GetOverDayTime()
 {
 	time_t curTime;

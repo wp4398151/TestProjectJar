@@ -197,8 +197,6 @@ bool GetAppPathW(wstring& strPath);
 bool GetAppNameA(string& strPath);
 bool GetAppNameW(wstring& strPath);
 
-
-
 ////////////////////////////////////////////////////
 // 替换所有匹配的字符串
 // Wupeng 
@@ -333,6 +331,7 @@ public:
 	static time_t GetOverDayTime(time_t curTime);
 	static time_t GetOverDayTime();
 	static void PrintTime(time_t atime);
+	static void GetCurTimeStr(string& strTime, time_t atime);
 };
 
 // 在指定位置插入字符串
