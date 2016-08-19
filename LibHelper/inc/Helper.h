@@ -332,7 +332,10 @@ public:
 	static time_t GetOverDayTime();
 	static void PrintTime(time_t atime);
 	static void GetCurTimeStr(string& strTime, time_t atime);
+	static void CurrentDateTimeString(string& strTime);
+	static void CurrentTimeString(string& strTime);
 };
+
 
 // 在指定位置插入字符串
 // [2015/12/17 wupeng] 

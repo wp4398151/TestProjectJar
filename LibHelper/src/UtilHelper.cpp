@@ -482,6 +482,26 @@ BOOL CRTConvertWidechar2ANSI(const wstring& rWStr, string& rStr)
 //	CRTConvertUTF82Widechar(str, wstrTar);
 */
 
+void TimeManager::CurrentDateTimeString(string& strTime)
+{
+	time_t     now = time(0);
+	struct tm  tstruct;
+	char       buf[80] = { 0 };
+	localtime_s(&tstruct, &now);
+	strftime(buf, sizeof(buf), "%Y-%m-%d, %X: ", &tstruct);
+	strTime = buf;
+}
+
+void TimeManager::CurrentTimeString(string& strTime)
+{
+	time_t     now = time(0);
+	struct tm  tstruct;
+	char       buf[80] = { 0 };
+	localtime_s(&tstruct, &now);
+	strftime(buf, sizeof(buf), "%X: ", &tstruct);
+	strTime = buf;
+}
+
 void TimeManager::PrintTime(time_t atime)
 {
 	tm timeStruct;
@@ -491,7 +511,7 @@ void TimeManager::PrintTime(time_t atime)
 	cout << buff << endl;
 }
 
-static void GetCurTimeStr(string& strTime, time_t atime)
+void TimeManager::GetCurTimeStr(string& strTime, time_t atime)
 {
 	tm timeStruct;
 	char buff[32];

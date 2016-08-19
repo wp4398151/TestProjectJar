@@ -96,6 +96,7 @@
     <ClInclude Include="inc\Helper.h" />
     <ClInclude Include="inc\MathLite.h" />
     <ClInclude Include="inc\MiniDump.h" />
+    <ClInclude Include="inc\RegistryOp.h" />
     <ClInclude Include="inc\SecurityHelper.h" />
     <ClInclude Include="inc\SharedMemObj.h" />
     <ClInclude Include="inc\TipMsgWindow.h" />
@@ -113,6 +114,7 @@
     <ClCompile Include="src\Helper.cpp" />
     <ClCompile Include="src\MathLite.cpp" />
     <ClCompile Include="src\MiniDump.cpp" />
+    <ClCompile Include="src\RegistryOp.cpp" />
     <ClCompile Include="src\SecurityHelper.cpp" />
     <ClCompile Include="src\SharedMemObj.cpp" />
     <ClCompile Include="src\TipMsgWindow.cpp" />
