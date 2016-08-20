@@ -44,14 +44,14 @@ BOOL RegistryOp::RestoreKey(LPWSTR lpFileName)
 	return FALSE;
 }
 
-BOOL RegistryOp::Read(LPWSTR lpValueName, string& rStr)
+BOOL RegistryOp::Read(LPWSTR lpValueName, wstring& rStr)
 {
 	assert(m_hKey);
 	assert(lpValueName);
 	
 	DWORD dwType = 0;
 	DWORD dwSize = MAX_PATH;
-	char szString[MAX_PATH] = {0};
+	WCHAR szString[MAX_PATH] = {0};
 	long lReturn = RegQueryValueExW(m_hKey, lpValueName, NULL, 
 										&dwType, (BYTE *)szString, &dwSize);
 	if (lReturn == ERROR_SUCCESS)
@@ -73,7 +73,6 @@ BOOL RegistryOp::Read(LPWSTR lpValueName, DWORD& rdwVal)
 	DWORD dwDest = 0;
 	long lReturn = RegQueryValueExW(m_hKey, lpValueName, NULL, &dwType, 
 									(BYTE *)&dwDest, &dwSize);
-
 	if (lReturn == ERROR_SUCCESS)
 	{
 		rdwVal = dwDest;
@@ -102,14 +101,15 @@ BOOL RegistryOp::Read(LPWSTR lpValueName, int& rnVal)
 	return FALSE;
 }
 
-BOOL RegistryOp::Write(LPWSTR lpValueName, LPSTR lpVal)
+BOOL RegistryOp::Write(LPCWSTR lpValueName, LPCWSTR lpVal)
 {
 	assert(m_hKey);
 	assert(lpValueName);
 	assert(lpVal);
 
+	// warning cbData is length of byte
 	long lReturn = RegSetValueExW(m_hKey, lpValueName, 0L, REG_SZ, 
-									(const BYTE *)lpVal, strlen(lpVal) + 1);
+									(const BYTE *)lpVal, (wcslen(lpVal) + 1)*sizeof(WCHAR));
 
 	if (lReturn == ERROR_SUCCESS)
 		return TRUE;

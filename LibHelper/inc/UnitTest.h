@@ -7,6 +7,7 @@
 #include "C2DimensionParser.h"
 #include "SecurityHelper.h"
 #include "CNetControl.h"
+#include "RegistryOp.h"
 
 ////////////////////////////////////////////////////
 // 简单的单元测试类 
@@ -158,10 +159,32 @@ WPUNITTESTSTART(GetAddressByDomain, false)
 	WSACleanup();
 WPUNITTESTEND
 
-WPUNITTESTSTART(EnumWindowsInSpecificProcess, true)
+WPUNITTESTSTART(EnumWindowsInSpecificProcess, false)
 	Sleep(5000);
 	DWORD procID = GetSpecificProcIDByNameEx("DMC-DevilMayCry.exe");
 	EnumWindowsInSpecificProcess(procID);
+WPUNITTESTEND
+
+WPUNITTESTSTART(RegistryOp, true)
+	RegistryOp myRegistry(HKEY_CURRENT_USER);
+	myRegistry.Open(L"SOFTWARE\\Lenovo\\NerveCenter\\Setting");
+	int yourage = false;
+
+	ASSERT_TRUE(myRegistry.Write(L"yourage", 12));
+
+	ASSERT_TRUE(myRegistry.Read(L"yourage", yourage));
+	DOLOG("SOFTWARE\\Lenovo\\NerveCenter\\Setting\\yourage : " + yourage);
+	//DOLOG("HighQualityResolutionTimeLite Lapse: " + timelapse + "micro sec\r\n");
+	wstring name;
+	ASSERT_TRUE(myRegistry.Read(L"myname", name));
+	DOLOGW(L"SOFTWARE\\Lenovo\\NerveCenter\\Setting\\myname : " + name);
+
+	ASSERT_TRUE(myRegistry.Write(L"yourname", name.c_str()));
+
+	ASSERT_TRUE(myRegistry.DeleteValue(L"yourage"));
+
+	ASSERT_TRUE(myRegistry.CreateKey(L"SubSetting"));
+
 WPUNITTESTEND
 
 };

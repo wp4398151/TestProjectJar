@@ -18,11 +18,11 @@ public:
 public:
 	BOOL SaveKey(LPWSTR lpFileName);
 	BOOL RestoreKey(LPWSTR lpFileName);
-	BOOL Read(LPWSTR lpValueName, std::string& rStr);
+	BOOL Read(LPWSTR lpValueName, std::wstring& rStr);
 	BOOL Read(LPWSTR lpValueName, DWORD& rdwVal);
 	BOOL Read(LPWSTR lpValueName, int& rnVal);
 
-	BOOL Write(LPWSTR lpSubKey, LPSTR lpwVal);
+	BOOL Write(LPCWSTR lpSubKey, LPCWSTR lpwVal);
 	BOOL Write(LPWSTR lpSubKey, DWORD dwVal);
 	BOOL Write(LPWSTR lpSubKey, int nVal);
 	BOOL DeleteKey(HKEY hKey, LPWSTR lpwSubKey);

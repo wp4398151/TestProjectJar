@@ -56,8 +56,14 @@ public:
 		m_ss << v;
 		return *this;
 	}
+
 	SstringEx& operator+(const char* v){
 		m_ss << v;
+		return *this;
+	}
+
+	SstringEx& operator+(const string& v){
+		m_ss << v.c_str();
 		return *this;
 	}
 
@@ -83,6 +89,10 @@ public:
 	}
 	WSstringEx& operator+(const wchar_t* v){
 		m_ss << v;
+		return *this;
+	}
+	WSstringEx& operator+(const wstring& v){
+		m_ss << v.c_str();
 		return *this;
 	}
 
