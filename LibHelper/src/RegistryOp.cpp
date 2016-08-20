@@ -218,3 +218,25 @@ BOOL RegistryOp::CreateKey(LPWSTR lpwSubKey)
 	DOLOG("RegCreateKeyExW ERROR return:" + lReturn);
 	return FALSE;
 }
+
+WPUNITTESTSTART(RegistryOp)
+{
+	RegistryOp myRegistry(HKEY_CURRENT_USER);
+	myRegistry.Open(L"SOFTWARE\\Lenovo\\NerveCenter\\Setting");
+	int yourage = false;
+
+	EXPECT_TRUE(myRegistry.Write(L"yourage", 12));
+
+	EXPECT_TRUE(myRegistry.Read(L"yourage", yourage));
+	DOLOG("SOFTWARE\\Lenovo\\NerveCenter\\Setting\\yourage : " + yourage);
+	//DOLOG("HighQualityResolutionTimeLite Lapse: " + timelapse + "micro sec\r\n");
+	wstring name;
+	EXPECT_TRUE(myRegistry.Read(L"myname", name));
+	DOLOGW(L"SOFTWARE\\Lenovo\\NerveCenter\\Setting\\myname : " + name);
+
+	EXPECT_TRUE(myRegistry.Write(L"yourname", name.c_str()));
+
+	EXPECT_TRUE(myRegistry.DeleteValue(L"yourage"));
+
+	EXPECT_TRUE(myRegistry.CreateKey(L"SubSetting"));
+}

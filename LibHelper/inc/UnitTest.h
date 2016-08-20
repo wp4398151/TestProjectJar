@@ -1,21 +1,17 @@
-#pragma once
+ï»¿#pragma once
 #include "Helper.h"
-#include <list>
 #include <assert.h>
-#include <Winsock2.h>
 
-#include "C2DimensionParser.h"
-#include "SecurityHelper.h"
-#include "CNetControl.h"
-#include "RegistryOp.h"
+#include <vector>
 
 ////////////////////////////////////////////////////
-// ¼òµ¥µÄµ¥Ôª²âÊÔÀà 
+// ç®€å•çš„å•å…ƒæµ‹è¯•ç±» 
 // Wupeng 
-// ÊµÀı:
+// å®ä¾‹:
 //		UnitTest::Instance().testAll();
+// deprecate!
 ////////////////////////////////////////////////////
-
+#if 0
 #define WPUNITTESTSTART(x, bActive) class Unit##x{		\
 public:\
 	Unit##x(){ if(bActive){ UnitTest::m_TestFuncList.push_back(UnitTest::test##x);} }\
@@ -188,3 +184,75 @@ WPUNITTESTSTART(RegistryOp, true)
 WPUNITTESTEND
 
 };
+#endif
+
+/**
+ * WPTestCaseBase
+ * all test case will derive it.
+ */
+class TestCaseBase
+{
+public:
+	TestCaseBase(LPCSTR lpCaseName) : m_CaseName(lpCaseName), m_bResult(true){}
+
+	LPCSTR m_CaseName;
+	virtual void Run() = 0;
+	BOOL m_bResult;
+};
+
+/**
+ * WPUnitTestClass  
+ * all test case must regist in the class.
+ */
+class UnitTest : public CLiteSingleton<UnitTest>
+{
+public:
+	friend class CLiteSingleton<UnitTest>;
+	TestCaseBase* RegisterTestCase(TestCaseBase* testcase);
+	int Run();
+
+	TestCaseBase* m_pCurrentTestCase;
+	BOOL m_bTestResult;
+	int m_nPassedCount;
+	int m_nFailedCount;
+
+protected:
+	std::vector<TestCaseBase*> m_TestCases; // æ¡ˆä¾‹é›†åˆ
+};
+
+#define TESTCASE_NAME(nameTest) \
+	nameTest##_TEST
+
+#define WPUNITTESTSTART(nameTest) \
+class TESTCASE_NAME(nameTest) : public TestCaseBase \
+{ \
+public: \
+	TESTCASE_NAME(nameTest)(const char* pCaseName) : TestCaseBase(pCaseName){ DOLOG("!!!!New "+ pCaseName)}; \
+	virtual void Run(); \
+private: \
+	static TestCaseBase* const s_pTestcase; \
+}; \
+	\
+	TestCaseBase* const TESTCASE_NAME(nameTest) \
+	::s_pTestcase = UnitTest::Instance().RegisterTestCase(\
+	new TESTCASE_NAME(nameTest)(#nameTest)); \
+	void TESTCASE_NAME(nameTest)::Run()
+
+#define EXPECT_EQ(m, n) \
+if (m != n) \
+{ \
+	UnitTest::Instance().m_pCurrentTestCase->m_bResult = false; \
+	DOLOG("Failed!"); \
+	DOLOG("Expect:" + m); \
+	DOLOG("Actual:" + n); \
+}
+
+#define EXPECT_TRUE(m) \
+if (m != TRUE) \
+{ \
+	UnitTest::Instance().m_pCurrentTestCase->m_bResult = false; \
+	DOLOG("Failed!"); \
+	DOLOG("Expect:true" + m); \
+	DOLOG("Actual:false"); \
+}
+

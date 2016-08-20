@@ -5,63 +5,40 @@
 ////////////////////////////////////////////////////
 
 #include "UnitTest.h"
-#include "TipMsgWindow.h"
-std::list<UNITTESTPROC> UnitTest::m_TestFuncList;
 
-UnitTest::UnitTest()
+TestCaseBase* UnitTest::RegisterTestCase(TestCaseBase* pTest)
 {
+	m_TestCases.push_back(pTest);
+	return pTest;
 }
 
-UnitTest::~UnitTest()
+int UnitTest::Run()
 {
-
-}
-
-void UnitTest::testAll()
-{
-	for (std::list<UNITTESTPROC>::iterator itor = m_TestFuncList.begin();
-		itor != m_TestFuncList.end(); ++itor)
+	m_bTestResult = TRUE;
+	for (std::vector<TestCaseBase*>::iterator it = m_TestCases.begin();
+		it != m_TestCases.end(); ++it)
 	{
-		(*itor)();
+		TestCaseBase* pTest = *it;
+		m_pCurrentTestCase = pTest;
+		DOLOG("======================================");
+		DOLOG("----------- (" + pTest->m_CaseName + " Test Start)--------");
+		pTest->Run();
+		DOLOG("----------- (" + pTest->m_CaseName + " End )--------");
+		if (pTest->m_bResult)
+		{
+			m_nPassedCount++;
+		}
+		else
+		{
+			m_nFailedCount++;
+			m_bTestResult = FALSE;
+		}
 	}
+
+	DOLOG(" == == == == == == == == == == == == == == == == == == == ");
+	DOLOG("Total TestCase : " + m_TestCases.size());
+	DOLOG("Passed Count: " + m_nPassedCount);;
+	DOLOG("Failed Count : " + m_nFailedCount);
+	return m_bTestResult;
 }
 
-bool UnitTest::ShowATopMostInfoWindow(wstring &showText)
-{
-	TipPureDeskWindow tipWindow;
-	tipWindow.ShowDesktopCoveredWindow();
-	return true;
-}
-
-// TODO: add libevent
-bool UnitTest::StartSimpleLibeventServer()
-{
-	return true;
-}
-
-bool UnitTest::StartSimpleLibeventClient()
-{
-	return true;
-}
-
-// TODO: add plain socket class
-bool UnitTest::StartPlainSocketServer()
-{
-	return true;
-}
-
-bool UnitTest::StartPlainSocketClient()
-{
-	return true;
-}
-
-// TODO: add plain socket select class
-bool UnitTest::StartSelectSocketServer()
-{
-	return true;
-}
-
-bool UnitTest::StartSelectSocketClient()
-{
-	return true;
-}

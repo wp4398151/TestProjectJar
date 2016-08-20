@@ -7,7 +7,17 @@
 
 #pragma once  
 
+#include <math.h>
+/**
+ * the different of two float
+ */
 #define EPSILON 1e-6
+
+#define ISEQFLOAT(x, y)	\
+	(fabs((x)-(y)) <= EPSILON)) ? true : false)
+
+#define ISZEROFLOAT(x)	\
+	(fabs(x)) <= EPSILON)) ? true : false)
 
 class Vec3
 {

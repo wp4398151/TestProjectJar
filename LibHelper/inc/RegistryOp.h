@@ -8,6 +8,7 @@
 #pragma once
 #include <windows.h>
 #include <string>
+#include "UnitTest.h"
 
 class RegistryOp
 {
