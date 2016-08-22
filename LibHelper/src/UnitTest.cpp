@@ -42,3 +42,12 @@ int UnitTest::Run()
 	return m_bTestResult;
 }
 
+#include "gtest/gtest.h"
+#ifdef DEBUGGTEST
+
+void wmain(int argc, wchar_t** argv)
+{
+	testing::InitGoogleTest(&argc, argv);
+	RUN_ALL_TESTS();
+}
+#endif

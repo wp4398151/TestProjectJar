@@ -238,7 +238,7 @@ private: \
 	new TESTCASE_NAME(nameTest)(#nameTest)); \
 	void TESTCASE_NAME(nameTest)::Run()
 
-#define EXPECT_EQ(m, n) \
+#define WPEXPECT_EQ(m, n) \
 if (m != n) \
 { \
 	UnitTest::Instance().m_pCurrentTestCase->m_bResult = false; \
@@ -247,7 +247,7 @@ if (m != n) \
 	DOLOG("Actual:" + n); \
 }
 
-#define EXPECT_TRUE(m) \
+#define WPEXPECT_TRUE(m) \
 if (m != TRUE) \
 { \
 	UnitTest::Instance().m_pCurrentTestCase->m_bResult = false; \
@@ -255,4 +255,3 @@ if (m != TRUE) \
 	DOLOG("Expect:true" + m); \
 	DOLOG("Actual:false"); \
 }
-

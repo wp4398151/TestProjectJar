@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #define _WIN32_WINNT 0x0500 
 #include"windows.h"
@@ -7,7 +7,7 @@
 #include"NativeApi.h"
 #include"wchar.h"
 #include"psapi.h"//SDK6.0
-#pragma comment(lib,"psapi.lib")////SDK6.0,²»ÖªµÀÎªÊ²Ã´vc6ºÃÏñÃ»ÓĞ×Ô´øÕâ¸öÍ·ÎÄ¼ş£¿£¿
+#pragma comment(lib,"psapi.lib")////SDK6.0,ä¸çŸ¥é“ä¸ºä»€ä¹ˆvc6å¥½åƒæ²¡æœ‰è‡ªå¸¦è¿™ä¸ªå¤´æ–‡ä»¶ï¼Ÿï¼Ÿ
 
 int GetUserPath(WCHAR* szModPath);
 BOOL GetProcessModule(DWORD dwPID)
@@ -17,20 +17,20 @@ BOOL GetProcessModule(DWORD dwPID)
     HANDLE hModuleSnap = NULL;
     MODULEENTRY32 me32 ={0};
 	
-    hModuleSnap = ::CreateToolhelp32Snapshot(TH32CS_SNAPMODULE,dwPID);//´´½¨½ø³Ì¿ìÕÕ
+    hModuleSnap = ::CreateToolhelp32Snapshot(TH32CS_SNAPMODULE,dwPID);//åˆ›å»ºè¿›ç¨‹å¿«ç…§
     if(hModuleSnap == INVALID_HANDLE_VALUE)
 	{   
-		printf("»ñÈ¡Ä£¿éÊ§°Ü!\n");
+		printf("è·å–æ¨¡å—å¤±è´¥!\n");
 		return FALSE;
 	}
 	
     me32.dwSize = sizeof(MODULEENTRY32);
-    if(::Module32First(hModuleSnap,&me32))//»ñµÃµÚÒ»¸öÄ£¿é
+    if(::Module32First(hModuleSnap,&me32))//è·å¾—ç¬¬ä¸€ä¸ªæ¨¡å—
 	{
 		do{
-			printf("·½·¨1ÁĞÄ£¿éÃû£º%s\n",me32.szExePath);
+			printf("æ–¹æ³•1åˆ—æ¨¡å—åï¼š%s\n",me32.szExePath);
 		}while(::Module32Next(hModuleSnap,&me32));
-	}//µİ¹éÃ¶¾ÙÄ£¿é
+	}//é€’å½’æšä¸¾æ¨¡å—
 	
 	CloseHandle(hModuleSnap);
 	return bFound;
@@ -75,7 +75,7 @@ bool ForceLookUpModule(DWORD dwPID)
 					{   
 						_wsetlocale(0,L"chs"); 				
 						GetUserPath(Out_Data->SectionFileName.Buffer);
-						wprintf(L"·½·¨2ÁĞÄ£¿é%s\n",Out_Data->SectionFileName.Buffer);
+						wprintf(L"æ–¹æ³•2åˆ—æ¨¡å—%s\n",Out_Data->SectionFileName.Buffer);
 					}
 					wcscpy(wstr,   Out_Data->SectionFileName.Buffer);
 				}	
@@ -116,7 +116,7 @@ int GetUserPath(WCHAR* szModPath)
    
    return 0;
 }
-BOOL EnableDebugPrivilege(BOOL fEnable)//Õâ¸öÓÃÓÚÌáÈ¨µÄ
+BOOL EnableDebugPrivilege(BOOL fEnable)//è¿™ä¸ªç”¨äºææƒçš„
 {  
 	BOOL fOk = FALSE;   
 	HANDLE hToken;
@@ -157,7 +157,7 @@ void EnumModlueAll(DWORD dwPID)
 		
 		while(GetModuleFileNameEx(hProcess,parry[i],path,MAX_PATH))
 		{
-			printf("·½·¨3Ä£¿é£º%s\n",path);
+			printf("æ–¹æ³•3æ¨¡å—ï¼š%s\n",path);
 			memset(path,0,MAX_PATH);
 			i++;
 		}
@@ -178,7 +178,7 @@ void EnumModuleEx(DWORD dwPID)
 	RTLDESTROYDEBUGBUFFER RtlDestroyQueryDebugBuffer =(RTLDESTROYDEBUGBUFFER )GetProcAddress(hMod,"RtlDestroyQueryDebugBuffer");
 	if((hMod==NULL)||(RtlDestroyQueryDebugBuffer==NULL)||(RtlQueryProcessDebugInformation==NULL)||(RtlCreateQueryDebugBuffer==NULL))
 	{
-		printf("º¯Êı¶¨Î»Ê§°Ü£¡\n");
+		printf("å‡½æ•°å®šä½å¤±è´¥ï¼\n");
 		return ;
 	}	
 	
@@ -186,7 +186,7 @@ void EnumModuleEx(DWORD dwPID)
 	status=RtlQueryProcessDebugInformation(dwPID,PDI_MODULES ,Buffer);
 	if(status<0)
 	{ 
-		printf("RtlQueryProcessDebugInformationº¯Êıµ÷ÓÃÊ§°Ü£¬½ø³Ì¿ªÁË±£»¤\n");
+		printf("RtlQueryProcessDebugInformationå‡½æ•°è°ƒç”¨å¤±è´¥ï¼Œè¿›ç¨‹å¼€äº†ä¿æŠ¤\n");
 		return ;
 	}
 	ULONG count=*(PULONG)(Buffer->ModuleInformation);
@@ -194,7 +194,7 @@ void EnumModuleEx(DWORD dwPID)
 	PDEBUG_MODULE_INFORMATION ModuleInfo=(PDEBUG_MODULE_INFORMATION)((ULONG)Buffer->ModuleInformation+4);
 	for(ULONG i=0;i<count;i++)
 	{
-		printf("·½·¨4ÁĞ³öµÄÄ£¿é£º%s\n",ModuleInfo->ImageName);
+		printf("æ–¹æ³•4åˆ—å‡ºçš„æ¨¡å—ï¼š%s\n",ModuleInfo->ImageName);
 		ModuleInfo++;
 	}
 	
@@ -209,7 +209,7 @@ void EnumSelfModule()
 		*p           = NULL,
 		*BaseAddress = NULL,
 		*FullDllName = NULL;
-	printf("ÁĞ¾Ù×ÔÉíÄ£¿é£¡\n");
+	printf("åˆ—ä¸¾è‡ªèº«æ¨¡å—ï¼\n");
 	__asm
 	{
 		mov     eax,fs:[0x30]
@@ -247,7 +247,7 @@ bool IsValidModule(byte* i)
 	PIMAGE_NT_HEADERS32 NtHead=(PIMAGE_NT_HEADERS32)(i+BasePoint->e_lfanew);
 	if(IsBadReadPtr((void*)NtHead,PAGE_SIZE))
 		return false;
-	if((NtHead->FileHeader.Characteristics&IMAGE_FILE_DLL)==0)//¹ıÂËµô¡£exeÎÄ¼ş
+	if((NtHead->FileHeader.Characteristics&IMAGE_FILE_DLL)==0)//è¿‡æ»¤æ‰ã€‚exeæ–‡ä»¶
 		return false;
 	if(NtHead->OptionalHeader.Subsystem==0x2)
 		return true;
@@ -258,7 +258,7 @@ bool IsValidModule(byte* i)
 
 void Search()
 {   
-	printf("±©Á¦ËÑË÷ÁĞ¾ÙÄ£¿é!\n");
+	printf("æš´åŠ›æœç´¢åˆ—ä¸¾æ¨¡å—!\n");
 	UCHAR* i=(PUCHAR)0x10000000;
 	int Num=0;
 	for(;i<(PUCHAR)0x7ffeffff;i+=PAGE_SIZE)
@@ -285,6 +285,6 @@ void main()
 	EnumSelfModule();
 	getchar();
 	Search();
-	printf("°´ÈÎÒâ¼üÍË³ö........");
+	printf("æŒ‰ä»»æ„é”®é€€å‡º........");
 	getchar();
 }

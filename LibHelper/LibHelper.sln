@@ -1,18 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibHelper", "LibHelper.vcxproj", "{1E2284E8-21B0-4310-A3F6-5772726AF1DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		DebugGTest|Win32 = DebugGTest|Win32
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1E2284E8-21B0-4310-A3F6-5772726AF1DB}.Debug|Win32.ActiveCfg = Debug|Win32
 		{1E2284E8-21B0-4310-A3F6-5772726AF1DB}.Debug|Win32.Build.0 = Debug|Win32
+		{1E2284E8-21B0-4310-A3F6-5772726AF1DB}.DebugGTest|Win32.ActiveCfg = DebugGTest|Win32
+		{1E2284E8-21B0-4310-A3F6-5772726AF1DB}.DebugGTest|Win32.Build.0 = DebugGTest|Win32
 		{1E2284E8-21B0-4310-A3F6-5772726AF1DB}.Release|Win32.ActiveCfg = Release|Win32
 		{1E2284E8-21B0-4310-A3F6-5772726AF1DB}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
