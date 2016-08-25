@@ -98,6 +98,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\gtest\lib\DEBUG\;$(ProjectDir)3rd\x264\libs\32bit;$(ProjectDir)3rd\libevent-2.0.22-stable\libs</AdditionalLibraryDirectories>
       <AdditionalDependencies>libx264.lib;libevent.lib;Ws2_32.lib;gtestd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Profile>true</Profile>
     </Link>
     <Lib>
       <AdditionalDependencies>libx264.lib;libevent.lib;Ws2_32.lib;gtestd.lib</AdditionalDependencies>
@@ -135,6 +136,7 @@
   <ItemGroup>
     <ClInclude Include="inc\C2DimensionParser.h" />
     <ClInclude Include="inc\CH264Encoder.h" />
+    <ClInclude Include="inc\CMp4FileParser.h" />
     <ClInclude Include="inc\CNameEvent.h" />
     <ClInclude Include="inc\CNameShareMemory.h" />
     <ClInclude Include="inc\CNetControl.h" />
@@ -152,6 +154,7 @@
   <ItemGroup>
     <ClCompile Include="src\C2DimensionParser.cpp" />
     <ClCompile Include="src\CH264Encoder.cpp" />
+    <ClCompile Include="src\CMp4FileParser.cpp" />
     <ClCompile Include="src\CNameEvent.cpp" />
     <ClCompile Include="src\CNameShareMemory.cpp" />
     <ClCompile Include="src\CNetControl.cpp" />

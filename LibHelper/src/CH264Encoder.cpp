@@ -112,7 +112,6 @@ bool CH264Encoder::TestEncodeScreenUseX264Encoder()
 	SAFE_FREE(pRBGA);
 	SAFE_FREE(pYUVBuf);
 	return true;
-
 }
 
 bool CH264Encoder::TestEncodeScreen()

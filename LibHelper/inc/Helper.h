@@ -22,6 +22,8 @@ using namespace std;
 
 #define SAFE_RELEASE(ptr) if(ptr){ ptr->Release(); ptr = NULL;}
 #define SAFE_DELETEEX(ptr, op) if(ptr){ op; delete ptr; ptr = NULL;}
+
+#define SAFE_DELETEARR(ptr, op) if(ptr){ op; delete [] ptr; ptr = NULL;}
 #define SAFE_FREE(ptr) if(ptr){  free(ptr); ptr = NULL;}
 
 
@@ -108,11 +110,22 @@ public:
 // Debug log help macro
 #ifdef USEDOLOG
 #ifdef POPSHOWBOX
+
+	#define DOLOGS(msg) {		\
+		SstringEx tempMsg;		\
+		MessageBoxA(NULL, (tempMsg +"wupeng::" + msg).m_ss.str().c_str(), "Infomation", MB_OK); \
+		}
+
 	#define DOLOG(msg) {		\
 		SstringEx tempMsg;		\
 		MessageBoxA(NULL, (tempMsg +"wupeng::" + msg + " (" + __FILE__ + ":" + __LINE__ + ")\n").m_ss.str().c_str(), "Infomation", MB_OK); \
 	}
 #else
+	#define DOLOGS(msg) {	\
+		SstringEx tempMsg;	\
+		OutputDebugStringA((tempMsg + "wupeng::" + msg).m_ss.str().c_str()); \
+	}
+
 	#define DOLOG(msg) {	\
 		SstringEx tempMsg;	\
 		OutputDebugStringA((tempMsg + "wupeng::" + msg + " (" + __FILE__ + ":" + __LINE__ + ")\n").m_ss.str().c_str()); \
@@ -196,6 +209,29 @@ BOOL CopyStringToWString(wstring &targetWStr, string &srcStr);
 // Wupeng 
 ////////////////////////////////////////////////////
 bool IsByteLittleEndian(bool &bIsLittleEndian);
+
+//big endian conversion functions
+// net byte sequence is bigendian
+#define ULONGLONG_BE(val) (((val>>56)&0xFF) | (((val>>48)&0xFF)<<8) | (((val>>40)&0xFF)<<16) | (((val>>32)&0xFF)<<24) | \
+	(((val >> 24) & 0xFF) << 32) | (((val >> 16) & 0xFF) << 40) | (((val >> 8) & 0xFF) << 48) | ((val & 0xFF) << 56))
+#define DWORD_BE(val) (((val>>24)&0xFF) | (((val>>16)&0xFF)<<8) | (((val>>8)&0xFF)<<16) | ((val&0xFF)<<24))
+#define WORD_BE(val)  (((val>>8)&0xFF) | ((val&0xFF)<<8))
+
+#define DWORD_LE(val) (((val<<24)&0xFF) | (((val<<16)&0xFF)>>8) | (((val<<8)&0xFF)>>16) | ((val&0xFF)>>24))
+#define WORD_LE(val)  (((val<<8)&0xFF) | ((val&0xFF)>>8))
+
+__forceinline ULONGLONG fastHtonll(ULONGLONG qw)
+{
+	return ULONGLONG_BE(qw);
+}
+__forceinline DWORD fastHtonl(DWORD dw)
+{
+	return DWORD_BE(dw);
+}
+__forceinline  WORD fastHtons(WORD  w)
+{
+	return  WORD_BE(w);
+}
 
 ////////////////////////////////////////////////////
 // 得到当前执行程序的路径
@@ -422,7 +458,12 @@ bool EnumSpecificProcessModuleEx(DWORD processID, list<wstring>& pModuleNames);
 // wupeng
 BOOL EnumWindowsInSpecificProcess(DWORD dwOwnerPID);
 
-
 void CreateBMPFileEx(LPTSTR pszFile, PBITMAPINFO pbi, LPBYTE lpBits);
 void WriteCaptureSpecificDCRGBbitsEx(LPBYTE lpBits, LPTSTR lpFilePath, UINT width, UINT height, UINT pixelBitSize);
+
+/**
+ * Get File Size
+ */
+bool GetFileSizeW(wstring& filePath, DWORD &fileSize);
+
 #endif //HELPER_H_
