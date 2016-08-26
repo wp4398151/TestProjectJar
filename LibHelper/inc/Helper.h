@@ -44,6 +44,7 @@ using namespace std;
 #define ASSERT_NOTZERO(x) assert((x)!=0);
 #define ASSERT_TRUE(x) assert((x)==TRUE);
 #define ASSERT_FALSE(x) assert((x)==FALSE);
+
 // [2015/12/11 wupeng] 
 // Convinient to cat string
 class SstringEx
@@ -110,10 +111,9 @@ public:
 // Debug log help macro
 #ifdef USEDOLOG
 #ifdef POPSHOWBOX
-
 	#define DOLOGS(msg) {		\
 		SstringEx tempMsg;		\
-		MessageBoxA(NULL, (tempMsg +"wupeng::" + msg).m_ss.str().c_str(), "Infomation", MB_OK); \
+		MessageBoxA(NULL, (tempMsg + msg).m_ss.str().c_str(), "Infomation", MB_OK); \
 		}
 
 	#define DOLOG(msg) {		\
@@ -123,7 +123,7 @@ public:
 #else
 	#define DOLOGS(msg) {	\
 		SstringEx tempMsg;	\
-		OutputDebugStringA((tempMsg + "wupeng::" + msg).m_ss.str().c_str()); \
+		OutputDebugStringA((tempMsg + msg).m_ss.str().c_str()); \
 	}
 
 	#define DOLOG(msg) {	\
@@ -131,6 +131,13 @@ public:
 		OutputDebugStringA((tempMsg + "wupeng::" + msg + " (" + __FILE__ + ":" + __LINE__ + ")\n").m_ss.str().c_str()); \
 	}
 #endif
+
+#define COUNTTAB(x) {\
+for (int i = 0; i < x; ++i){	\
+	DOLOGS("\t");\
+}\
+}
+
 
 #define W2(x) L ## x
 #define W(x) W2(x)
@@ -146,7 +153,6 @@ public:
 		OutputDebugStringW((tempMsg + L"wupeng::" + msg + L" (" + W(__FILE__) + L":" + __LINE__ + L")\n").m_ss.str().c_str()); \
 	}
 #endif
-
 
 #else // USEDOLOG
 	#define DOLOG(msg)

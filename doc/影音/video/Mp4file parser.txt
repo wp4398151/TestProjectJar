@@ -6,8 +6,20 @@ http://www.52rd.com/Blog/wqyuwss/559/
 2.fir have a ftyp box.then consequently is a moov.
 3.box size is big endian.
 
+解析媒体文件，最关心的部分是视频文件的宽高、时长、码率、编码格式、帧列表、关键帧列表，以及所对应的时戳和在文件中的位置
+
 track  表示一些sample的集合，对于媒体数据来说，track表示一个视频或音频序列。
 hint track  这个特殊的track并不包含媒体数据，而是包含了一些将其他数据track打包成流媒体的指示信息。
 sample  对于非hint track来说，video sample即为一帧视频，或一组连续视频帧，audio sample即为一段连续的压缩音频，它们统称sample。对于hint track，sample定义一个或多个流媒体包的格式。
 sample table  指明sampe时序和物理布局的表。
 chunk 一个track的几个sample组成的单元。
+
+获取mp4文件信息1 - 计算电影长度
+方法1
+	从mvhd - movie header atom中找到time scale和duration，duration除以time scale即是整部电影的长度。
+	time scale相当于定义了标准的1秒在这部电影里面的刻度是多少。
+	例如audio track的time scale = 8000, duration = 560128，所以总长度是70.016，video track的time scale = 600, duration = 42000，所以总长度是70
+方法2
+	首先计算出共有多少个帧，也就是sample（从sample size atoms中得到），然后
+	整部电影的duration = 每个帧的duration之和（从Time-to-sample atoms中得出）
+	例如audio track共有547个sample，每个sample的长度是1024，则总duration是560128，电影长度是70.016；video track共有1050个sample，每个sample的长度是40，则总duration是42000，电影长度是70
