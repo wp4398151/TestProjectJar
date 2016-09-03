@@ -18,10 +18,12 @@ public:
 	ATOM MyRegisterClass(HINSTANCE hInstance);
 	UINT loopMsg();
 	bool ShowATopMostInfoWindow();
+	HWND GetWnd(){ return m_hwnd; }
 protected:
 	char m_Msg[MAX_PATH];
 	POINT m_pos;
 	POINT m_size;
+	HWND m_hwnd;
 };
 
 // show a window overlap the desktop use pure color

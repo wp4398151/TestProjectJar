@@ -113,7 +113,6 @@ WPUNITTESTSTART(GetElapse, false)
 		a += i;
 	}
 	startCount = GetTickCount() - startCount;
-
 	DOLOG("GetTickCount Lapse: " + startCount + "mili sec \r\n");
 
 	HighQualityResolutionTimeLite timeLite;

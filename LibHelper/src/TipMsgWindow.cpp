@@ -27,6 +27,7 @@ BOOL TipMsgWindow::InitInstance(HINSTANCE hInstance)
 		DOLOG("CreateWindowExW Failed! ErrorCode:" + GetLastError());
 		return FALSE;
 	}
+	m_hwnd = hWnd;
 	SetWindowLong(hWnd, GWL_USERDATA, (LONG)this);
 	ShowWindow(hWnd, SW_SHOWNORMAL);
 	LONG_PTR Style = ::GetWindowLongPtr(hWnd, GWL_STYLE);

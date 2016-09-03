@@ -44,6 +44,7 @@ TEST(CMp4FileParser, TestDumpAllBox)
 	filePaser.DumpTopLevel();
 	//EXPECT_TRUE(ftypHeader. filePaser.IsSucceed());
 }
+
 std::vector<BoxHandlerBase*> Mp4Box::m_HandlerList 
 = { new BoxMDHDHanlder(), 
 	new BoxHDLRHanlder(), 

@@ -53,7 +53,7 @@ struct Mp4BoxHeader
 	unsigned int uHeaderLen;
 };
 
-class Mp4Box;
+struct Mp4Box;
 /**
 * use handle the specific box content.
 */

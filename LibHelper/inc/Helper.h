@@ -314,7 +314,7 @@ public:
 	BOOL close();
 	BOOL start();
 
-protected:
+public:
 	T *m_pInst;
 	HANDLE m_hThread;
 	unsigned int m_threadID;
@@ -339,6 +339,10 @@ LiteThread<T>::~LiteThread()
 template<typename T>
 BOOL LiteThread<T>::close()
 {
+	if (!m_hThread)
+	{
+		return TRUE;
+	}
 	if (0 == WaitForSingleObject(m_hThread, 0))
 	{
 		if (CloseHandle(m_hThread))
@@ -355,7 +359,7 @@ BOOL LiteThread<T>::close()
 template<typename T>
 BOOL LiteThread<T>::start()
 {
-	m_hThread = (HANDLE)_beginthreadex(NULL, 0, T::RunFunc, m_pInst, 0, &m_threadID);
+	m_hThread = (HANDLE)_beginthreadex(NULL, 0, T::RunFunc, (T*)this, 0, &m_threadID);
 	if (0 == m_hThread)
 	{
 		return FALSE;

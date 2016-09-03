@@ -57,8 +57,8 @@
     <LibraryPath>$(ProjectDir)..\gtest\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGTest|Win32'">
-    <IncludePath>$(ProjectDir)..\gtest\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)..\gtest\lib\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\gtest\include;$(IncludePath);$(DXSDK_DIR)Include;$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)..\gtest\lib\$(Configuration)\;$(LibraryPath);$(DXSDK_DIR)Lib\x86;$(WindowsSDK_LibraryPath_x86)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -97,8 +97,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\gtest\lib\DEBUG\;$(ProjectDir)3rd\x264\libs\32bit;$(ProjectDir)3rd\libevent-2.0.22-stable\libs</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libx264.lib;libevent.lib;Ws2_32.lib;gtestd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxgi.lib;d3d11.lib;libx264.lib;libevent.lib;Ws2_32.lib;gtestd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Profile>true</Profile>
+      <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
     </Link>
     <Lib>
       <AdditionalDependencies>libx264.lib;libevent.lib;Ws2_32.lib;gtestd.lib</AdditionalDependencies>
@@ -135,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\C2DimensionParser.h" />
+    <ClInclude Include="inc\CDuplicateOutputDx11.h" />
     <ClInclude Include="inc\CH264Encoder.h" />
     <ClInclude Include="inc\CMp4FileParser.h" />
     <ClInclude Include="inc\CNameEvent.h" />
@@ -153,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\C2DimensionParser.cpp" />
+    <ClCompile Include="src\CDuplicateOutputDx11.cpp" />
     <ClCompile Include="src\CH264Encoder.cpp" />
     <ClCompile Include="src\CMp4FileParser.cpp" />
     <ClCompile Include="src\CNameEvent.cpp" />
