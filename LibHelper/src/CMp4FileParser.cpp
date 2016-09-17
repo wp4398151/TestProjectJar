@@ -14,7 +14,6 @@
 
 using namespace std;
 
-
 #include "gtest/gtest.h"
 
 TEST(CMp4FileParser, TestReadftyp)
@@ -45,14 +44,20 @@ TEST(CMp4FileParser, TestDumpAllBox)
 	//EXPECT_TRUE(ftypHeader. filePaser.IsSucceed());
 }
 
-std::vector<BoxHandlerBase*> Mp4Box::m_HandlerList 
-= { new BoxMDHDHanlder(), 
-	new BoxHDLRHanlder(), 
-	new BoxTKHDHanlder(), 
-	new BoxMVHDHanlder(),
-	new BoxSTSCHanlder(),
-};
-
+/**
+ * 通过注册Handler类型，可以在解析遇到对应类型的对象时进行调用
+ */
+std::vector<BoxHandlerBase*> Mp4Box::m_HandlerList
+= { new BoxMDHDHanlder(),
+		new BoxHDLRHanlder(),
+		new BoxTKHDHanlder(),
+		new BoxMVHDHanlder(),
+		new BoxSTSCHanlder(),
+		new BoxELSTHandler(),
+		new BoxSTSDHandler(),
+		new BoxSTTSHandler(),
+		new BoxSTSSHandler(),
+		};
 
 std::vector<string> Mp4Box::m_ContanerTypeList = {string("moov"), 
 													string("trak"),
@@ -60,11 +65,104 @@ std::vector<string> Mp4Box::m_ContanerTypeList = {string("moov"),
 													string("minf"),
 													string("dinf"),
 													string("mp4a"),
-													string("stbl")};
+													string("stbl"),
+													string("edts"),
+													};
+
+void BoxELSTHandler::DumpInfo(Mp4Box& rBox)
+{
+	BoxStructHeader headInfo;
+	memcpy_s(&headInfo, sizeof(headInfo), rBox.pBoxBody, sizeof(headInfo));
+	COUNTTAB(rBox.dwLevel);
+
+	headInfo.dwEntryCount = ntohl(headInfo.dwEntryCount);
+	DWORD dwCurPos = sizeof(headInfo);
+	DOLOGS("[ ");
+	for (int i = 0; i < headInfo.dwEntryCount; ++i)
+	{
+		BoxBody bodyInfo;
+		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
+		dwCurPos += sizeof(bodyInfo);
+		bodyInfo.dwDuration = ntohl(bodyInfo.dwDuration );
+		bodyInfo.dwTime = ntohl(bodyInfo.dwTime);
+		bodyInfo.dwSpeed = ntohl(bodyInfo.dwSpeed );
+		DOLOGS("( Duration:" + bodyInfo.dwDuration  + ", Time:"
+			+ bodyInfo.dwTime+ ", Speed:" + bodyInfo.dwSpeed+ ")");
+	}
+	DOLOGS("] \r\n");
+}
+
+void BoxSTSDHandler::DumpInfo(Mp4Box& rBox)
+{
+	BoxStructHeader headInfo;
+	memcpy_s(&headInfo, sizeof(headInfo), rBox.pBoxBody, sizeof(headInfo));
+	COUNTTAB(rBox.dwLevel);
+
+	headInfo.dwEntryCount = ntohl(headInfo.dwEntryCount);
+	DWORD dwCurPos = sizeof(headInfo);
+
+	DOLOGS("[ ");
+	for (int i = 0 ; i < headInfo.dwEntryCount;++i)
+	{
+		BoxBody bodyInfo;
+		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
+		dwCurPos += sizeof(bodyInfo);
+		bodyInfo.dwSize = ntohl(bodyInfo.dwSize);
+		char *pData = new char[bodyInfo.dwSize];
+		memcpy(pData, rBox.pBoxBody + dwCurPos, bodyInfo.dwSize);
+		dwCurPos += bodyInfo.dwSize;
+		char bufName[5] = { 0 };
+		memcpy(bufName, (char*)&bodyInfo.dwFormat, 4);
+		DOLOGS("( type:" + bufName + ", size:" + bodyInfo.dwSize + ")");
+	}
+	DOLOGS("] \r\n");
+}
+
+void BoxSTSSHandler::DumpInfo(Mp4Box& rBox)
+{
+	BoxStructHeader headInfo;
+	memcpy_s(&headInfo, sizeof(headInfo), rBox.pBoxBody, sizeof(headInfo));
+	COUNTTAB(rBox.dwLevel);
+
+	headInfo.dwEntryCount = ntohl(headInfo.dwEntryCount);
+	DWORD dwCurPos = sizeof(headInfo);
+	DOLOGS(" [ KeyFrameCount "+ headInfo.dwEntryCount);
+	for (int i = 0; i < headInfo.dwEntryCount ; ++i )
+	{
+		BoxBody bodyInfo;
+		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
+		dwCurPos += sizeof(bodyInfo);
+		bodyInfo.dwKeyFrameIndex= ntohl(bodyInfo.dwKeyFrameIndex);
+		DOLOGS("( keyFrameIndex:" + bodyInfo.dwKeyFrameIndex+ ")");
+	}
+	DOLOGS("] \r\n");
+}
+
+
+void BoxSTTSHandler::DumpInfo(Mp4Box& rBox)
+{
+	BoxStructHeader headInfo;
+	memcpy_s(&headInfo, sizeof(headInfo), rBox.pBoxBody, sizeof(headInfo));
+	COUNTTAB(rBox.dwLevel);
+
+	headInfo.dwEntryCount = ntohl(headInfo.dwEntryCount);
+	DWORD dwCurPos = sizeof(headInfo);
+	DOLOGS("[ ");
+	for (int i = 0; i < headInfo.dwEntryCount ; ++i )
+	{
+		BoxBody bodyInfo;
+		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
+		dwCurPos += sizeof(bodyInfo);
+		bodyInfo.dwSampleCount= ntohl(bodyInfo.dwSampleCount);
+		bodyInfo.dwSampleDuration= ntohl(bodyInfo.dwSampleDuration);
+		DOLOGS("( sampleCount:" + bodyInfo.dwSampleCount+ ", SampleDuration:" 
+					 + bodyInfo.dwSampleDuration+ ")");
+	}
+	DOLOGS("] \r\n");
+}
 
 void BoxSTSCHanlder::DumpInfo(Mp4Box& rBox)
 {
-	//DWORD dwTotalLen = rBox.boxHeader.uBoxSize64 - rBox.boxHeader.uHeaderLen;
 	BoxStructHeader headInfo;
 	memcpy_s(&headInfo, sizeof(headInfo), rBox.pBoxBody, sizeof(headInfo));
 	COUNTTAB(rBox.dwLevel);
@@ -83,7 +181,7 @@ void BoxSTSCHanlder::DumpInfo(Mp4Box& rBox)
 		DOLOGS("( first:" + bodyInfo.dwFirstChunk + ", SamplePerChunk:" 
 					+ bodyInfo.dwSamplePerChunk + ", Index:" + bodyInfo.dwSampleDescriptionIndex + ")");
 	}
-	DOLOGS("] ");
+	DOLOGS("] \r\n");
 }
 
 void BoxMVHDHanlder::DumpInfo(Mp4Box& rBox)
@@ -93,7 +191,7 @@ void BoxMVHDHanlder::DumpInfo(Mp4Box& rBox)
 
 	info.dwRate = ntohl(info.dwRate);
 	COUNTTAB(rBox.dwLevel);
-	DOLOGS(" <this rate is " + info.dwRate + ">");
+	DOLOGS(" <this rate is " + info.dwRate + ">\r\n");
 }
 
 void BoxTKHDHanlder::DumpInfo(Mp4Box& rBox)
@@ -106,7 +204,7 @@ void BoxTKHDHanlder::DumpInfo(Mp4Box& rBox)
 	if (info.dwWidth != 0)
 	{
 		COUNTTAB(rBox.dwLevel);
-		DOLOGS(" <this vedio size is " + (info.dwWidth >>16) + "*" + (info.dwHeight>>16) + ">");
+		DOLOGS(" <this vedio size is " + (info.dwWidth >>16) + "*" + (info.dwHeight>>16) + ">\r\n");
 	}
 }
 
@@ -117,7 +215,7 @@ void BoxMDHDHanlder::DumpInfo(Mp4Box& rBox)
 	info.dwTimeDuration = ntohl(info.dwTimeDuration);
 	info.dwTimeScale = ntohl(info.dwTimeScale);
 	COUNTTAB(rBox.dwLevel);
-	DOLOGS("<this track time length is " + (info.dwTimeDuration/info.dwTimeScale) + " second >");
+	DOLOGS("<this track time length is " + (info.dwTimeDuration / info.dwTimeScale) + " second, TimeScale:" + info.dwTimeScale + " > \r\n");
 };
 
 void BoxHDLRHanlder::DumpInfo(Mp4Box& rBox)
@@ -127,15 +225,15 @@ void BoxHDLRHanlder::DumpInfo(Mp4Box& rBox)
 	COUNTTAB(rBox.dwLevel);
 	if (0 == memcmp((char*)(&info.dwHandlerType) ,"vide", 4))
 	{
-		DOLOGS(" <this track is video>");
+		DOLOGS(" <this track is video>\r\n");
 	}
 	else if(0 == memcmp((char*)(&info.dwHandlerType), "soun", 4))
 	{
-		DOLOGS(" <this track is audio>");
+		DOLOGS(" <this track is audio>\r\n");
 	}
 	else if (0 ==memcmp((char*)(&info.dwHandlerType), "hint", 4))
 	{
-		DOLOGS(" <this track is hint>");
+		DOLOGS(" <this track is hint>\r\n");
 	}
 }
 

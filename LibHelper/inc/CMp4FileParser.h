@@ -139,6 +139,86 @@ public:
 };
 
 /**
+ * Sync Sample Atoms, 用于确定media中的关键帧. 
+ * 其中记录了sample的index, 被标记的sample即为关键帧.
+ * 特殊的，如果没有标记任何一个关键帧，则每一帧都是关键帧
+ */
+class BoxSTSSHandler :public BoxHandlerBase
+{
+public:
+	struct BoxStructHeader{
+		DWORD dwVersionAndFlag;
+		DWORD dwEntryCount;
+	};
+	struct BoxBody{
+		DWORD dwKeyFrameIndex;
+	};
+	BoxSTSSHandler() : BoxHandlerBase("stss"){}
+	virtual void DumpInfo(Mp4Box& rBox);
+};
+
+/**
+ * Time to Sample Atom, 提供了sample的duration信息, 也就是具体sample的时间映射方法.
+ * DT(n+1) = DT(n) + STTS(n)
+ */
+class BoxSTTSHandler : public BoxHandlerBase
+{
+public:
+	struct BoxStructHeader{
+		DWORD dwVersionAndFlag;
+		DWORD dwEntryCount;
+	};
+	struct BoxBody{
+		DWORD dwSampleCount;			/**< 表示此偏移有多少个相同的sample相同持续时间的sample, e.g. 如果是video, 每隔一sample就是一帧， */
+		DWORD dwSampleDuration;			/**< 用draction/timescale 就等于了实际一个sample所持续的second */
+	};
+	BoxSTTSHandler() : BoxHandlerBase("stts"){}
+	virtual void DumpInfo(Mp4Box& rBox);
+};
+
+/**
+ * 利用STSD sample Description正确解码media sample
+ */
+class BoxSTSDHandler : public BoxHandlerBase
+{
+public:
+	struct BoxStructHeader
+	{
+		DWORD dwVersionAndflag;
+		DWORD dwEntryCount;
+	};
+	struct BoxBody{
+		DWORD dwSize;
+		DWORD dwFormat;
+		CHAR dwReserve[6];
+		USHORT dwReference[2];
+	};
+	
+	BoxSTSDHandler() : BoxHandlerBase("stsd"){}
+	virtual void DumpInfo(Mp4Box& rBox);
+};
+
+/**
+ * 用来映射movie时间到此track的时间
+ */
+class BoxELSTHandler : public BoxHandlerBase
+{
+public:
+	struct BoxStructHeader{
+		DWORD dwVersionAndFlag;
+		DWORD dwEntryCount;
+	};
+	
+	struct BoxBody{
+		DWORD dwDuration;
+		DWORD dwTime;
+		DWORD dwSpeed;
+	};
+	BoxELSTHandler() : BoxHandlerBase("elst"){}
+	virtual void DumpInfo(Mp4Box& rBox);
+};
+
+/**
 * use to handle Media Header Box(mdhd)
 */
 class BoxMDHDHanlder : public BoxHandlerBase

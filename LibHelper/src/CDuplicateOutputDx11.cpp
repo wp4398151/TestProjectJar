@@ -11,24 +11,22 @@
 
 TEST(CDuplicateOutputDx11, Initialize)
 {
-	TipMsgWindow tip;
-	POINT pos = { 1, 1 };
-	tip.Init("test Output", pos, pos);
-	tip.ShowATopMostInfoWindow();
-	HWND hwnd = tip.GetWnd();
-
-	CDuplicateOutputDx11 output(hwnd);
-	do
-	{
-		DOLOG("Start****************");
-		output.close();
-		output.Release();
-		output.Init();
-		output.start();
-		WaitForSingleObject(output.m_hThread, INFINITE);
-	} while (output.GetStatus() == DupicatorStatus_Restart);
-	DOLOG("Exit******************");
-
+	//TipMsgWindow tip;
+	//POINT pos = { 1, 1 };
+	//tip.Init("test Output", pos, pos);
+	//tip.ShowATopMostInfoWindow();
+	//HWND hwnd = tip.GetWnd();
+	//CDuplicateOutputDx11 output(hwnd);
+	//do
+	//{
+	//	DOLOG("Start****************");
+	//	output.close();
+	//	output.Release();
+	//	output.Init();
+	//	output.start();
+	//	WaitForSingleObject(output.m_hThread, INFINITE);
+	//} while (output.GetStatus() == DupicatorStatus_Restart);
+	//DOLOG("Exit******************");
 }
 
 void CDuplicateOutputDx11::Release()
@@ -230,7 +228,8 @@ bool CDuplicateOutputDx11::Init()
 	D3D_FEATURE_LEVEL receivedLevel;
 
 	D3D_DRIVER_TYPE driverType = D3D_DRIVER_TYPE_HARDWARE;
-	err = D3D11CreateDeviceAndSwapChain(NULL, driverType, NULL, D3D11_CREATE_DEVICE_DEBUG, desiredLevels, 6, D3D11_SDK_VERSION, &swapDesc, &m_pSwapChain, &m_pDevice, &receivedLevel, &m_pDeviceContext);
+	UINT flags = 0;// D3D11_CREATE_DEVICE_DEBUG;
+	err = D3D11CreateDeviceAndSwapChain(NULL, driverType, NULL, flags, desiredLevels, 6, D3D11_SDK_VERSION, &swapDesc, &m_pSwapChain, &m_pDevice, &receivedLevel, &m_pDeviceContext);
 	if (SUCCEEDED(err))
 	{
 		//m_pSwapChain->AddRef();
