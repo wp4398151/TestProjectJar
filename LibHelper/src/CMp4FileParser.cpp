@@ -57,6 +57,11 @@ std::vector<BoxHandlerBase*> Mp4Box::m_HandlerList
 		new BoxSTSDHandler(),
 		new BoxSTTSHandler(),
 		new BoxSTSSHandler(),
+		new BoxVMHDHandler(),
+		new BoxSMHDHandler(),
+		new BoxDREFHandler(),
+		new BoxSTSZHandler(),
+		new BoxSTCOHandler(),
 		};
 
 std::vector<string> Mp4Box::m_ContanerTypeList = {string("moov"), 
@@ -116,6 +121,97 @@ void BoxSTSDHandler::DumpInfo(Mp4Box& rBox)
 		DOLOGS("( type:" + bufName + ", size:" + bodyInfo.dwSize + ")");
 	}
 	DOLOGS("] \r\n");
+}
+
+void BoxSTCOHandler::DumpInfo(Mp4Box& rBox)
+{
+	BoxStructHeader headInfo;
+	memcpy_s(&headInfo, sizeof(headInfo), rBox.pBoxBody, sizeof(headInfo));
+	COUNTTAB(rBox.dwLevel);
+
+	headInfo.dwEntriesCount = ntohl(headInfo.dwEntriesCount);
+	DWORD dwCurPos = sizeof(headInfo);
+	DOLOGS("[ ");
+	for (int i = 0; i < headInfo.dwEntriesCount; ++i)
+	{
+		BoxBody bodyInfo;
+		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
+		dwCurPos += sizeof(bodyInfo);
+		DOLOGS("( Chunk Offset :" + bodyInfo.dwChunkOffset + ")");
+	}
+	DOLOGS("] \r\n");
+}
+
+void BoxSTSZHandler::DumpInfo(Mp4Box& rBox)
+{
+	BoxStructHeader headInfo;
+	memcpy_s(&headInfo, sizeof(headInfo), rBox.pBoxBody, sizeof(headInfo));
+	COUNTTAB(rBox.dwLevel);
+
+	headInfo.dwSampleSize = ntohl(headInfo.dwSampleSize);
+	if (headInfo.dwSampleSize)
+	{
+		DOLOGS("( sample size :" + headInfo.dwSampleSize + ")");
+	}
+	else
+	{
+		headInfo.dwEntriesCount = ntohl(headInfo.dwEntriesCount);
+		DWORD dwCurPos = sizeof(headInfo);
+		DOLOGS("[ ");
+		for (int i = 0; i < headInfo.dwEntriesCount ; ++i)
+		{
+			BoxBody bodyInfo;
+			memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
+			dwCurPos += sizeof(bodyInfo);
+			DOLOGS("( sample size:" + bodyInfo.dwSampleSize+ ")");
+		}
+		DOLOGS("] \r\n");
+	}
+}
+
+void BoxDREFHandler::DumpInfo(Mp4Box& rBox)
+{
+	BoxStructHeader headInfo;
+	memcpy_s(&headInfo, sizeof(headInfo), rBox.pBoxBody, sizeof(headInfo));
+	COUNTTAB(rBox.dwLevel);
+
+	headInfo.dwEntryCount = ntohl(headInfo.dwEntryCount);
+	DWORD dwCurPos = sizeof(headInfo);
+
+	DOLOGS("[ ");
+	for (int i = 0; i < headInfo.dwEntryCount; ++i)
+	{
+		BoxBody bodyInfo;
+		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
+		dwCurPos += sizeof(bodyInfo);
+		bodyInfo.dwRefSize = ntohl(bodyInfo.dwRefSize);
+		char *pData = new char[bodyInfo.dwRefSize ];
+		memcpy(pData, rBox.pBoxBody + dwCurPos, bodyInfo.dwRefSize);
+		dwCurPos += bodyInfo.dwRefSize ;
+		char bufType[5] = { 0 };
+		memcpy(bufType, (char*)&bodyInfo.dwRefType, 4);
+		DOLOGS("( type:" + bufType + ", size:" + bodyInfo.dwRefSize + ")");
+	}
+	DOLOGS("] \r\n");
+}
+
+
+void BoxSMHDHandler::DumpInfo(Mp4Box& rBox)
+{
+	BoxStruct info;
+	memcpy_s(&info, sizeof(info), rBox.pBoxBody, sizeof(info));
+	info.wEqualization = ntohs(info.wEqualization);
+	COUNTTAB(rBox.dwLevel);
+	DOLOGS("< Equalization is " + info.wEqualization + "> \r\n");
+}
+
+void BoxVMHDHandler::DumpInfo(Mp4Box& rBox)
+{
+	BoxStruct info;
+	memcpy_s(&info, sizeof(info), rBox.pBoxBody, sizeof(info));
+	info.wGraphicMode = ntohs(info.wGraphicMode);
+	COUNTTAB(rBox.dwLevel);
+	DOLOGS("< graphic mode is "+info.wGraphicMode+"> \r\n");
 }
 
 void BoxSTSSHandler::DumpInfo(Mp4Box& rBox)

@@ -139,6 +139,94 @@ public:
 };
 
 /**
+ * Chunk Offset, 定义trunk在媒体流中的偏移
+ */
+class BoxSTCOHandler : public BoxHandlerBase
+{
+public:
+	struct BoxStructHeader{
+		DWORD dwVersionAndFlag;
+		DWORD dwEntriesCount;
+	};
+	struct BoxBody{
+		DWORD dwChunkOffset;
+	};
+	BoxSTCOHandler() : BoxHandlerBase("stco"){}
+	virtual void DumpInfo(Mp4Box& rBox);
+};
+
+/**
+ * Sample Size，定义了每个Sample的大小
+ */
+class BoxSTSZHandler : public BoxHandlerBase
+{
+public:
+	struct BoxStructHeader{
+		DWORD dwVersionAndFlag;
+		DWORD dwSampleSize;			/**< enable if the sample size same. other wise 0, see Entries Count*/
+		DWORD dwEntriesCount;		/**< Count of entries */
+	};
+	struct BoxBody{
+		DWORD dwSampleSize;
+	};
+	BoxSTSZHandler(): BoxHandlerBase("stsz"){}
+	virtual void DumpInfo(Mp4Box& rBox);
+};
+
+/**
+* Data Reference， 获取媒体数据的引用信息
+*/
+class BoxDREFHandler : public BoxHandlerBase
+{
+public:
+	struct BoxStructHeader{
+		DWORD dwVersionAndFlag;
+		DWORD dwEntryCount;
+	};
+	struct BoxBody{
+		DWORD dwRefSize;				
+		DWORD dwRefType;			/**< count of sample in every chunk */
+		DWORD dwVersionAndFlag;			/**< the description of every sample reference to stsd box */
+	};
+	BoxDREFHandler() : BoxHandlerBase("dref"){}
+	virtual void DumpInfo(Mp4Box& rBox);
+};
+
+/**
+ * Sound Media Head, 包含了声音控制信息
+ */
+class BoxSMHDHandler : public BoxHandlerBase
+{
+public:
+	struct BoxStruct
+	{
+		DWORD dwVersionAndFlag;
+		WORD wEqualization;			/**< Sound mix Equalization */
+		WORD wReserved;
+	};
+
+	BoxSMHDHandler() : BoxHandlerBase("smhd"){}
+	virtual void DumpInfo(Mp4Box& rBox);
+};
+
+/**
+ * Video Media informationm header, 视频媒体控制信息
+ */
+class BoxVMHDHandler :public BoxHandlerBase
+{
+public:	
+	struct BoxStruct
+	{
+		DWORD dwVersionAndFlag;		
+		WORD wGraphicMode;			/**< switch for quick Draw */
+		CHAR opColor[6];			/**< specify the red, green, blue color for transfer */
+	};
+
+	BoxVMHDHandler() : BoxHandlerBase("vmhd"){}
+	virtual void DumpInfo(Mp4Box& rBox);
+};
+
+/**
  * Sync Sample Atoms, 用于确定media中的关键帧. 
  * 其中记录了sample的index, 被标记的sample即为关键帧.
  * 特殊的，如果没有标记任何一个关键帧，则每一帧都是关键帧
