@@ -49,30 +49,30 @@ TEST(CMp4FileParser, TestDumpAllBox)
  */
 std::vector<BoxHandlerBase*> Mp4Box::m_HandlerList
 = { new BoxMDHDHanlder(),
-		new BoxHDLRHanlder(),
-		new BoxTKHDHanlder(),
-		new BoxMVHDHanlder(),
-		new BoxSTSCHanlder(),
-		new BoxELSTHandler(),
-		new BoxSTSDHandler(),
-		new BoxSTTSHandler(),
-		new BoxSTSSHandler(),
-		new BoxVMHDHandler(),
-		new BoxSMHDHandler(),
-		new BoxDREFHandler(),
-		new BoxSTSZHandler(),
-		new BoxSTCOHandler(),
-		};
+new BoxHDLRHanlder(),
+new BoxTKHDHanlder(),
+new BoxMVHDHanlder(),
+new BoxSTSCHanlder(),
+new BoxELSTHandler(),
+new BoxSTSDHandler(),
+new BoxSTTSHandler(),
+new BoxSTSSHandler(),
+new BoxVMHDHandler(),
+new BoxSMHDHandler(),
+new BoxDREFHandler(),
+new BoxSTSZHandler(),
+new BoxSTCOHandler(),
+};
 
-std::vector<string> Mp4Box::m_ContanerTypeList = {string("moov"), 
-													string("trak"),
-													string("mdia"),
-													string("minf"),
-													string("dinf"),
-													string("mp4a"),
-													string("stbl"),
-													string("edts"),
-													};
+std::vector<string> Mp4Box::m_ContanerTypeList = { string("moov"),
+string("trak"),
+string("mdia"),
+string("minf"),
+string("dinf"),
+string("mp4a"),
+string("stbl"),
+string("edts"),
+};
 
 void BoxELSTHandler::DumpInfo(Mp4Box& rBox)
 {
@@ -88,11 +88,11 @@ void BoxELSTHandler::DumpInfo(Mp4Box& rBox)
 		BoxBody bodyInfo;
 		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
 		dwCurPos += sizeof(bodyInfo);
-		bodyInfo.dwDuration = ntohl(bodyInfo.dwDuration );
+		bodyInfo.dwDuration = ntohl(bodyInfo.dwDuration);
 		bodyInfo.dwTime = ntohl(bodyInfo.dwTime);
-		bodyInfo.dwSpeed = ntohl(bodyInfo.dwSpeed );
-		DOLOGS("( Duration:" + bodyInfo.dwDuration  + ", Time:"
-			+ bodyInfo.dwTime+ ", Speed:" + bodyInfo.dwSpeed+ ")");
+		bodyInfo.dwSpeed = ntohl(bodyInfo.dwSpeed);
+		DOLOGS("( Duration:" + bodyInfo.dwDuration + ", Time:"
+			+ bodyInfo.dwTime + ", Speed:" + bodyInfo.dwSpeed + ")");
 	}
 	DOLOGS("] \r\n");
 }
@@ -107,7 +107,7 @@ void BoxSTSDHandler::DumpInfo(Mp4Box& rBox)
 	DWORD dwCurPos = sizeof(headInfo);
 
 	DOLOGS("[ ");
-	for (int i = 0 ; i < headInfo.dwEntryCount;++i)
+	for (int i = 0; i < headInfo.dwEntryCount; ++i)
 	{
 		BoxBody bodyInfo;
 		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
@@ -131,12 +131,13 @@ void BoxSTCOHandler::DumpInfo(Mp4Box& rBox)
 
 	headInfo.dwEntriesCount = ntohl(headInfo.dwEntriesCount);
 	DWORD dwCurPos = sizeof(headInfo);
-	DOLOGS("[ ");
+	DOLOGS("[ ChunkCount:" + headInfo.dwEntriesCount);
 	for (int i = 0; i < headInfo.dwEntriesCount; ++i)
 	{
 		BoxBody bodyInfo;
 		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
 		dwCurPos += sizeof(bodyInfo);
+		bodyInfo.dwChunkOffset = ntohl(bodyInfo.dwChunkOffset);
 		DOLOGS("( Chunk Offset :" + bodyInfo.dwChunkOffset + ")");
 	}
 	DOLOGS("] \r\n");
@@ -157,13 +158,14 @@ void BoxSTSZHandler::DumpInfo(Mp4Box& rBox)
 	{
 		headInfo.dwEntriesCount = ntohl(headInfo.dwEntriesCount);
 		DWORD dwCurPos = sizeof(headInfo);
-		DOLOGS("[ ");
-		for (int i = 0; i < headInfo.dwEntriesCount ; ++i)
+		DOLOGS("[ SampleCount:" + headInfo.dwEntriesCount);
+		for (int i = 0; i < headInfo.dwEntriesCount; ++i)
 		{
 			BoxBody bodyInfo;
 			memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
 			dwCurPos += sizeof(bodyInfo);
-			DOLOGS("( sample size:" + bodyInfo.dwSampleSize+ ")");
+			bodyInfo.dwSampleSize = ntohl(bodyInfo.dwSampleSize);
+			DOLOGS("( sample size:" + bodyInfo.dwSampleSize + ")");
 		}
 		DOLOGS("] \r\n");
 	}
@@ -185,9 +187,9 @@ void BoxDREFHandler::DumpInfo(Mp4Box& rBox)
 		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
 		dwCurPos += sizeof(bodyInfo);
 		bodyInfo.dwRefSize = ntohl(bodyInfo.dwRefSize);
-		char *pData = new char[bodyInfo.dwRefSize ];
+		char *pData = new char[bodyInfo.dwRefSize];
 		memcpy(pData, rBox.pBoxBody + dwCurPos, bodyInfo.dwRefSize);
-		dwCurPos += bodyInfo.dwRefSize ;
+		dwCurPos += bodyInfo.dwRefSize;
 		char bufType[5] = { 0 };
 		memcpy(bufType, (char*)&bodyInfo.dwRefType, 4);
 		DOLOGS("( type:" + bufType + ", size:" + bodyInfo.dwRefSize + ")");
@@ -211,7 +213,7 @@ void BoxVMHDHandler::DumpInfo(Mp4Box& rBox)
 	memcpy_s(&info, sizeof(info), rBox.pBoxBody, sizeof(info));
 	info.wGraphicMode = ntohs(info.wGraphicMode);
 	COUNTTAB(rBox.dwLevel);
-	DOLOGS("< graphic mode is "+info.wGraphicMode+"> \r\n");
+	DOLOGS("< graphic mode is " + info.wGraphicMode + "> \r\n");
 }
 
 void BoxSTSSHandler::DumpInfo(Mp4Box& rBox)
@@ -222,18 +224,17 @@ void BoxSTSSHandler::DumpInfo(Mp4Box& rBox)
 
 	headInfo.dwEntryCount = ntohl(headInfo.dwEntryCount);
 	DWORD dwCurPos = sizeof(headInfo);
-	DOLOGS(" [ KeyFrameCount "+ headInfo.dwEntryCount);
-	for (int i = 0; i < headInfo.dwEntryCount ; ++i )
+	DOLOGS(" [ KeyFrameCount " + headInfo.dwEntryCount);
+	for (int i = 0; i < headInfo.dwEntryCount; ++i)
 	{
 		BoxBody bodyInfo;
 		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
 		dwCurPos += sizeof(bodyInfo);
-		bodyInfo.dwKeyFrameIndex= ntohl(bodyInfo.dwKeyFrameIndex);
-		DOLOGS("( keyFrameIndex:" + bodyInfo.dwKeyFrameIndex+ ")");
+		bodyInfo.dwKeyFrameIndex = ntohl(bodyInfo.dwKeyFrameIndex);
+		DOLOGS("( keyFrameIndex:" + bodyInfo.dwKeyFrameIndex + ")");
 	}
 	DOLOGS("] \r\n");
 }
-
 
 void BoxSTTSHandler::DumpInfo(Mp4Box& rBox)
 {
@@ -244,15 +245,15 @@ void BoxSTTSHandler::DumpInfo(Mp4Box& rBox)
 	headInfo.dwEntryCount = ntohl(headInfo.dwEntryCount);
 	DWORD dwCurPos = sizeof(headInfo);
 	DOLOGS("[ ");
-	for (int i = 0; i < headInfo.dwEntryCount ; ++i )
+	for (int i = 0; i < headInfo.dwEntryCount; ++i)
 	{
 		BoxBody bodyInfo;
 		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
 		dwCurPos += sizeof(bodyInfo);
-		bodyInfo.dwSampleCount= ntohl(bodyInfo.dwSampleCount);
-		bodyInfo.dwSampleDuration= ntohl(bodyInfo.dwSampleDuration);
-		DOLOGS("( sampleCount:" + bodyInfo.dwSampleCount+ ", SampleDuration:" 
-					 + bodyInfo.dwSampleDuration+ ")");
+		bodyInfo.dwSampleCount = ntohl(bodyInfo.dwSampleCount);
+		bodyInfo.dwSampleDuration = ntohl(bodyInfo.dwSampleDuration);
+		DOLOGS("( sampleCount:" + bodyInfo.dwSampleCount + ", SampleDuration:"
+			+ bodyInfo.dwSampleDuration + ")");
 	}
 	DOLOGS("] \r\n");
 }
@@ -266,16 +267,16 @@ void BoxSTSCHanlder::DumpInfo(Mp4Box& rBox)
 	headInfo.dwEntryCount = ntohl(headInfo.dwEntryCount);
 	DWORD dwCurPos = sizeof(headInfo);
 	DOLOGS("[ ");
-	for (int i = 0; i < headInfo.dwEntryCount ; ++i )
+	for (int i = 0; i < headInfo.dwEntryCount; ++i)
 	{
 		BoxBody bodyInfo;
 		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
 		dwCurPos += sizeof(bodyInfo);
 		bodyInfo.dwFirstChunk = ntohl(bodyInfo.dwFirstChunk);
-		bodyInfo.dwSamplePerChunk= ntohl(bodyInfo.dwSamplePerChunk);
+		bodyInfo.dwSamplePerChunk = ntohl(bodyInfo.dwSamplePerChunk);
 		bodyInfo.dwSampleDescriptionIndex = ntohl(bodyInfo.dwSampleDescriptionIndex);
-		DOLOGS("( first:" + bodyInfo.dwFirstChunk + ", SamplePerChunk:" 
-					+ bodyInfo.dwSamplePerChunk + ", Index:" + bodyInfo.dwSampleDescriptionIndex + ")");
+		DOLOGS("( first:" + bodyInfo.dwFirstChunk + ", SamplePerChunk:"
+			+ bodyInfo.dwSamplePerChunk + ", DescriptionIndex:" + bodyInfo.dwSampleDescriptionIndex + ")");
 	}
 	DOLOGS("] \r\n");
 }
@@ -296,11 +297,11 @@ void BoxTKHDHanlder::DumpInfo(Mp4Box& rBox)
 	memcpy_s(&info, sizeof(info), rBox.pBoxBody, sizeof(info));
 	info.dwWidth = ntohl(info.dwWidth);
 	info.dwHeight = ntohl(info.dwHeight);
-	
+
 	if (info.dwWidth != 0)
 	{
 		COUNTTAB(rBox.dwLevel);
-		DOLOGS(" <this vedio size is " + (info.dwWidth >>16) + "*" + (info.dwHeight>>16) + ">\r\n");
+		DOLOGS(" <this vedio size is " + (info.dwWidth >> 16) + "*" + (info.dwHeight >> 16) + ">\r\n");
 	}
 }
 
@@ -319,15 +320,15 @@ void BoxHDLRHanlder::DumpInfo(Mp4Box& rBox)
 	BoxStruct info;
 	memcpy_s(&info, sizeof(info), rBox.pBoxBody, sizeof(info));
 	COUNTTAB(rBox.dwLevel);
-	if (0 == memcmp((char*)(&info.dwHandlerType) ,"vide", 4))
+	if (0 == memcmp((char*)(&info.dwHandlerType), "vide", 4))
 	{
 		DOLOGS(" <this track is video>\r\n");
 	}
-	else if(0 == memcmp((char*)(&info.dwHandlerType), "soun", 4))
+	else if (0 == memcmp((char*)(&info.dwHandlerType), "soun", 4))
 	{
 		DOLOGS(" <this track is audio>\r\n");
 	}
-	else if (0 ==memcmp((char*)(&info.dwHandlerType), "hint", 4))
+	else if (0 == memcmp((char*)(&info.dwHandlerType), "hint", 4))
 	{
 		DOLOGS(" <this track is hint>\r\n");
 	}
@@ -357,7 +358,7 @@ void CMp4FileParser::Load(wstring& mp4filePath)
 	UINT curPos = 0;
 	while (!mp4File.eof())
 	{
-		mp4File.read(pData+curPos, 1024);
+		mp4File.read(pData + curPos, 1024);
 		curPos += 1024;
 	}
 
@@ -378,7 +379,7 @@ void CMp4FileParser::GetBoxHeader(Mp4BoxHeader& rBoxHeader, BOOL &bIs64, DWORD d
 	{
 		bIs64 = TRUE;
 		ULONGLONG ullSize = 0;
-		memcpy_s((char*)&ullSize, sizeof(ULONGLONG),(char*)(pData + dwPosition + sizeof(boxHeaderReal)), sizeof(ULONGLONG));
+		memcpy_s((char*)&ullSize, sizeof(ULONGLONG), (char*)(pData + dwPosition + sizeof(boxHeaderReal)), sizeof(ULONGLONG));
 		rBoxHeader.uBoxSize64 = ntohll(ullSize);
 	}
 	m_bRes = true;
@@ -488,7 +489,7 @@ void Mp4Box::DumpSubBox()
 		COUNTTAB(box.dwLevel);
 		DOLOG(" " + buftype + " :" + box.dwLevel + ", length:" + (box.boxHeader.uBoxSize64 - box.boxHeader.uHeaderLen) + ", Current Position:" + dwTotoal);
 		box.DumpBoxContent();
-		box.DumpSubBox(); 
+		box.DumpSubBox();
 	}
 }
 
@@ -496,14 +497,14 @@ void CMp4FileParser::DumpTopLevel()
 {
 	DOLOG("---------- DumpAllLevel -------------------");
 	DWORD dwTotoal = 0;
-	char buftype[5] = {0};
+	char buftype[5] = { 0 };
 	while (dwTotoal < m_FileContent.size())
 	{
 		Mp4Box box;
 		GetBox(box, dwTotoal);
 		dwTotoal += box.boxHeader.uBoxSize64;
-		memcpy(buftype,(void*)&(box.boxHeader.uBoxType), 4);
-		DOLOG(" " + buftype + " :" + box.dwLevel + ", length:" + (box.boxHeader.uBoxSize64 - box.boxHeader.uHeaderLen) + ", Current Position:" + dwTotoal);
+		memcpy(buftype, (void*)&(box.boxHeader.uBoxType), 4);
+		DOLOG(" " + buftype + " :" + box.dwLevel + ", length:" + (box.boxHeader.uBoxSize64 - box.boxHeader.uHeaderLen) + ", CurrentPosition:" + dwTotoal);
 		box.DumpSubBox();
 	}
 

@@ -68,6 +68,9 @@ public:
 	string m_strName;
 };
 
+/**
+ * Movie Header 媒体的总体信息，主要包括时长，以及帧率
+ */
 class BoxMVHDHanlder : public BoxHandlerBase
 {
 public:
@@ -149,7 +152,7 @@ public:
 		DWORD dwEntriesCount;
 	};
 	struct BoxBody{
-		DWORD dwChunkOffset;
+		DWORD dwChunkOffset;	/**< the offset is relative mdat body */
 	};
 	BoxSTCOHandler() : BoxHandlerBase("stco"){}
 	virtual void DumpInfo(Mp4Box& rBox);
@@ -362,7 +365,6 @@ struct Mp4Box
 	DWORD dwLevel;
 	static std::vector<string> m_ContanerTypeList;
 	static std::vector<BoxHandlerBase*> m_HandlerList;
-
 };
 
 class CMp4FileParser
