@@ -12,6 +12,26 @@
 #include <list>
 #include <fstream>
 
+#include "gtest/gtest.h"
+
+TEST(C2DimensionFile, TestGenerateDataTable)
+{
+	wstring appPath;
+	wstring srcFile;
+	wstring outputTableFile;
+	assert(GetAppPathW(appPath));
+	//outputTableFile = (appPath + L"\\..\\MyTestGameClient\\inc\\GenerateTables\\RoleTable.h");
+	outputTableFile = appPath + L"\\RoleTable.h";
+	srcFile = appPath + L"\\Role.txt";
+	C2DimensionParser parser;
+	ASSERT_TRUE(parser.LoadTableFromFile(srcFile, outputTableFile, false));
+
+	C2DimensionParser indexParser;
+	outputTableFile = appPath + L"\\UserIndexTable.h";
+	srcFile = appPath + L"\\UserIndexTable.txt";
+	ASSERT_TRUE(indexParser.LoadTableFromFile(srcFile, outputTableFile, true));
+}
+
 void GenINTFunc(wstring* orignStr, wstring& resStr);
 void GenLONGFunc(wstring* orignStr, wstring& resStr);
 void GenSTRINGFunc(wstring* orignStr, wstring& resStr);

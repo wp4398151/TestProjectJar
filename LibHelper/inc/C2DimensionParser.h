@@ -46,6 +46,9 @@ protected:
 	ValueFunc *m_ConvertFunc;
 };
 
+/**
+ * SourceFile,行使用index来索引，列则是每一行的成员
+ */
 class C2DimensionSourceFile : public C2DimensionFile
 {
 public:
@@ -53,6 +56,9 @@ public:
 	bool GenerateFill(wstring* wstrColoumnName, list<wstring>& contentList);
 };
 
+/**
+ * Index File 的区别是里面所有的行和列都用index来索引
+ */
 class C2DimensionSourceIndexFile : public C2DimensionFile
 {
 public:
