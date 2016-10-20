@@ -707,7 +707,7 @@ void WriteCaptureSpecificDCRGBbitsEx(LPBYTE lpBits, LPTSTR lpFilePath, UINT widt
 {
 	BITMAPINFO bmpinfo = { 0 };
 
-	bmpinfo.bmiHeader.biBitCount = 32;//颜色位数
+	bmpinfo.bmiHeader.biBitCount = pixelBitSize*8;//颜色位数
 	bmpinfo.bmiHeader.biClrImportant = 0;
 	bmpinfo.bmiHeader.biCompression = BI_RGB;
 	bmpinfo.bmiHeader.biHeight = height;

@@ -44,6 +44,9 @@ public:
 	static unsigned __stdcall RunFunc(void* pInst);
 	DupicatorStatus GetStatus(){ return m_DuplicatorStatus; }
 
+	void SaveTextureInBMP(ID3D11Texture2D* p2dTexture);
+	bool CopyResource(ID3D11Texture2D **pTargetRenderTexture, ID3D11Texture2D *pSrcRenderTexture);
+	bool GetSpecificAdapter(int idAdapter, IDXGIAdapter** pAdapter);
 	DupicatorStatus m_DuplicatorStatus;
 protected:
 	HWND m_hwnd;

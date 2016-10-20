@@ -94,7 +94,7 @@ unsigned __stdcall CDuplicateOutputDx11::RunFunc(void* pInst)
 		ID3D11Texture2D* p2dTexture = nullptr;
 
 		pThis->DoneWithFrame();
-		DuplicatorInfo retInfo =  pThis->GetNewFrame(&p2dTexture);
+		DuplicatorInfo retInfo = pThis->GetNewFrame(&p2dTexture);
 
 		D3D11_TEXTURE2D_DESC desc2D;
 		switch (retInfo)
@@ -102,6 +102,7 @@ unsigned __stdcall CDuplicateOutputDx11::RunFunc(void* pInst)
 		case DuplicatorInfo_Acquired:
 		{
 			p2dTexture->GetDesc(&desc2D);
+			pThis->SaveTextureInBMP(p2dTexture);
 			DOLOG("GetNewFrame Lapse Acquired : " + (GetTickCount() - startCount) + "mili sec, x:" + desc2D.Width + ", y:" + desc2D.Height);
 			startCount = GetTickCount();
 			SAFE_RELEASE(p2dTexture);
@@ -109,7 +110,7 @@ unsigned __stdcall CDuplicateOutputDx11::RunFunc(void* pInst)
 		}
 		case DuplicatorInfo_Lost:
 		{
-			DOLOG("GetNewFrame Lapse Lost: " + (GetTickCount()- startCount) + "mili sec------------------------------------------------------------ \r\n");
+			DOLOG("GetNewFrame Lapse Lost: " + (GetTickCount() - startCount) + "mili sec------------------------------------------------------------ \r\n");
 			startCount = GetTickCount();
 			if (false == pThis->CreateOutputDuplicator())
 			{
@@ -122,16 +123,16 @@ unsigned __stdcall CDuplicateOutputDx11::RunFunc(void* pInst)
 		}
 		case DuplicatorInfo_InvalidCall:
 		{
-			DOLOG("GetNewFrame Lapse invalid call: " + (GetTickCount()- startCount) + "mili sec<<<<<<<<< \r\n");
+			DOLOG("GetNewFrame Lapse invalid call: " + (GetTickCount() - startCount) + "mili sec<<<<<<<<< \r\n");
 			startCount = GetTickCount();
 			pThis->m_DuplicatorStatus = DupicatorStatus_Restart;
 			return 0;
 		}
 		case DuplicatorInfo_Timeout:
 		{
-		   //pThis->DoneWithFrame();
+			//pThis->DoneWithFrame();
 			//DOLOG("GetNewFrame Lapse Timeout: " + (GetTickCount() - startCount) + "mili sec \r\n");
-			continue;	
+			continue;
 		}
 		case DuplicatorInfo_Error:
 		default:
@@ -144,6 +145,76 @@ unsigned __stdcall CDuplicateOutputDx11::RunFunc(void* pInst)
 		};
 	}
 	return 0;
+}
+
+bool CDuplicateOutputDx11::CopyResource(ID3D11Texture2D **pTargetRenderTexture, ID3D11Texture2D *pSrcRenderTexture)
+{
+	if (pTargetRenderTexture == NULL || pSrcRenderTexture == NULL)
+	{
+		return false;
+	}
+
+	IDXGIKeyedMutex *pMutex = NULL;
+	HRESULT hr = S_OK;
+
+	D3D11_TEXTURE2D_DESC renderDesc;
+	pSrcRenderTexture->GetDesc(&renderDesc);
+
+	D3D11_TEXTURE2D_DESC copyDesc;
+	ZeroMemory(&copyDesc, sizeof(&copyDesc));
+	copyDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	copyDesc.Format = renderDesc.Format;
+	copyDesc.Height = renderDesc.Height;
+	copyDesc.Width = renderDesc.Width;
+	copyDesc.Usage = D3D11_USAGE_STAGING;
+	copyDesc.ArraySize = 1;
+	copyDesc.SampleDesc.Count = 1;
+	copyDesc.SampleDesc.Quality = 0;
+	copyDesc.MipLevels = 1;
+	copyDesc.MiscFlags = 0;//D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+	copyDesc.BindFlags = 0;//D3D11_BIND_SHADER_RESOURCE;
+
+	D3D11_SUBRESOURCE_DATA *lpSRD = NULL;
+
+	hr = m_pDevice->CreateTexture2D(&copyDesc, lpSRD, pTargetRenderTexture);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	m_pDeviceContext->CopyResource((ID3D11Resource*)*pTargetRenderTexture, (ID3D11Resource*)pSrcRenderTexture);
+		
+	return true;
+}
+
+void CDuplicateOutputDx11::SaveTextureInBMP(ID3D11Texture2D* p2dTexture)
+{
+	if (!p2dTexture){
+		return;
+	}
+
+	ID3D11Texture2D* pTextureBuf = NULL;
+	if (!CopyResource(&pTextureBuf, p2dTexture)){
+		return;
+	}
+
+	D3D11_MAPPED_SUBRESOURCE  mapResource;
+	//ID3D11Resource* p2dResource = NULL;
+	//if (!SUCCEEDED(p2dTexture->QueryInterface(__uuidof(ID3D11Resource), (void**)&p2dResource))){
+	//	return;
+	//}
+	if (!SUCCEEDED(m_pDeviceContext->Map(pTextureBuf, 0, D3D11_MAP_READ, NULL, &mapResource))){
+		return;
+	}
+	
+	wstringstream ss;
+	ss <<L"D:\\Test\\"<< GetTickCount()<<L".bmp";
+	WriteCaptureSpecificDCRGBbitsEx((LPBYTE)mapResource.pData, (LPWSTR)ss.str().c_str(), 
+					mapResource.RowPitch/4, mapResource.DepthPitch/mapResource.RowPitch, 4);
+
+	m_pDeviceContext->Unmap(pTextureBuf, 0);
+	
+	SAFE_RELEASE(pTextureBuf);
 }
 
 bool CDuplicateOutputDx11::CreateOutputDuplicator()
@@ -168,6 +239,9 @@ bool CDuplicateOutputDx11::CreateOutputDuplicator()
 		DOLOG("pDxgiDevice->GetParent failed!");
 		return false;
 	}
+	
+	DXGI_ADAPTER_DESC descAdapter;
+	pDxgiAdapter->GetDesc(&descAdapter);
 
 	// Get output
 	IDXGIOutput* pDxgiOutput = nullptr;
@@ -201,6 +275,36 @@ bool CDuplicateOutputDx11::CreateOutputDuplicator()
 	return true;
 }
 
+bool CDuplicateOutputDx11::GetSpecificAdapter(int idAdapter, IDXGIAdapter** pAdapter)
+{
+	HRESULT err = S_OK;
+
+	if (!pAdapter)
+	{
+		return false;
+	}
+
+	REFIID iidVal = __uuidof(IDXGIFactory1);
+	UINT adapterID = 0;	// adapter index
+	IDXGIFactory1* pFactory = NULL;
+	if (FAILED(err = CreateDXGIFactory1(iidVal, (void**)&pFactory)))
+	{
+		return 	false;
+	}
+	UINT i = 0;
+	UINT adapterDeviceID = idAdapter;		// if device id equal zero, use the first device
+
+	DXGI_ADAPTER_DESC dxgiDesc;
+	IDXGIAdapter1 *giAdapter = NULL;
+	if (pFactory->EnumAdapters1(i, &giAdapter) != S_OK)
+	{
+		return false;
+	}
+	if (pFactory)pFactory->Release();
+	*pAdapter = giAdapter;
+	return true;
+}
+
 bool CDuplicateOutputDx11::Init()
 {
 	HRESULT err = NULL;
@@ -228,8 +332,15 @@ bool CDuplicateOutputDx11::Init()
 	D3D_FEATURE_LEVEL receivedLevel;
 
 	D3D_DRIVER_TYPE driverType = D3D_DRIVER_TYPE_HARDWARE;
-	UINT flags = 0;// D3D11_CREATE_DEVICE_DEBUG;
-	err = D3D11CreateDeviceAndSwapChain(NULL, driverType, NULL, flags, desiredLevels, 6, D3D11_SDK_VERSION, &swapDesc, &m_pSwapChain, &m_pDevice, &receivedLevel, &m_pDeviceContext);
+	UINT flags = 0;//D3D11_CREATE_DEVICE_DEBUG;
+
+	//err = D3D11CreateDeviceAndSwapChain(pAdapter, driverType, NULL, flags, desiredLevels, 6, D3D11_SDK_VERSION, &swapDesc, &m_pSwapChain, &m_pDevice, &receivedLevel, &m_pDeviceContext);
+	IDXGIAdapter* pAdapter = NULL;
+	GetSpecificAdapter(0, &pAdapter);
+	DXGI_ADAPTER_DESC adapterDesc;
+	pAdapter->GetDesc(&adapterDesc);
+	
+	err = D3D11CreateDeviceAndSwapChain(pAdapter, D3D_DRIVER_TYPE_UNKNOWN, NULL, flags, desiredLevels, 6, D3D11_SDK_VERSION, &swapDesc, &m_pSwapChain, &m_pDevice, &receivedLevel, &m_pDeviceContext);
 	if (SUCCEEDED(err))
 	{
 		//m_pSwapChain->AddRef();
