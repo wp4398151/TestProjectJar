@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "TestGameServer.h"
+#include <shellapi.h>
 
 #define MAX_LOADSTRING 100
 
@@ -17,6 +18,8 @@ BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
+#include <glog/logging.h>
+
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPTSTR    lpCmdLine,
@@ -25,6 +28,12 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
+	google::InitGoogleLogging((const char*)"C:\\Project\\git\\TestProjectJar\\MyTestGame\\Debug\\TestGameServer.exe");
+	FLAGS_log_dir = "C:\\TestLog\\";	// 前提是指定的文件夹必须存在
+	FLAGS_minloglevel = 0;
+	LOG(WARNING) << "Found " << 123 << " hah cookies";
+	google::ShutdownGoogleLogging();
+	return 0;
  	// TODO:  在此放置代码。
 	MSG msg;
 	HACCEL hAccelTable;
