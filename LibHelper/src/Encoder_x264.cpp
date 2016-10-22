@@ -115,7 +115,7 @@ public:
 
         ZeroMemory(&paramData, sizeof(paramData));
 
-
+		//if (x264_param_default_preset(&paramData, "ultrafast", NULL))
 		if (x264_param_default_preset(&paramData, "veryfast", NULL))
 		{
 			DOLOG("Failed to set default preset");
