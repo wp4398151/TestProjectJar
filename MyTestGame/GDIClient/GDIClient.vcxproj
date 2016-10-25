@@ -84,6 +84,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClientSys.h" />
     <ClInclude Include="GDIClient.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -91,6 +92,7 @@
     <ClInclude Include="WpDrawObj.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClientSys.cpp" />
     <ClCompile Include="GDIClient.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
