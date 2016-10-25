@@ -11,6 +11,13 @@ extern "C"
 }
 #include <assert.h>
 
+#include "gtest/gtest.h"
+
+TEST(CH264Encoder, TestEncode)
+{
+	ASSERT_TRUE(CH264Encoder::TestEncodeScreen());
+}
+
 struct EncoderParam
 {
 	int picWidth;
@@ -48,10 +55,10 @@ bool CH264Encoder::TestEncodeScreenUseX264Encoder()
 	char* pYUVBuf = (char*)malloc(yuv420ByteCount);
 	char* pRBGA = (char*)malloc(width*height * 4);
 	assert(pYUVBuf);
-	int totalFrame = 100;
+	int totalFrame = 10;
 	INT startCount = GetTickCount();
 
-	VideoEncoder *pEncoder = CreateX264Encoder(30, width, height, 5, 60000, 60000, false);
+	VideoEncoder *pEncoder = CreateX264Encoder(30, width, height, 5, 30000, 30000, false);
 
 	x264_picture_t pic_in;
 	res = x264_picture_alloc(&pic_in, X264_CSP_I420, width, height);
@@ -65,13 +72,13 @@ bool CH264Encoder::TestEncodeScreenUseX264Encoder()
 		DOLOG("---------------------------------------------\r\n");
 		// 获取当前桌面的RGBA
 		res = GetCaptureScreenDCRGBAbitsEx(picWidth, picHeight, pixelBitSize, pRBGA);
-		ASSERT_TRUE(res);
+		ISTRUE(res);
 
 		DOLOG(">> Capture Use :" + timeLite.GetTimelapse() + "ms \r\n");
 		timeLite.Reset();
 
 		res = ConvertRBGA2YUV420Ex(pRBGA, picWidth, picHeight, pYUVBuf);
-		ASSERT_TRUE(res);
+		ISTRUE(res);
 
 		DOLOG(">> Counvert Use :" + timeLite.GetTimelapse() + "ms \r\n");
 		timeLite.Reset();
@@ -150,7 +157,7 @@ bool CH264Encoder::TestEncodeScreen()
 	pX264Param->i_width = encoderParam.picWidth;
 	pX264Param->i_height= encoderParam.picHeight;
 	pX264Param->i_frame_total = 0;	// 录制非定长视频不需要知道帧数
-	pX264Param->i_keyint_max = 30;	// 设置IDR帧(完整画面数据帧)允许的最大间隔帧数
+	pX264Param->i_keyint_max = 14;	// 设置IDR帧(完整画面数据帧)允许的最大间隔帧数
 	
 	pX264Param->i_bframe = 5;	// 允许参考帧之间允许存在多少B帧
 	pX264Param->b_open_gop = 0;
@@ -177,7 +184,7 @@ bool CH264Encoder::TestEncodeScreen()
 	int iNal = 0;
 	res = x264_encoder_headers(pX264Handle, &pNals, &iNal);
 	
-	int totalFrame = 200;
+	int totalFrame = 10;
 	//NAL_SP
 	x264_picture_t pic_in;
 	x264_picture_t pic_out;
@@ -210,13 +217,13 @@ bool CH264Encoder::TestEncodeScreen()
 		DOLOG("---------------------------------------------\r\n");
 		// 获取当前桌面的RGBA
 		res = GetCaptureScreenDCRGBAbitsEx(picWidth, picHeight, pixelBitSize, pRBGA);
-		ASSERT_TRUE(res);
+		FALSE_RET(res, "抓取失败", return false);
 
 		DOLOG(">> Capture Use :"+timeLite.GetTimelapse()+"ms \r\n");
 		timeLite.Reset();
 
 		res = ConvertRBGA2YUV420Ex(pRBGA, picWidth, picHeight, pYUVBuf);
-		ASSERT_TRUE(res);
+		FALSE_RET(res, "转换失败", return false);
 
 		DOLOG(">> Counvert Use :"+timeLite.GetTimelapse()+"ms \r\n");
 		timeLite.Reset();

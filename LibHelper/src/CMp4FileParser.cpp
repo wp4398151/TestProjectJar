@@ -64,6 +64,9 @@ new BoxSTSZHandler(),
 new BoxSTCOHandler(),
 };
 
+/**
+ * add container box name here
+ */ 
 std::vector<string> Mp4Box::m_ContanerTypeList = { string("moov"),
 string("trak"),
 string("mdia"),
@@ -95,6 +98,26 @@ void BoxELSTHandler::DumpInfo(Mp4Box& rBox)
 			+ bodyInfo.dwTime + ", Speed:" + bodyInfo.dwSpeed + ")");
 	}
 	DOLOGS("] \r\n");
+}
+
+
+void SampleDescriptionBox::Dump(SampleDescriptionBox* pBox, char* pBodyBytes, DWORD dwLen, DWORD dwLevel)
+{
+	if (!pBox)
+	{
+		return;
+	}
+	pBox->m_dwLevel = dwLevel;
+}
+
+bool MP4ASampleDescriptionBox::SetBody(char* pBodyBytes, DWORD dwLen)
+{
+	return true;
+}
+
+bool AVC1SampleDescriptionBox::SetBody(char* pBodyBytes, DWORD dwLen)
+{
+	return true;
 }
 
 void BoxSTSDHandler::DumpInfo(Mp4Box& rBox)
@@ -468,6 +491,17 @@ bool Mp4Box::IsHaveSub()
 	{
 		return false;
 	}
+	return true;
+}
+
+bool Mp4Box::GetBox(Mp4Box &rBox, char* pData, DWORD uLevel)
+{
+	DWORD dwTotoal = 0;
+	rBox.pBoxBody = pData;
+	rBox.GetSubBoxHeader(rBox.boxHeader, 0);
+	rBox.dwLevel = uLevel;
+	rBox.pBoxBody = new char[rBox.boxHeader.uBoxSize64];
+	memcpy_s(rBox.pBoxBody, rBox.boxHeader.uBoxSize64, pData, rBox.boxHeader.uBoxSize64);
 	return true;
 }
 
