@@ -476,4 +476,57 @@ void WriteCaptureSpecificDCRGBbitsEx(LPBYTE lpBits, LPTSTR lpFilePath, UINT widt
  */
 bool GetFileSizeW(wstring& filePath, DWORD &fileSize);
 
+
+// 浮点数点
+class FPOINT
+{
+public:
+	float x;
+	float y;
+	FPOINT() :x(0), y(0){ }
+	FPOINT(float fx, float fy) :x(fx), y(fy){ }
+	FPOINT(int ix, int iy) :x((float)x), y((float)y){ }
+	FPOINT(POINT pt) :x((float)pt.x), y((float)pt.y){ }
+	FPOINT operator-(FPOINT& fpt)
+	{
+		FPOINT p;
+		p.x = x - fpt.x;
+		p.y = y - fpt.y;
+		return p;
+	}
+
+	FPOINT operator+(FPOINT& fpt)
+	{
+		FPOINT p;
+		p.x = x + fpt.x;
+		p.y = y + fpt.y;
+		return p;
+	}
+
+	FPOINT operator*(float p)
+	{
+		FPOINT pt;
+		pt.x = x*p;
+		pt.y = y*p;
+		return pt;
+	}
+
+	void FillPt(POINT &rPt)
+	{
+		rPt.x = (INT)x;
+		rPt.y = (INT)y;
+	}
+};
+
+VOID Nomalize(POINT &rPt);					// 一般化
+VOID Nomalize(FPOINT &rPt);					// 一般化
+float RoundDir(float pos, float dir);		// 按照向量方向取整
+int StepDir(int pos, int dir);				// 向量的方向走一步
+
+VOID Nomalize(FPOINT &rPt);					// 一般化
+float StepDir(float pos, float dir);		// 向量的方向走一步
+float Get2PointScale(FPOINT pt1, FPOINT pt2);
+INT Get2PointScale(POINT pt1, POINT pt2);
+INT Get2PointScaleDist(POINT pt1, POINT pt2);
+
 #endif //HELPER_H_
