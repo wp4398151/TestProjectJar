@@ -142,7 +142,6 @@ VOID WpRobot::Draw(HWND hwnd, HDC hdc)
 
 VOID WpRobot::OnHeartBeat(CWpDrawObj& rDrawObj, INT elapse)
 {
-
 	if (m_Pos.x != m_Tarpos.x && m_Pos.y != m_Tarpos.y)
 	{
 		// 如果已经在目标点,点就不需要移动

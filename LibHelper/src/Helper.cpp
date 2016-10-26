@@ -720,3 +720,73 @@ void WriteCaptureSpecificDCRGBbitsEx(LPBYTE lpBits, LPTSTR lpFilePath, UINT widt
 
 	CreateBMPFileEx(lpFilePath, &bmpinfo, lpBits);
 }
+
+
+VOID Nomalize(POINT &rPt){
+	float norm = sqrt((float)((rPt.x * rPt.x) + (rPt.y * rPt.y)));
+	rPt.x = (INT)ceil(rPt.x / norm);
+	rPt.y = (INT)ceil(rPt.y / norm);
+}
+
+// 按照向量方向取整
+float RoundDir(float pos, float dir)
+{
+	if (dir >= 0)
+	{
+		return ceil(pos);
+	}
+	else
+	{
+		return floor(pos);
+	}
+}
+
+// 向量的方向走一步
+int StepDir(int pos, int dir)
+{
+	if (dir >= 0)
+	{
+		pos++;
+	}
+	else
+	{
+		pos--;
+	}
+	return pos;
+}
+
+VOID Nomalize(FPOINT &rPt)
+{
+	float norm = sqrt((rPt.x * rPt.x) + (rPt.y * rPt.y));
+	rPt.x = rPt.x / norm;
+	rPt.y = rPt.y / norm;
+}
+
+float StepDir(float pos, float dir)
+{
+	if (dir >= 0)
+	{
+		pos++;
+	}
+	else
+	{
+		pos--;
+	}
+	return pos;
+}
+
+// 的量度量两点距离的标量
+float Get2PointScale(FPOINT pt1, FPOINT pt2)
+{
+	return abs(pt1.x - pt2.x) + abs(pt1.y - pt2.y);
+}
+
+INT Get2PointScale(POINT pt1, POINT pt2)
+{
+	return abs(pt1.x - pt2.x) + abs(pt1.y - pt2.y);
+}
+
+INT Get2PointScaleDist(POINT pt1, POINT pt2)
+{
+	return ((pt1.x - pt2.x)*(pt1.x - pt2.x)) + ((pt1.y - pt2.y)*(pt1.y - pt2.y));
+}

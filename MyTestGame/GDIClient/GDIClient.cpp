@@ -5,6 +5,7 @@
 #include "GDIClient.h"
 #include "WpDrawObj.h"
 #include <thread>
+#include "ClientSys.h"
 
 #define MAX_LOADSTRING 100
 
@@ -27,34 +28,38 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
-	// TODO:  在此放置代码。
-	MSG msg;
-	HACCEL hAccelTable;
+	ClientSys client(hInstance, nCmdShow);
+	client.Initialize();
+	client.LoopMsg();
 
-	// 初始化全局字符串
-	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-	LoadString(hInstance, IDC_GDICLIENT, szWindowClass, MAX_LOADSTRING);
-	MyRegisterClass(hInstance);
+	//// TODO:  在此放置代码。
+	//MSG msg;
+	//HACCEL hAccelTable;
 
-	// 执行应用程序初始化: 
-	if (!InitInstance(hInstance, nCmdShow))
-	{
-		return FALSE;
-	}
+	//// 初始化全局字符串
+	//LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+	//LoadString(hInstance, IDC_GDICLIENT, szWindowClass, MAX_LOADSTRING);
+	//MyRegisterClass(hInstance);
 
-	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GDICLIENT));
+	//// 执行应用程序初始化: 
+	//if (!InitInstance(hInstance, nCmdShow))
+	//{
+	//	return FALSE;
+	//}
 
-	// 主消息循环: 
-	while (GetMessage(&msg, NULL, 0, 0))
-	{
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
+	//hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_GDICLIENT));
 
-	return (int)msg.wParam;
+	//// 主消息循环: 
+	//while (GetMessage(&msg, NULL, 0, 0))
+	//{
+	//	if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+	//	{
+	//		TranslateMessage(&msg);
+	//		DispatchMessage(&msg);
+	//	}
+	//}
+
+	//return (int)msg.wParam;
 }
 
 //

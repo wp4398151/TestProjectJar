@@ -33,6 +33,9 @@
     <ClInclude Include="WpDrawObj.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ClientSys.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -42,6 +45,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="WpDrawObj.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientSys.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
