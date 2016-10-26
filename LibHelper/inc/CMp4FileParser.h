@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////
+ï»¿////////////////////////////////////////////////////
 // implement the parse mp4 format
 // Wupeng 
 // qq:4398151
@@ -48,7 +48,7 @@ struct Mp4BoxHeader
 		uBoxType = rBoxHeaderRealEx.uBoxType;
 	}
 
-	unsigned __int64 uBoxSize64;
+	unsigned __int64 uBoxSize64;	// å¤§å°æ˜¯æ•´ä¸ªBOXçš„å¤§å°ï¼ŒåŒ…æ‹¬Header
 	unsigned int uBoxType;
 	unsigned int uHeaderLen;
 };
@@ -69,7 +69,7 @@ public:
 };
 
 /**
- * Movie Header Ã½ÌåµÄ×ÜÌåĞÅÏ¢£¬Ö÷Òª°üÀ¨Ê±³¤£¬ÒÔ¼°Ö¡ÂÊ
+ * Movie Header åª’ä½“çš„æ€»ä½“ä¿¡æ¯ï¼Œä¸»è¦åŒ…æ‹¬æ—¶é•¿ï¼Œä»¥åŠå¸§ç‡
  */
 class BoxMVHDHanlder : public BoxHandlerBase
 {
@@ -142,7 +142,7 @@ public:
 };
 
 /**
- * Chunk Offset, ¶¨ÒåtrunkÔÚÃ½ÌåÁ÷ÖĞµÄÆ«ÒÆ
+ * Chunk Offset, å®šä¹‰trunkåœ¨åª’ä½“æµä¸­çš„åç§»
  */
 class BoxSTCOHandler : public BoxHandlerBase
 {
@@ -159,7 +159,7 @@ public:
 };
 
 /**
- * Sample Size£¬¶¨ÒåÁËÃ¿¸öSampleµÄ´óĞ¡
+ * Sample Sizeï¼Œå®šä¹‰äº†æ¯ä¸ªSampleçš„å¤§å°
  */
 class BoxSTSZHandler : public BoxHandlerBase
 {
@@ -177,7 +177,7 @@ public:
 };
 
 /**
-* Data Reference£¬ »ñÈ¡Ã½ÌåÊı¾İµÄÒıÓÃĞÅÏ¢
+* Data Referenceï¼Œ è·å–åª’ä½“æ•°æ®çš„å¼•ç”¨ä¿¡æ¯
 */
 class BoxDREFHandler : public BoxHandlerBase
 {
@@ -196,7 +196,7 @@ public:
 };
 
 /**
- * Sound Media Head, °üº¬ÁËÉùÒô¿ØÖÆĞÅÏ¢
+ * Sound Media Head, åŒ…å«äº†å£°éŸ³æ§åˆ¶ä¿¡æ¯
  */
 class BoxSMHDHandler : public BoxHandlerBase
 {
@@ -213,7 +213,7 @@ public:
 };
 
 /**
- * Video Media informationm header, ÊÓÆµÃ½Ìå¿ØÖÆĞÅÏ¢
+ * Video Media informationm header, è§†é¢‘åª’ä½“æ§åˆ¶ä¿¡æ¯
  */
 class BoxVMHDHandler :public BoxHandlerBase
 {
@@ -230,9 +230,9 @@ public:
 };
 
 /**
- * Sync Sample Atoms, ÓÃÓÚÈ·¶¨mediaÖĞµÄ¹Ø¼üÖ¡. 
- * ÆäÖĞ¼ÇÂ¼ÁËsampleµÄindex, ±»±ê¼ÇµÄsample¼´Îª¹Ø¼üÖ¡.
- * ÌØÊâµÄ£¬Èç¹ûÃ»ÓĞ±ê¼ÇÈÎºÎÒ»¸ö¹Ø¼üÖ¡£¬ÔòÃ¿Ò»Ö¡¶¼ÊÇ¹Ø¼üÖ¡
+ * Sync Sample Atoms, ç”¨äºç¡®å®šmediaä¸­çš„å…³é”®å¸§. 
+ * å…¶ä¸­è®°å½•äº†sampleçš„index, è¢«æ ‡è®°çš„sampleå³ä¸ºå…³é”®å¸§.
+ * ç‰¹æ®Šçš„ï¼Œå¦‚æœæ²¡æœ‰æ ‡è®°ä»»ä½•ä¸€ä¸ªå…³é”®å¸§ï¼Œåˆ™æ¯ä¸€å¸§éƒ½æ˜¯å…³é”®å¸§
  */
 class BoxSTSSHandler :public BoxHandlerBase
 {
@@ -249,7 +249,7 @@ public:
 };
 
 /**
- * Time to Sample Atom, Ìá¹©ÁËsampleµÄdurationĞÅÏ¢, Ò²¾ÍÊÇ¾ßÌåsampleµÄÊ±¼äÓ³Éä·½·¨.
+ * Time to Sample Atom, æä¾›äº†sampleçš„durationä¿¡æ¯, ä¹Ÿå°±æ˜¯å…·ä½“sampleçš„æ—¶é—´æ˜ å°„æ–¹æ³•.
  * DT(n+1) = DT(n) + STTS(n)
  */
 class BoxSTTSHandler : public BoxHandlerBase
@@ -260,15 +260,144 @@ public:
 		DWORD dwEntryCount;
 	};
 	struct BoxBody{
-		DWORD dwSampleCount;			/**< ±íÊ¾´ËÆ«ÒÆÓĞ¶àÉÙ¸öÏàÍ¬µÄsampleÏàÍ¬³ÖĞøÊ±¼äµÄsample, e.g. Èç¹ûÊÇvideo, Ã¿¸ôÒ»sample¾ÍÊÇÒ»Ö¡£¬ */
-		DWORD dwSampleDuration;			/**< ÓÃdraction/timescale ¾ÍµÈÓÚÁËÊµ¼ÊÒ»¸ösampleËù³ÖĞøµÄsecond */
+		DWORD dwSampleCount;			/**< è¡¨ç¤ºæ­¤åç§»æœ‰å¤šå°‘ä¸ªç›¸åŒçš„sampleç›¸åŒæŒç»­æ—¶é—´çš„sample, e.g. å¦‚æœæ˜¯video, æ¯éš”ä¸€sampleå°±æ˜¯ä¸€å¸§ï¼Œ */
+		DWORD dwSampleDuration;			/**< ç”¨draction/timescale å°±ç­‰äºäº†å®é™…ä¸€ä¸ªsampleæ‰€æŒç»­çš„second */
 	};
 	BoxSTTSHandler() : BoxHandlerBase("stts"){}
 	virtual void DumpInfo(Mp4Box& rBox);
 };
 
 /**
- * ÀûÓÃSTSD sample DescriptionÕıÈ·½âÂëmedia sample
+ * STSD ä¸­çš„DescriptionBox
+ */
+class SampleDescriptionBox
+{
+public:
+	struct SampleDescriptionBoxHeader
+	{
+		DWORD dwSize;
+		DWORD dwType;
+		CHAR reserve[6];
+		USHORT usReference;
+	};
+	
+	SampleDescriptionBoxHeader m_Header;
+	DWORD m_dwLevel;
+
+	static SampleDescriptionBox* Dump( char* pBodyBytes, DWORD dwLevel);
+	virtual bool SetBody(char* pBodyBytes) = 0;
+};
+
+class MP4ASampleDescriptionBox : public SampleDescriptionBox
+{
+public:
+#pragma pack(push, 1)
+	struct SampleDescriptionBoxBody
+	{
+		WORD usEncodeVersion;	// encode version
+		WORD usReserved;		// revision level
+		DWORD dwEncodeVendor;
+		WORD wChannels;
+		WORD wSampleSize;
+		WORD wAudioCompressionId;
+		WORD wAudioPacketSize;
+		DWORD dwSampleRate;
+	};
+#pragma pack(pop)
+
+public:
+	virtual bool SetBody(char* pBodyBytes);
+
+	SampleDescriptionBoxBody m_Body;
+};
+
+class AVC1SampleDescriptionBox : public SampleDescriptionBox
+{
+public:
+#pragma pack(push, 1)
+	struct SampleDescriptionBoxBody
+	{
+		WORD usEncodeVersion;	// encode version
+		WORD usReserved;		// revision level
+		DWORD dwEncodeVendor;	
+		DWORD dwTemporalQuality;
+		DWORD dwSpatialQuality; 	
+		WORD usWidth;
+		WORD usHeight;
+		DWORD dwHoriz_DPI;
+		DWORD dwVert_DPI;
+		DWORD dwReserved;		// quicktime video data size
+		WORD usFrameCount;
+		BYTE bcompressionNameLen;
+		CHAR compression_name[31];
+		WORD usBitDepth;
+		WORD usPredefine;		//quicktime video color table id
+	};
+#pragma pack(pop)
+public:
+	virtual bool SetBody(char* pBodyBytes);
+
+	SampleDescriptionBoxBody m_Body;
+};
+
+/**
+* ESDS Element Stream Descriptors, å­˜æ”¾éŸ³é¢‘aacçš„å…·ä½“config
+*/
+class BoxESDSHandler : public BoxHandlerBase
+{
+public:
+#pragma pack(push, 1)
+	struct BoxStructHeader
+	{
+		DWORD dwVersionAndFlag;
+		BYTE cESDSType;	// just support type 3
+	};
+
+	struct BoxBody
+	{
+		BYTE wSize;		// sps size 
+		CHAR* pContent;	// sps content
+	};
+#pragma pack (pop)
+
+	BoxESDSHandler() : BoxHandlerBase("esds"){}
+	virtual void DumpInfo(Mp4Box& rBox);
+};
+
+
+/**
+* AVCC ä¿å­˜SPSå’ŒPPS,ç”¨æ¥è¾…åŠ©è§£ç æ•°æ®
+*/
+class BoxAVCCHandler : public BoxHandlerBase
+{
+public:
+#pragma pack(push, 1)
+	struct BoxStructHeader
+	{
+		BYTE version;
+		BYTE profileID;
+		BYTE h246CompatibleProfile;
+		BYTE h264Level;
+		BYTE Reserved;
+	};
+	
+	struct BoxBody
+	{
+		BYTE spsCount;		// sps count
+		WORD spsSize;		// sps size 
+		CHAR* spsContent;	// sps content
+		BYTE ppsCount;		// pps count
+		WORD ppsSize;		// pps size 
+		CHAR* ppsContent;	// pps content
+	};
+#pragma pack (pop)
+
+	BoxAVCCHandler() : BoxHandlerBase("avcc"){}
+	virtual void DumpInfo(Mp4Box& rBox);
+};
+
+/**
+ * åˆ©ç”¨STSD sample Descriptionæ­£ç¡®è§£ç media sample
  */
 class BoxSTSDHandler : public BoxHandlerBase
 {
@@ -290,7 +419,7 @@ public:
 };
 
 /**
- * ÓÃÀ´Ó³ÉämovieÊ±¼äµ½´ËtrackµÄÊ±¼ä
+ * ç”¨æ¥æ˜ å°„movieæ—¶é—´åˆ°æ­¤trackçš„æ—¶é—´
  */
 class BoxELSTHandler : public BoxHandlerBase
 {
@@ -363,6 +492,7 @@ struct Mp4Box
 	Mp4BoxHeader boxHeader;
 	char* pBoxBody;
 	DWORD dwLevel;
+	static bool GetBox(Mp4Box &rBox, char* pData, DWORD uLevel);
 	static std::vector<string> m_ContanerTypeList;
 	static std::vector<BoxHandlerBase*> m_HandlerList;
 };

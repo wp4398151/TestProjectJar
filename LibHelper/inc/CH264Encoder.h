@@ -8,8 +8,6 @@
 #include <list>
 using namespace std;
 
-
-
 class CH264Encoder{
 public:
 	CH264Encoder(){}

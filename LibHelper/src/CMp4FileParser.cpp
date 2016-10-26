@@ -55,6 +55,8 @@ new BoxMVHDHanlder(),
 new BoxSTSCHanlder(),
 new BoxELSTHandler(),
 new BoxSTSDHandler(),
+new BoxESDSHandler(),
+new BoxAVCCHandler(),
 new BoxSTTSHandler(),
 new BoxSTSSHandler(),
 new BoxVMHDHandler(),
@@ -100,24 +102,117 @@ void BoxELSTHandler::DumpInfo(Mp4Box& rBox)
 	DOLOGS("] \r\n");
 }
 
-
-void SampleDescriptionBox::Dump(SampleDescriptionBox* pBox, char* pBodyBytes, DWORD dwLen, DWORD dwLevel)
+SampleDescriptionBox* SampleDescriptionBox::Dump(char* pBodyBytes, DWORD dwLevel)
 {
-	if (!pBox)
-	{
-		return;
+	if (!pBodyBytes){
+		return NULL;
 	}
-	pBox->m_dwLevel = dwLevel;
+	SampleDescriptionBoxHeader header;
+	memcpy_s((char*)&header, sizeof(header), pBodyBytes, sizeof(header));
+	header.dwSize = ntohl(header.dwSize);
+	char bufName[5] = { 0 };
+	memcpy(bufName, (char*)&header.dwType, 4);
+	DOLOG(" " + bufName + " :" + dwLevel + ", length:" + header.dwSize);
+
+	if (_memicmp(bufName, "avc1", 4) == 0)
+	{
+		SampleDescriptionBox* pSampleDesc = new AVC1SampleDescriptionBox();
+		pSampleDesc->m_dwLevel = dwLevel;
+		pSampleDesc->m_Header = header;
+		pSampleDesc->SetBody(pBodyBytes + sizeof(header));
+		return pSampleDesc;
+	}
+	else
+	{
+		SampleDescriptionBox* pSampleDesc = new MP4ASampleDescriptionBox();
+		pSampleDesc->m_dwLevel = dwLevel;
+		pSampleDesc->m_Header = header;
+		pSampleDesc->SetBody(pBodyBytes + sizeof(header));
+		return pSampleDesc;
+	}
 }
 
-bool MP4ASampleDescriptionBox::SetBody(char* pBodyBytes, DWORD dwLen)
+bool MP4ASampleDescriptionBox::SetBody(char* pBodyBytes)
 {
+	memcpy_s(&m_Body, sizeof(m_Body), pBodyBytes, sizeof(m_Body));
+	Mp4Box box;
+	Mp4Box::GetBox(box, pBodyBytes + sizeof(m_Body), m_dwLevel + 1);
+	box.DumpBoxContent();
+
+	char bufName[5] = { 0 };
+	memcpy(bufName, (char*)&box.boxHeader.uBoxType, 4);
+	COUNTTAB(box.dwLevel);
+	DOLOGS(" " + bufName + " :" + box.dwLevel + ", length:" + (box.boxHeader.uBoxSize64 - box.boxHeader.uHeaderLen));
 	return true;
 }
 
-bool AVC1SampleDescriptionBox::SetBody(char* pBodyBytes, DWORD dwLen)
+bool AVC1SampleDescriptionBox::SetBody(char* pBodyBytes)
 {
+	memcpy_s(&m_Body, sizeof(m_Body), pBodyBytes, sizeof(m_Body));
+	Mp4Box box;
+	Mp4Box::GetBox(box, pBodyBytes + sizeof(m_Body), m_dwLevel+1);
+	box.DumpBoxContent();
+
+	char bufName[5] = { 0 };
+	memcpy(bufName, (char*)&box.boxHeader.uBoxType, 4);
+	COUNTTAB(box.dwLevel);
+	DOLOGS(" " + bufName + " :" + box.dwLevel + ", length:" + (box.boxHeader.uBoxSize64 - box.boxHeader.uHeaderLen));
+
 	return true;
+}
+
+void BoxESDSHandler::DumpInfo(Mp4Box& rBox)
+{
+	BoxStructHeader header;
+	memcpy_s(&header, sizeof(header), rBox.pBoxBody, sizeof(header));
+	UINT uCurPos = sizeof(header);
+	
+	BoxBody body;
+	memcpy_s(&body.wSize, 1, rBox.pBoxBody + uCurPos, 1);
+	uCurPos += 1;
+	body.pContent= new char[body.wSize];
+	memcpy_s(body.pContent, body.wSize, rBox.pBoxBody, body.wSize);
+	uCurPos += body.wSize;
+	
+	if (body.pContent ){
+		delete body.pContent;
+	}
+}
+
+void BoxAVCCHandler::DumpInfo(Mp4Box& rBox)
+{
+	BoxStructHeader header;
+	memcpy_s(&header, sizeof(header), rBox.pBoxBody, sizeof(header));
+	UINT uCurPos = sizeof(header);
+
+	BoxBody body;
+	memcpy_s(&body.spsCount, 1, rBox.pBoxBody + uCurPos, 1);
+	body.spsCount = body.spsCount & 0x0F;
+	uCurPos += 1;
+	memcpy_s(&body.spsSize, 2, rBox.pBoxBody + uCurPos, 2);
+	body.spsSize = ntohs(body.spsSize);
+	uCurPos += 2;
+	body.spsContent = new char[body.spsSize];
+	memcpy_s(body.spsContent, body.spsSize, rBox.pBoxBody, body.spsSize);
+	uCurPos += body.spsSize;
+
+	memcpy_s(&body.ppsCount, 1, rBox.pBoxBody + uCurPos, 1);
+	uCurPos += 1;
+	memcpy_s(&body.ppsSize, 2, rBox.pBoxBody + uCurPos, 2);
+	body.ppsSize = ntohs(body.ppsSize);
+	uCurPos += 2;
+	body.ppsContent = new char[body.ppsSize];
+	memcpy_s(body.ppsContent, body.ppsSize, rBox.pBoxBody, body.ppsSize);
+	uCurPos += body.ppsSize;
+
+	if (body.ppsContent ){
+		delete body.ppsContent;
+	}
+
+	if (body.spsContent ){
+		delete body.spsContent;
+	}
+	return;
 }
 
 void BoxSTSDHandler::DumpInfo(Mp4Box& rBox)
@@ -128,20 +223,15 @@ void BoxSTSDHandler::DumpInfo(Mp4Box& rBox)
 
 	headInfo.dwEntryCount = ntohl(headInfo.dwEntryCount);
 	DWORD dwCurPos = sizeof(headInfo);
-
+	
+	//DOLOGS("avc1 " + (sizeof(AVC1SampleDescriptionBox::SampleDescriptionBoxBody) +sizeof(SampleDescriptionBox::SampleDescriptionBoxHeader)));
 	DOLOGS("[ ");
 	for (int i = 0; i < headInfo.dwEntryCount; ++i)
 	{
-		BoxBody bodyInfo;
-		memcpy_s(&bodyInfo, sizeof(bodyInfo), rBox.pBoxBody + dwCurPos, sizeof(bodyInfo));
-		dwCurPos += sizeof(bodyInfo);
-		bodyInfo.dwSize = ntohl(bodyInfo.dwSize);
-		char *pData = new char[bodyInfo.dwSize];
-		memcpy(pData, rBox.pBoxBody + dwCurPos, bodyInfo.dwSize);
-		dwCurPos += bodyInfo.dwSize;
-		char bufName[5] = { 0 };
-		memcpy(bufName, (char*)&bodyInfo.dwFormat, 4);
-		DOLOGS("( type:" + bufName + ", size:" + bodyInfo.dwSize + ")");
+		SampleDescriptionBox *sampleBox = SampleDescriptionBox::Dump(rBox.pBoxBody + dwCurPos, rBox.dwLevel+1);
+		if (sampleBox){
+			delete sampleBox;
+		}
 	}
 	DOLOGS("] \r\n");
 }
@@ -150,10 +240,11 @@ void BoxSTCOHandler::DumpInfo(Mp4Box& rBox)
 {
 	BoxStructHeader headInfo;
 	memcpy_s(&headInfo, sizeof(headInfo), rBox.pBoxBody, sizeof(headInfo));
-	COUNTTAB(rBox.dwLevel);
 
 	headInfo.dwEntriesCount = ntohl(headInfo.dwEntriesCount);
 	DWORD dwCurPos = sizeof(headInfo);
+
+	COUNTTAB(rBox.dwLevel);
 	DOLOGS("[ ChunkCount:" + headInfo.dwEntriesCount);
 	for (int i = 0; i < headInfo.dwEntriesCount; ++i)
 	{
@@ -475,7 +566,7 @@ void Mp4Box::DumpBoxContent()
 	for (auto p : m_HandlerList)
 	{
 		memcpy(bufName, &boxHeader.uBoxType, 4);
-		if (p->m_strName == string(bufName))
+		if (_stricmp(p->m_strName.c_str(), bufName) == 0)
 		{
 			p->DumpInfo(*this);
 		}
@@ -501,7 +592,7 @@ bool Mp4Box::GetBox(Mp4Box &rBox, char* pData, DWORD uLevel)
 	rBox.GetSubBoxHeader(rBox.boxHeader, 0);
 	rBox.dwLevel = uLevel;
 	rBox.pBoxBody = new char[rBox.boxHeader.uBoxSize64];
-	memcpy_s(rBox.pBoxBody, rBox.boxHeader.uBoxSize64, pData, rBox.boxHeader.uBoxSize64);
+	memcpy_s(rBox.pBoxBody, rBox.boxHeader.uBoxSize64, pData + rBox.boxHeader.uHeaderLen, rBox.boxHeader.uBoxSize64);
 	return true;
 }
 
