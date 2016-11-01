@@ -184,7 +184,7 @@ bool CH264Encoder::TestEncodeScreen()
 	int iNal = 0;
 	res = x264_encoder_headers(pX264Handle, &pNals, &iNal);
 	
-	int totalFrame = 10;
+	int totalFrame = 25;
 	//NAL_SP
 	x264_picture_t pic_in;
 	x264_picture_t pic_out;

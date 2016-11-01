@@ -97,6 +97,33 @@ bool GetAppPathA(string& strPath)
 	return true;
 }
 
+/**
+ * 去掉文件全名称中的路径，仅留下文件名称
+ */
+bool TrimFilePathA(string& strPath)
+{
+	int pos = strPath.find_last_of('\\');
+	if (string::npos == pos)
+	{
+		return false;
+	}
+	int count = strPath.size() - pos;
+	strPath = strPath.substr(strPath.find_last_of('\\') + 1, count);
+	return true;
+}
+
+bool TrimFilePathW(wstring& strPath)
+{
+	int pos = strPath.find_last_of(L'\\');
+	if (wstring::npos == pos)
+	{
+		return false;
+	}
+	int count = strPath.size() - pos;
+	strPath = strPath.substr(strPath.find_last_of(L'\\') + 1, count);
+	return true;
+}
+
 string &ReplaceAll(string& rSrcString, string& rSearchString, string& rReplaceString)
 {
 	string::size_type pos = 0;

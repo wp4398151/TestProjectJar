@@ -1,4 +1,4 @@
-#include "Helper.h"
+ï»¿#include "Helper.h"
 #include <windows.h>
 #include <Psapi.h>
 
@@ -6,6 +6,8 @@
 #include <Tlhelp32.h>
 #undef UNICODE
 #include <tchar.h>
+
+#include "gtest/gtest.h"
 
 // [2015/12/17 wupeng] 
 // test
@@ -85,7 +87,7 @@ DWORD GetSpecificProcIDByName(LPWSTR lpName)
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if (hProcessSnap == INVALID_HANDLE_VALUE)
 	{
-		DOLOG(" CreateToolhelp32Snapshot Failed £¡ \n" + GetLastError());
+		DOLOG(" CreateToolhelp32Snapshot Failed ï¼ \n" + GetLastError());
 		return 0;
 	}
 
@@ -100,7 +102,7 @@ DWORD GetSpecificProcIDByName(LPWSTR lpName)
 		bMore = Process32NextW(hProcessSnap, &pe32);
 	}
 
-	// ²»ÒªÍü¼ÇÇå³ıµôsnapshot¶ÔÏó  
+	// ä¸è¦å¿˜è®°æ¸…é™¤æ‰snapshotå¯¹è±¡  
 	CloseHandle(hProcessSnap);
 	return resProcessID;
 }
@@ -145,11 +147,16 @@ DWORD GetSpecificProcIDByNameEx(LPSTR lpName)
 				allProcessIDs[i]);
 		if (ISNOTNULL(hProcess))
 		{
-			if (ISNOZERO(GetModuleBaseNameA(hProcess, NULL, szProcessName,
-				sizeof(szProcessName))))
+			DWORD dwNameSize = sizeof(szProcessName);
+			if (QueryFullProcessImageNameA(hProcess, 0, szProcessName, &dwNameSize))
+			//if (ISNOZERO(GetModuleBaseNameA(hProcess, NULL, szProcessName,
+			//	sizeof(szProcessName))))
 			{
 				DOLOG(" >>" + szProcessName + " : " + allProcessIDs[i]);
-				if (ISZERO(strcmp(szProcessName, lpName)))
+
+				string strPath = szProcessName;
+				TrimFilePathA(strPath);
+				if (ISZERO(_stricmp(strPath.c_str(), lpName)))
 				{
 					DOLOG("Found the Process " + lpName);
 					CloseHandle(hProcess);
@@ -235,11 +242,11 @@ void GetBitmapInfo(BITMAPINFO &rBmpinfo, HBITMAP compatibleHbitmap)
 	BITMAP bitmap = { 0 };
 	GetObjectA(compatibleHbitmap, sizeof(bitmap), &bitmap);
 
-	rBmpinfo.bmiHeader.biBitCount = bitmap.bmBitsPixel;//ÑÕÉ«Î»Êı
+	rBmpinfo.bmiHeader.biBitCount = bitmap.bmBitsPixel;//é¢œè‰²ä½æ•°
 	rBmpinfo.bmiHeader.biClrImportant = 0;
 	rBmpinfo.bmiHeader.biCompression = BI_RGB;
 	rBmpinfo.bmiHeader.biHeight = bitmap.bmHeight;
-	rBmpinfo.bmiHeader.biPlanes = bitmap.bmPlanes; //¼¶±ğ?±ØĞëÎª1
+	rBmpinfo.bmiHeader.biPlanes = bitmap.bmPlanes; //çº§åˆ«?å¿…é¡»ä¸º1
 	rBmpinfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	rBmpinfo.bmiHeader.biSizeImage = bitmap.bmHeight*bitmap.bmWidth*bitmap.bmBitsPixel;
 	rBmpinfo.bmiHeader.biWidth = bitmap.bmWidth;
@@ -247,7 +254,7 @@ void GetBitmapInfo(BITMAPINFO &rBmpinfo, HBITMAP compatibleHbitmap)
 	rBmpinfo.bmiHeader.biYPelsPerMeter = 0;
 }
 
-// ĞèÒªÊ¹ÓÃfreeÀ´ÊÍ·Å»ñµÃµÄBMPµÄÄÚ´æ
+// éœ€è¦ä½¿ç”¨freeæ¥é‡Šæ”¾è·å¾—çš„BMPçš„å†…å­˜
 char* GetBMPBinaryDataEx(LPSTR pszFileName)
 {
 	HBITMAP hBitmap = (HBITMAP)::LoadImageA(NULL, pszFileName,
@@ -266,11 +273,11 @@ char* GetBMPBinaryDataEx(LPSTR pszFileName)
 		return NULL;
 	}
 
-	// ¼ÆËãÏñËØÊı¾İ³¤¶È
+	// è®¡ç®—åƒç´ æ•°æ®é•¿åº¦
 	int pixelLength = rBmpinfo.bmiHeader.biWidth * 3;
 	pixelLength *= rBmpinfo.bmiHeader.biHeight;
 
-	// ¶ÁÈ¡ÏñËØÊı¾İ
+	// è¯»å–åƒç´ æ•°æ®
 	char* pixelData = NULL;
 	pixelData = (char*)malloc(pixelLength);
 	assert(pixelData);
@@ -380,13 +387,13 @@ void GetCurDisplay(HDC& rCompatibleHDC, HBITMAP& rHbitmap)
 	ASSERT_NOTNULL(rHbitmap);
 	HBITMAP oldbitMap = (HBITMAP)SelectObject(rCompatibleHDC, rHbitmap);
 
-	// ÒòÎªÔÚÕı³£µÃµ½µÄÍ¼ÏñÊÇµßµ¹µÄ£¬ËùÒÔĞèÒªÔÚÖ®Ç°´¦Àí³É·´µÄ
+	// å› ä¸ºåœ¨æ­£å¸¸å¾—åˆ°çš„å›¾åƒæ˜¯é¢ å€’çš„ï¼Œæ‰€ä»¥éœ€è¦åœ¨ä¹‹å‰å¤„ç†æˆåçš„
 	//int res = BitBlt(rCompatibleHDC, 0, cy, cx, -1*cy, desktopDC, 0, 0, SRCCOPY);
 	/*
-	StretchBltÒ²ÔÊĞíË®Æ½»ò´¹Ö±·­×ªÍ¼Ïñ¡£Èç¹ûcxSrcºÍcxDst±ê¼Ç£¨×ª»»³ÉÉè±¸µ¥Î»ÒÔºó£©²»Í¬£¬
-	ÄÇÃ´StretchBlt¾Í½¨Á¢Ò»¸ö¾µÏñ£º×óÓÒ·­×ª¡£ÔÚSTRETCH³ÌĞòÖĞ£¬Í¨¹ı½«xDst²ÎÊı¸ÄÎªcxClient²¢½«cxDst²ÎÊı¸Ä³É-cxClient£¬
-	¾Í¿ÉÒÔ×öµ½ÕâÒ»µã¡£Èç¹ûcySrcºÍcyDst²»Í¬£¬ÔòStretchBlt»áÉÏÏÂ·­×ªÍ¼Ïñ¡£ÒªÔÚSTRETCH³ÌĞòÖĞ²âÊÔÕâÒ»µã£¬
-	¿É½«yDst²ÎÊı¸ÄÎªcyClient²¢½«cyDst²ÎÊı¸Ä³É-cyClient¡£
+	StretchBltä¹Ÿå…è®¸æ°´å¹³æˆ–å‚ç›´ç¿»è½¬å›¾åƒã€‚å¦‚æœcxSrcå’ŒcxDstæ ‡è®°ï¼ˆè½¬æ¢æˆè®¾å¤‡å•ä½ä»¥åï¼‰ä¸åŒï¼Œ
+	é‚£ä¹ˆStretchBltå°±å»ºç«‹ä¸€ä¸ªé•œåƒï¼šå·¦å³ç¿»è½¬ã€‚åœ¨STRETCHç¨‹åºä¸­ï¼Œé€šè¿‡å°†xDstå‚æ•°æ”¹ä¸ºcxClientå¹¶å°†cxDstå‚æ•°æ”¹æˆ-cxClientï¼Œ
+	å°±å¯ä»¥åšåˆ°è¿™ä¸€ç‚¹ã€‚å¦‚æœcySrcå’ŒcyDstä¸åŒï¼Œåˆ™StretchBltä¼šä¸Šä¸‹ç¿»è½¬å›¾åƒã€‚è¦åœ¨STRETCHç¨‹åºä¸­æµ‹è¯•è¿™ä¸€ç‚¹ï¼Œ
+	å¯å°†yDstå‚æ•°æ”¹ä¸ºcyClientå¹¶å°†cyDstå‚æ•°æ”¹æˆ-cyClientã€‚
 	*/
 	int res = StretchBlt(rCompatibleHDC, 0, cy, cx, -1*cy, desktopDC, 0, 0, cx, cy,SRCCOPY);
 	//int res = StretchDIBits(rCompatibleHDC, 0, 0, cx, -1*cy, desktopDC, 0, 0, cx, cy,SRCCOPY);
@@ -514,21 +521,21 @@ bool EnumSpecificProcessModule(DWORD processID, list<string>& rModuleNames)
 		FALSE, processID);
 	if (hProcess == NULL)
 	{
-		DOLOG("´ò¿ªprocess:" + processID + "Ê§°Ü");
+		DOLOG("æ‰“å¼€process:" + processID + "å¤±è´¥");
 		return false;
 	}
 
 	DWORD needSize = 0;
 	if (FALSE == EnumProcessModules(hProcess, NULL, 0, &needSize))
 	{
-		DOLOG("EnumProcessModules " + processID + "Ê§°Ü ErrCode:" + GetLastError());
+		DOLOG("EnumProcessModules " + processID + "å¤±è´¥ ErrCode:" + GetLastError());
 		return false;
 	}
 
 	HMODULE *hMods = (HMODULE*)malloc(needSize);
 	if (hMods == NULL)
 	{
-		DOLOG(" malloc ´íÎó");
+		DOLOG(" malloc é”™è¯¯");
 		return false;
 	}
 	memset(hMods, 0, needSize);
@@ -549,6 +556,13 @@ bool EnumSpecificProcessModule(DWORD processID, list<string>& rModuleNames)
 	}
 	SAFE_FREE(hMods);
 	return true;
+}
+
+TEST(GetProcessModuleEx, false)
+{
+	int processID = GetCurrentProcessId();
+	list<wstring> moduleNames;
+	ASSERT_TRUE(EnumSpecificProcessModuleEx(processID, moduleNames));
 }
 
 /////////////////////////////////////////////////////
@@ -610,6 +624,13 @@ BOOL CALLBACK ProcThreadWindowsEnum(HWND hWnd, LPARAM param)
 		L"], ClassName:" + wszClassName+L", Style:"+ GetWindowLongA(hWnd, GWL_STYLE) + L", IsVisible:" + ((GetWindowLongA(hWnd, GWL_STYLE)&WS_VISIBLE)?L"true":L"false"));
 
 	return TRUE;
+}
+
+TEST(EnumWindowsInSpecificProcess, false)
+{
+	//DWORD procID = GetSpecificProcIDByNameEx("DMC-DevilMayCry.exe");
+	DWORD procID = GetSpecificProcIDByNameEx("dwm.exe");
+	ASSERT_TRUE(EnumWindowsInSpecificProcess(procID));
 }
 
 BOOL EnumWindowsInSpecificProcess(DWORD dwOwnerPID)
@@ -707,12 +728,12 @@ void WriteCaptureSpecificDCRGBbitsEx(LPBYTE lpBits, LPTSTR lpFilePath, UINT widt
 {
 	BITMAPINFO bmpinfo = { 0 };
 
-	bmpinfo.bmiHeader.biBitCount = pixelBitSize*8;//ÑÕÉ«Î»Êı
+	bmpinfo.bmiHeader.biBitCount = pixelBitSize*8;//é¢œè‰²ä½æ•°
 	bmpinfo.bmiHeader.biClrImportant = 0;
 	bmpinfo.bmiHeader.biCompression = BI_RGB;
 	bmpinfo.bmiHeader.biHeight = height;
 	bmpinfo.bmiHeader.biWidth = width;
-	bmpinfo.bmiHeader.biPlanes = 1; //¼¶±ğ?±ØĞëÎª1
+	bmpinfo.bmiHeader.biPlanes = 1; //çº§åˆ«?å¿…é¡»ä¸º1
 	bmpinfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	bmpinfo.bmiHeader.biSizeImage = height*width*pixelBitSize;
 	bmpinfo.bmiHeader.biXPelsPerMeter = 0;
@@ -728,7 +749,7 @@ VOID Nomalize(POINT &rPt){
 	rPt.y = (INT)ceil(rPt.y / norm);
 }
 
-// °´ÕÕÏòÁ¿·½ÏòÈ¡Õû
+// æŒ‰ç…§å‘é‡æ–¹å‘å–æ•´
 float RoundDir(float pos, float dir)
 {
 	if (dir >= 0)
@@ -741,7 +762,7 @@ float RoundDir(float pos, float dir)
 	}
 }
 
-// ÏòÁ¿µÄ·½Ïò×ßÒ»²½
+// å‘é‡çš„æ–¹å‘èµ°ä¸€æ­¥
 int StepDir(int pos, int dir)
 {
 	if (dir >= 0)
@@ -775,7 +796,7 @@ float StepDir(float pos, float dir)
 	return pos;
 }
 
-// µÄÁ¿¶ÈÁ¿Á½µã¾àÀëµÄ±êÁ¿
+// çš„é‡åº¦é‡ä¸¤ç‚¹è·ç¦»çš„æ ‡é‡
 float Get2PointScale(FPOINT pt1, FPOINT pt2)
 {
 	return abs(pt1.x - pt2.x) + abs(pt1.y - pt2.y);

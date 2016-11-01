@@ -249,6 +249,9 @@ bool GetAppPathW(wstring& strPath);
 bool GetAppNameA(string& strPath);
 bool GetAppNameW(wstring& strPath);
 
+bool TrimFilePathA(string& strPath);
+bool TrimFilePathW(wstring& strPath);
+
 ////////////////////////////////////////////////////
 // Ìæ»»ËùÓÐÆ¥ÅäµÄ×Ö·û´®
 // Wupeng 

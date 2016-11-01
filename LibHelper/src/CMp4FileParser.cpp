@@ -311,7 +311,6 @@ void BoxDREFHandler::DumpInfo(Mp4Box& rBox)
 	DOLOGS("] \r\n");
 }
 
-
 void BoxSMHDHandler::DumpInfo(Mp4Box& rBox)
 {
 	BoxStruct info;
