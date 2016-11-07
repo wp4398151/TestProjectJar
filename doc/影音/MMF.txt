@@ -1,0 +1,123 @@
+《Microsoft Media Foundation》
+Media Foundation是下一代windows多媒体的开发框架。
+
+----------What's New for Media Foundation
+MMF是用来代替DirectShow的
+1.更好的支持格式支持，例如Mp4
+2.支持capture设备和硬件编码解码器
+3.简化的编码模型
+4.平台的升级
+----------Better Format Support
+AAC decoder
+AAC encoder
+AVI/WAVE file source
+DV video decoder
+H.264 video decoder
+H.264 video encoder
+MJPEG decoder
+MP3 file sink，The MP3 file sink does not include an MP3 audio encoder.
+MP4/3GP file source
+MP4/3GP file sink
+
+----------Hardware Device Support
+支持硬件采集设备，例如网络摄像头。
+支持声音采集设备，例如麦克风
+支持硬件编码解码
+支持视频硬件处理，例如色彩模式的转换。
+
+----------Simplified Programming Model 
+存在低级API的同时，暴露了新增加了高级API，可以用C++简单的完成多媒体处理。
+**Source Reader**
+可以利用Source Reader来从音频或视频文件中提取原始图片或者是波形数据。也可以从音频或视频设备中获取时时数据。
+
+**Sink Writer **
+利用Sink Writer允许你通过传入未压缩或者是编码的数据来生成媒体文件，也可以重新编码一个视频文件，或者是将获取到的硬件实时数据保存到媒体文件中。
+
+Transcode API 
+这个特性支持大部分音频/视频处理场景。
+
+--------- Platform Improvements 
+添加了许多底层的API让MMF获得了许多新特性。
+例如可以通过以下接口迭代源和解码器
+MFTEnumEx 
+IMFPluginControl 
+Codec Merit 
+
+--------- New in Windows?8
+Some of the new updates to Media Foundation with Windows?8 are:
+IMFCaptureEngine 可以控制多个采样设备。另外还新加了一些采集设备接口IMFCapturePhotoSink, IMFCapturePreviewSink, IMFCaptureRecordSink, IMFCaptureSink, and IMFCaptureSource。
+
+The following Media Foundation class extensions are new for Windows 8: 
+IMFMediaEngineEx 
+IMFMediaSourceEx 
+IMFRealTimeClientEx 
+IMFSinkWriterEx 
+IMFSourceReaderEx 
+IMFVideoSampleAllocatorEx 
+IMFWorkQueueServicesEx 
+Direct3D 11 Video API， 可以使用 Direct3D 11 来解码视频文件，并且渲染播放。
+
+==Media Foundation Tools==
+MFTrace 用来生成跟踪日志
+TopoEdit 用来建立，测试拓扑结构的可视化工具。
+可以通过添加各种拓扑节点来测试source, transform, and output，以及可以立刻看到结果。
+
+== Media Foundation Programming Guide == 
+使用COM实现，用C/C++来使用
+
+== Media Foundation: Essential Concepts ==
+Streams
+	一段连续的内容数据，可以是音频，视频，文字，图片等。
+	
+Compression
+	为了减少内存占用量而将stream压缩之后的数据，分为有损和无损。
+Media Containers
+	很少直接使用原始的音频数据和视频数据，因为光靠内容本身无法知道该使用什么样的解码器进行解码。
+	因此包含一下几个数据
+	1.文件头描述包含几个stream，以及每个Stream的格式信息。
+	2.进行随机访问使用的索引信息。
+	3.描述有关内容的元数据，例如作者，标题。
+	4.用于随机访问，网络传输的包头数据。
+	之所以称之为Container，是因为利用它可以直接进行直播，而不需要保存到本地。
+	例如早期的媒体container是AVI，其他的例子包括MP4，ASF等，基本上都可以从后缀名区分出来。
+	媒体Container的通常结构就是音频文件和视频文件交叉interleave.
+	The term multiplexing refers to the process of packetizing the audio and video streams and interleaving the packets into the container. The reverse process, reassembling the streams from the packetized data, is called demultiplexing.
+	Multiplexing是指将音频视频数据打包并且交叉存储到container中的过程。相反的过程是interleave数据中组合stream数据的过程，叫demultiplexing.
+Formats
+	读取媒体文件，实际上分两步
+	1.解析Container
+	2.根据Container中的相关信息，用相应的解码器来解码内容数据。
+	因此媒体处理软件就设计成了container和decode两个组件。继而发展成了插件模式，可以让三方来实现解析器和解码器。COM就提供了这样的功能，因此MF就使用了COM接口。
+	Container->Demultiplexer->decoder
+	
+	写一个媒体文件也分成两步
+	1.编码未压缩的音视频内容
+	2.将压缩过的内容添加到制定的Container文件中
+	
+== Media Foundation Architecture == 
+有关MF设计架构的描述
+------------- MF有两种编程模型
+1.直接初始化管线MediaSession，指定了Input和output,然后通过方法控制数据流。
+2.通过代码直接操作SourceReader和SinkWriter，然后手动操作数据读出或者是写入。
+
+------------- Primitives and Platform
+一些Primitives objects始终在MF底层实现功能。
+Attributes 通用存取键值对的方式
+Media Types 描述媒体内容数据
+Media Buffers 用来保存视频帧和音频采样，用来在对象间传递。
+Media Samples 包含多个Media Buffers，并且包含Metadata例如时间戳。
+ME Platform API 提供了核心共功能供MF管线使用。例如异步回调工作队列。某些程序可能会调用ME Platform API，或者是你需要实现自定义的source， transform， sink。
+
+------------- Media Pipeline
+媒体管线包含三个对象来产生或者是处理媒体数据。
+Media Sources 导入数据到管线内。一个media source可以从本地web文件获得数据，例如视频文件，也可以从网络上获取流数据，或者是从采样设备上获取数据。
+Media Foundation Transforms (MFTs) 从stream中处理数据。MFT实现了encoder和decoder。
+Media Sinks 消费数据，例如将视屏显示出来，播放音频，或者是生成媒体文件。
+Media Session 通过管线控制数据流向，以及控制质量，format改变等。
+------------- Source Reader and Sink Writer
+source reader 和 sink writer提供了使用基本MF组件的可选择组件。reader拥有一个media source 多个decorder, sink拥有一个media sink和多个encoder.可以使用reader来从media　source中得到压缩数据或者是非压缩数据。使用sink writer来编码数据和发送数据到media sink.
+
+
+
+
+
