@@ -117,7 +117,87 @@ Media Session 通过管线控制数据流向，以及控制质量，format改变等。
 ------------- Source Reader and Sink Writer
 source reader 和 sink writer提供了使用基本MF组件的可选择组件。reader拥有一个media source 多个decorder, sink拥有一个media sink和多个encoder.可以使用reader来从media　source中得到压缩数据或者是非压缩数据。使用sink writer来编码数据和发送数据到media sink.
 
+== Audio/Video Playback ==
+这一节描述了怎么使用MF实现音频视频回放。
+------ How to Play Media Files with Media Foundation
+需要使用到
+Media Session 用来控制管线中的流媒体
+Source Resolver
+Topologies
+Media Event Generators
+Presentation Descriptors
+== About the Media Session ==
+Media Session 对象暴露的是IMFMediaSession接口，两种方法创建，看是否程序支持内容保护:
+1.如果你的应用程序，不支持保护内容，能够创建，Media Session 通过调用MFCreateMediaSession.这个方法在进程内创建了MediaSession。
+2.为了支持受保护的内容，创建，Media Session通过调用MFCreatePMPMediaSession这个方法在Protected Media Path进程内创建了Media Session。应用程序收到了一个指向代理对象的指针，这个代理，可以，通过调整方法的调用，跨越进程边界，注意，PMP MediaSession能够用于播放公开的文件和受保护的文件。
+任何应用程序要使用MediaSession都将经历以下步骤.
+1.创建拓扑结构，
+2.将创建的拓扑结构放入，Media Session的队列，通过调用IMFMediaSession::SetTopology
+3.通过控制流数据by calling IMFMediaSession::Start, IMFMediaSession::Pause, or IMFMediaSession::Stop.
+4在应用程序退出之前调用IMFMediaSession::Close 来关闭Media Session.
+5.关闭任何应用程序创建的媒体源都通过调用IMFMediaSource::Shutdown.
+6.关闭Media Session 通过调用 IMFMediaSession::Shutdown.
+当时有媒体回话，应用程序不应该直接启动暂停，或者停止媒体源，所有的状态切换都应该通过调用IMFMediaSession。媒体员工的状态切换都通过媒体会话处理，
 
+---------- Protected Content
+为了播放保护的内容，必须在保护媒体路径内创建媒体会话调用 MFCreatePMPMediaSession.这个方法创建了，一个在，保护媒体路径内的媒体会话，并且返回一个可以跨越进程边界调用的代理指针。
+在大多数情况下，在保护媒体路径中使用媒体会话对应用程序是透明的，但是应用程序应该需要调用指定的动作，来让用户播放内容，例如用户需要取得DRM授权，m f为这些行为定义了一个通用的机制，调用IMFContentEnabler.
 
+---------- Protected Media Path
+这个主题讨论了三个相关的主题，保护环境，媒体交互入口，还要吊销与刷新.
+1.被保护的环境是一系列的技术，可以让，需要保护的内容，从Vista里面流出，所有在保护环境里的组件都是被信任的，这个进程，就能够预防内容被篡改.
+2.被保护的媒体路径是一个可执行文件，被执行在保护环境中.
+3.如果保护环境中的可信任组件是被组合而成的，那么在处理完之后他将被吊销，微软提供了，刷新机制，来安装新的可信任组件的版本，并让它变得可用.
+----------- Source Resolver
+源处理器，通过得到一个url，或者字节流来创建对应的媒体源，源处理器是应用程序创建媒体源的标准方法，
+从内部来说，源处理器使用处理器对象，
+Scheme handlers使用一个url，来创建一个媒体源，或者字节流，
+Byte stream handlers使用字节流来创建一个媒体源，
+通过在注册表中添加你可以实现一个自定义的处理器，
+------------ Topologies
+拓扑结构是一个对象，这个对象来代表在管线中的数据流动，应用程序使用拓扑结构来为媒体会话准备管线，
 
+============ About Topologies
+拓扑结构是一个对象，用来表现数据流，如何在管线中流动。一个应用程序创建了拓扑结构来描述每一个流，如何从媒体源流入，媒体sink的路径，应用程序，将拓扑结构传入媒体会话，之后媒体会话使用拓扑结构来控制数据流。
+在管线中的数据处理组件（媒体源，转换器，媒体槽）在拓扑结构中都表现为节点，数据从一个逐渐流向另一个组件，都表现为两点之间的连接线，节点类型有如下定义，
+1.源节点，代表了一个媒体源的媒体流，
+2.转换节点，代表了一个，MFT
+3.输出节点，代表了一个媒体槽的媒体流，
+4.分支节点，代表了一流的分支，分支几点是一个节点代表管线的一个对象规则的例外，不同于其他节点类型，分支节点只是简单的直接数据流向，
+
+一个有功能的拓扑图，必须至少包含一个源节点，连接连接到一个输出节点，可以通过一个或多个转换节点，
+
+对于文件回放来说，转换节点就可能代表了一个解码器，输出节点将代表着，视频或音频的渲染器。对于文件编码，转换节点可能代表着一个编码器，而输出节点代表着压缩槽，例如a s f文件槽。
+
+如果两个节点相连，产生数据的那个几点被叫做upstream节点。接收数据的那个节点被叫做downstream.一对相连的节点，数据从输出节点流入输入节点，源节点不能有任何的输入，因此不能够成为任何节点的下游节点，同样的，一个输出节点不能有任何的输出，同样也就不能成为任何输出节点的上游节点，从一个源点到一个输入节点过程中的节点链，被称作拓扑的主干。
+
+一个完整的拓扑图为每一个管线对象都包含了一个节点，这是必须的！但是应用程序不需要永远都创建一个，全拓扑结构，相应的，它会创建一个部分拓扑结构，里面会忽略掉，一些转换节点，
+
+媒体回话通过一个叫拓扑加载器的对象来创建拓扑结构，这个拓扑加载器，转换部分拓普结构成为全拓补结构，通过插入必要的转换器，这个过程称之为，拓普的resolving.
+
+例如，播放一个被编码的音频流，文件必须是一个，解码器，放在输出源和输入源之间，这个应用程序创建了一个部分拓扑结构，只包含了一个输出节点和一个输入节点，没有包含解码器，拓扑加载器会检查这个瘤的格式，并且，找到正确的解码器，插入转换节点到拓扑结构中，
+在当前版本中的，拓扑加载器，支持拓扑结构的回放，对于文件编码或者其他场景，应用程序必须构造一个完整的拓扑结构，
+
+应用程序可以，直接创建一个拓扑结构加载器，来直接使用它，例如你可以使用拓扑加载器，来完成部分的拓扑结构，然后输入媒体会话之前修改全拓扑结构，To create the topology loader, call MFCreateTopoLoader.
+
+====== Media Event Generators
+Media Foundation 提供了发送事件一致的方法，一个对象能够使用时间，来通知异步方法完成，或者吐，通知应用程序，关于对象状态的改变。
+
+如果对象发送事件，就需要暴露IMFMediaEventGenerator接口，无论何时，对象发送一个新事件存储在队列中，应用程序都能够请求队列中的下一个事件，通过下列方法
+IMFMediaEventGenerator::GetEvent
+IMFMediaEventGenerator::BeginGetEvent
+GetEvent方法是同步的，如果一个事件已经在队列中，这个方法会立即返回，如果队中没有时间，这个方法立即返回错误或等待到下一个事件进入队列，依靠的是GetEvent传入的标志，
+BeginGetEvent方法是异步的，因此永远不会被挂起，这个方法将得到一个IMFAsyncCallback接口，应用程序必须实现，当回调被调用，应用程序调用 IMFMediaEventGenerator::EndGetEvent来得到事件，
+
+== Presentation Descriptors
+演示是共享同一个绘制时间一系列相关的媒体流，例如一个演示可能包含一个电影中的音频和视频流，演示描述是一个对象，用来描述指定的演示，演示描述符用于配置输入节点和输出节点，
+
+每一个演示描述符，包含一个或多个流描述符的，一系列描述。每一个流描述符都有一个媒体类型处理器，用来改变媒体的类型，或者得到媒体的当前类型，
+The following table shows the primary interfaces that each of these objects exposes.
+
+Presentation descriptor	IMFPresentationDescriptor
+Stream descriptor	IMFStreamDescriptor
+Media type handler	IMFMediaTypeHandler
+
+== How to Play Media Files with Media Foundation == 
 
