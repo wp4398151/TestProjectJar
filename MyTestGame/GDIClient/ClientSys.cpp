@@ -1,21 +1,12 @@
 #include "stdafx.h"
 #include "ClientSys.h"
 
-ClientSys::ClientSys(HINSTANCE hInstance, int nCmdShow) :m_hInst(hInstance), m_nCmdShow(nCmdShow)
+ClientSys::ClientSys(ClientSysInitParam& rClientSysParam, LPWSTR lpwszTempMenu) :
+m_hInst(rClientSysParam.hInstance), m_nCmdShow(rClientSysParam.nCmdShow), m_wstrTitle(rClientSysParam.wstrAppTitle),
+m_wstrWindowClass(rClientSysParam.wstrWindowsClass), m_hAccelTable(rClientSysParam.hAccelTable),
+m_hIcon(rClientSysParam.hIcon), m_hIconSm(rClientSysParam.hIconSm), m_ptSize(rClientSysParam.ptSize), m_lpwszTempMenu(lpwszTempMenu), m_hWndMain(NULL)
 {
-	WCHAR tempBuf[MAX_PATH] = { NULL };
-	
-	LoadString(m_hInst,IDS_APP_TITLE, tempBuf, MAX_PATH);
-	m_wstrTitle = tempBuf;
-	LoadString(m_hInst,IDC_GDICLIENT, tempBuf, MAX_PATH);
-	m_wstrWindowClass = tempBuf;
 
-	LoadString(m_hInst,IDS_MAINWNDWIDTH, tempBuf, MAX_PATH);
-	m_ptSize.x = stol(tempBuf);
-	LoadString(m_hInst,IDS_MAINWNDYHEIGHT, tempBuf, MAX_PATH);
-	m_ptSize.y = stol(tempBuf);
-	m_hAccelTable = LoadAccelerators(m_hInst, MAKEINTRESOURCE(IDC_GDICLIENT));
-	m_hWndMain = NULL;
 }
 
 ClientSys::~ClientSys()
@@ -27,9 +18,9 @@ bool ClientSys::Initialize()
 	MyRegisterClass();
 	if (!InitInstance())
 	{
-		return FALSE;
+		return false;
 	}
-	m_hAccelTable = LoadAccelerators(m_hInst, MAKEINTRESOURCE(IDC_GDICLIENT));
+	return true;
 }
 
 bool ClientSys::InitInstance()
@@ -40,9 +31,9 @@ bool ClientSys::InitInstance()
 	int screencx = GetSystemMetrics(SM_CXSCREEN);
 	int screency = GetSystemMetrics(SM_CYSCREEN);
 
-	m_hWndMain = CreateWindowW(m_wstrWindowClass.c_str(), 
-							m_wstrTitle.c_str(), 
-								WS_OVERLAPPEDWINDOW^WS_THICKFRAME,
+	m_hWndMain = CreateWindowW(m_wstrWindowClass.c_str(),
+		m_wstrTitle.c_str(),
+		WS_OVERLAPPEDWINDOW^WS_THICKFRAME,
 		(screencx - m_ptSize.x) / 2,
 		(screency - m_ptSize.y) / 2,
 		rect.right - rect.left,
@@ -68,12 +59,12 @@ ATOM ClientSys::MyRegisterClass()
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = m_hInst;
-	wcex.hIcon = LoadIcon(m_hInst, MAKEINTRESOURCE(IDC_GDICLIENT));
+	wcex.hIcon = m_hIcon;
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszMenuName = MAKEINTRESOURCE(IDC_GDICLIENT);
+	wcex.lpszMenuName = m_lpwszTempMenu;
 	wcex.lpszClassName = m_wstrWindowClass.c_str();
-	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.hIconSm = m_hIconSm;
 
 	return RegisterClassEx(&wcex);
 }
