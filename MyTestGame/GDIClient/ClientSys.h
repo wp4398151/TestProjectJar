@@ -24,6 +24,9 @@ public:
 	bool Initialize();
 	int LoopMsg();
 
+	void OnKeyPress(WPARAM key);
+	void OnCreate();
+
 protected:
 	bool InitInstance();
 	static LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

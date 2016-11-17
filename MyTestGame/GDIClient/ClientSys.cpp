@@ -87,23 +87,51 @@ int ClientSys::LoopMsg()
 
 LRESULT ClientSys::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	static ClientSys* pThis = (ClientSys*)lParam;
-	if (pThis){
+	static ClientSys* pThis = NULL;
+	if (message == WM_CREATE){
+		pThis = (ClientSys*)((CREATESTRUCT*)lParam)->lpCreateParams;
+	}
+	if (pThis)
+	{
 		return pThis->MsgProc(hWnd, message, wParam, lParam);
 	}
+	else
+	{
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
 	return 0;
+}
+
+void ClientSys::OnKeyPress(WPARAM key)
+{
+	switch (key)
+	{
+	case 'r':	//¿ªÊ¼
+		break;
+	case VK_SPACE:
+		break;
+	}
+}
+
+void ClientSys::OnCreate()
+{
+
 }
 
 LRESULT ClientSys::MsgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message){
 	case WM_CREATE:
+		OnCreate();
 		break;
 	case WM_COMMAND:
 		break;
 	case WM_LBUTTONUP:
 		break;
 	case WM_PAINT:
+		break;
+	case WM_CHAR:
+		OnKeyPress(wParam);
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
