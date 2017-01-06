@@ -81,17 +81,17 @@ LONG __stdcall MyUnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionInfo)
 	timeStruct.tm_mday += 1;
 
 	wstring dumpFileName = L"coredump-";
-	dumpFileName += timeStruct.tm_year;
+	dumpFileName += to_wstring(timeStruct.tm_year);
 	dumpFileName += L"-";
-	dumpFileName += timeStruct.tm_mon;
+	dumpFileName += to_wstring(timeStruct.tm_mon);
 	dumpFileName += L"-";
-	dumpFileName += timeStruct.tm_mday;
+	dumpFileName += to_wstring(timeStruct.tm_mday);
 	dumpFileName += L"-";
-	dumpFileName += timeStruct.tm_hour;
+	dumpFileName += to_wstring(timeStruct.tm_hour);
 	dumpFileName += L"-";
-	dumpFileName += timeStruct.tm_min;
+	dumpFileName += to_wstring(timeStruct.tm_min);
 	dumpFileName += L"-";
-	dumpFileName += timeStruct.tm_sec;
+	dumpFileName += to_wstring(timeStruct.tm_sec);
 	dumpFileName += L".dmp";
 
 	CreateMiniDump(pExceptionInfo, dumpFileName.c_str());
